@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>iGIFT — CCD Inventory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#1b1b1b",
+            "on-secondary-container": "#616363",
+            "on-background": "#1b1c1c",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#1a1c1c",
+            "secondary-container": "#dfe0e0",
+            "tertiary-fixed": "#e2e2e2",
+            "tertiary-container": "#1a1c1c",
+            "outline-variant": "#cfc4c5",
+            "on-primary-fixed": "#1b1b1b",
+            "on-primary-container": "#848484",
+            "on-secondary-fixed-variant": "#454747",
+            "surface-dim": "#dbdad9",
+            "surface-container-high": "#e9e8e7",
+            "primary": "#000000",
+            "on-primary-fixed-variant": "#474747",
+            "surface-container": "#efeded",
+            "secondary-fixed": "#e2e2e2",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "secondary": "#5d5f5f",
+            "on-tertiary-fixed-variant": "#454747",
+            "error": "#ba1a1a",
+            "surface-tint": "#5e5e5e",
+            "inverse-surface": "#303031",
+            "primary-fixed": "#e2e2e2",
+            "surface-variant": "#e3e2e2",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e3e2e2",
+            "on-surface-variant": "#4c4546",
+            "outline": "#7e7576",
+            "inverse-primary": "#c6c6c6",
+            "background": "#fbf9f9",
+            "on-tertiary-fixed": "#1a1c1c",
+            "surface-container-low": "#f5f3f3",
+            "secondary-fixed-dim": "#c6c6c7",
+            "on-tertiary-container": "#838484",
+            "tertiary": "#000000",
+            "primary-fixed-dim": "#c6c6c6",
+            "max-w-6xl": "72rem",
+            "tertiary-fixed-dim": "#c6c6c6",
+            "surface-bright": "#fbf9f9",
+            "on-primary": "#ffffff",
+            "on-surface": "#1b1c1c",
+            "inverse-on-surface": "#f2f0f0",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "surface": "#fbf9f9",
+            "brand-green": "#2F6F62",
+            "brand-green-tint": "rgba(47, 111, 98, 0.06)",
+            "brand-red": "#A23B4C"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "stack-sm": "8px",
+            "stack-lg": "32px",
+            "container-max": "1280px",
+            "gutter": "24px",
+            "stack-md": "16px",
+            "margin-mobile": "16px",
+            "margin-desktop": "64px",
+            "stack-xl": "64px"
+          },
+          "fontFamily": {
+            "body-md": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Montserrat"],
+            "headline-lg": ["Montserrat"],
+            "headline-xl": ["Montserrat"],
+            "body-lg": ["Hanken Grotesk"],
+            "label-sm": ["Hanken Grotesk"],
+            "headline-md": ["Montserrat"],
+            "label-bold": ["Hanken Grotesk"],
+            "sans": ["Hanken Grotesk", "sans-serif"],
+            "headline": ["Montserrat", "sans-serif"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "700" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { background: #fbf9f9; color: #1b1c1c; font-family: 'Hanken Grotesk', sans-serif; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, .nav-pill, .brand-text, .eyebrow, .btn-primary, .admin-tab { font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
+    .spin { animation: spin 1s linear infinite; display:inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    button { cursor: pointer; }
+    svg { display:block; }
+
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding: 24px 40px; border-bottom: 1px solid #e2e2e2; background: #ffffff; }
+    .brand { display:flex; align-items:center; gap:12px; background:none; border:none; padding:0; }
+    .brand-mark { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background: #000000; color: #ffffff; }
+    .brand-text { font-weight:700; font-size:14px; color: #000000; }
+    .brand-text em { font-style: normal; color: #7e7576; font-weight: 400; font-size: 11px; margin-left: 4px; }
+
+    .topnav { display:flex; gap:32px; }
+    .nav-pill { font-size:12px; font-weight:600; padding:4px 0; border-bottom: 2px solid transparent; color: #7e7576; transition: all .2s; background: transparent; }
+    .nav-pill:hover { color: #000000; }
+    .nav-pill.active { color: #000000; border-color: #000000; }
+
+    .main-area { max-width: 1280px; margin: 0 auto; padding: 64px 40px; }
+    .loading-block { display:flex; align-items:center; gap:10px; justify-content:center; padding: 80px 0; color: #7e7576; font-size: 14px; }
+
+    .card { background: #ffffff; border: 1px solid #e2e2e2; padding: 32px; }
+    .hero-tag { margin-bottom: 48px; }
+    .eyebrow { font-size:10px; font-weight:700; color: #000000; margin-bottom: 12px; }
+    .hero-tag h1 { font-size:32px; font-weight:700; line-height:1.2; margin-bottom: 16px; color: #000000; }
+    .hero-sub { color: #4c4546; font-size: 15px; line-height:1.6; max-width: 600px; margin:0; }
+
+    .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .field { display:flex; flex-direction:column; gap:8px; font-size:12px; margin-bottom:20px; }
+    .field-label { font-family: 'Montserrat', sans-serif; font-weight:700; text-transform: uppercase; color: #000000; letter-spacing: 0.05em; }
+    .field input, .field select, .field textarea {
+      font-family:'Hanken Grotesk'; font-size:14px; padding:12px; border:1px solid #e2e2e2; background:#fff; color: #000; outline:none; width:100%; transition: all .2s;
+    }
+
+    /* Form fields background logic */
+    .field input:placeholder-shown,
+    .field textarea:placeholder-shown,
+    .field select[value=""],
+    #event-date-input:not(.has-value) {
+      background-color: #ffffff !important;
+    }
+
+    /* Standard filled background: Brand Green Tint */
+    .field input:not(:placeholder-shown):not(.gift-qty-input-field), 
+    .field textarea:not(:placeholder-shown),
+    .field select:not([value=""]):not([value=""]),
+    #event-date-input.has-value {
+      background-color: rgba(47, 111, 98, 0.06) !important;
+    }
+
+    /* CRITICAL: Gift catalog quantity inputs MUST remain white at all times */
+    .gift-qty-input input.gift-qty-input-field {
+      background-color: #ffffff !important;
+    }
+
+    /* Standardized focus state for ALL inputs (brand red) */
+    .field input:focus, 
+    .field select:focus, 
+    .field textarea:focus { 
+      border-color: #A23B4C !important; 
+      box-shadow: 0 0 0 4px rgba(162, 59, 76, 0.2) !important;
+      background-color: #ffffff !important; 
+    }
+
+    .field-error { color: #ba1a1a; font-size:11px; font-weight:600; margin-top: 4px; text-transform: uppercase; }
+
+    .gift-picker { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:24px; }
+    .gift-option { display:flex; flex-direction:column; border:1px solid #e2e2e2; background:#fff; transition: all .2s; position:relative; }
+    .gift-option:hover { border-color: #2F6F62; }
+    .gift-option.selected { border: 2px solid #2F6F62; background: rgba(47, 111, 98, 0.06); }
+    .gift-option-top { display:flex; flex-direction:column; width: 100%; text-align: left; }
+    .gift-thumb { width:100%; height:200px; background: #f5f3f3; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; border-bottom: 1px solid #e2e2e2; }
+    .gift-thumb img { width:100%; height:100%; object-fit:cover; }
+    .gift-option-text { display:flex; flex-direction:column; font-size:13px; padding: 16px; }
+    .gift-option-text strong { font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 13px; letter-spacing: 0.02em; line-height: 1.4; }
+    .gift-qty-input { display: none; padding: 0 16px 16px 16px; }
+    .gift-option.selected .gift-qty-input { display: block; }
+
+    /* Quantity input specific styling */
+    .gift-option.selected .gift-qty-input input.gift-qty-input-field { 
+      height: 32px; 
+      font-size: 11px; 
+      padding: 4px 8px; 
+      border: 1px solid #2F6F62; 
+      outline: none; 
+    }
+    
+    /* Quantity input focus state (Standardized to Brand Red) */
+    .gift-option.selected .gift-qty-input input.gift-qty-input-field:focus {
+      border-color: #A23B4C !important;
+      box-shadow: 0 0 0 4px rgba(162, 59, 76, 0.2) !important;
+    }
+
+    .btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; font-weight:700; font-size:13px; padding:16px 32px; background: #000000; color:#ffffff; border:none; transition: opacity .2s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary.sm { padding: 10px 20px; font-size:11px; }
+    .btn-primary.full { width:100%; }
+    .btn-primary.brand-submit { background-color: #2F6F62; color: #ffffff; }
+    .btn-primary.brand-submit:hover { background-color: #265a50; }
+    
+    .btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-family:'Montserrat'; text-transform: uppercase; font-weight:700; font-size:11px; padding:10px 20px; background:transparent; color: #000; border:1px solid #000; }
+    .btn-ghost.danger { color: #ba1a1a; border-color: #ba1a1a; }
+
+    .stat-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:24px; margin-bottom: 40px; }
+    .stat-card { border:1px solid #e2e2e2; padding:24px; background: #fff; }
+    .stat-value { font-family:'Montserrat', sans-serif; font-size:28px; font-weight:700; margin-bottom: 4px; }
+    .stat-label { font-family:'Montserrat', sans-serif; font-size:10px; font-weight:700; text-transform: uppercase; color: #7e7576; letter-spacing: 0.05em; }
+
+    .admin-tabs { display:flex; gap:40px; border-bottom:1px solid #e2e2e2; margin-bottom: 40px; }
+    .admin-tab { font-size:12px; font-weight:700; padding:16px 0; background:transparent; border-bottom:2px solid transparent; color: #7e7576; }
+    .admin-tab.active { color: #000; border-color: #000; }
+    .admin-tab.logout { margin-left:auto; border-bottom:none; color: #ba1a1a; }
+
+    .gift-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; }
+    .gift-card-img { height:180px; background: #f5f3f3; display:flex; align-items:center; justify-content:center; overflow: hidden; }
+    .gift-card-img img { width:100%; height:100%; object-fit: cover; }
+    .gift-card-body { padding:20px 0; }
+    .gift-card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 4px; }
+    .gift-card-top strong { font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 14px; letter-spacing: 0.02em; }
+    .low-pill { background: #ba1a1a; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; text-transform: uppercase; }
+
+    .request-card { position: relative; margin-bottom: 16px; border: 1px solid #e2e2e2; padding: 24px; }
+    .badge { font-family: 'Montserrat', sans-serif; font-size:10px; font-weight:700; padding:4px 12px; text-transform: uppercase; border: 1px solid currentColor; }
+
+    .toast { position:fixed; bottom:40px; right:40px; display:flex; align-items:center; gap:12px; background: #000; color:#fff; padding:16px 24px; font-family:'Montserrat'; font-size:12px; font-weight:700; text-transform: uppercase; letter-spacing: 0.05em; z-index:100; }
+
+    /* Selection Summary Theming - Black Background */
+    .selection-card { background: #000000; border: 1px solid #000000; padding: 32px; color: #ffffff; }
+    .selection-card h3 { border-bottom-color: rgba(255,255,255,0.1) !important; color: #ffffff !important; }
+    .order-summary-table { width: 100%; font-size: 12px; color: #ffffff; }
+    .order-summary-table th { font-family: 'Montserrat', sans-serif; text-align: left; text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 10px; color: rgba(255,255,255,0.5) !important; }
+    .order-summary-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .order-summary-total { font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 8px; }
+    .order-summary-total span:first-child { color: rgba(255,255,255,0.5); }
+    .order-summary-total span:last-child { color: #ffffff; }
+
+    #modal-root:empty { display: none; }
+    #modal-root { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); padding: 20px; }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 16px 20px; }
+      .main-area { padding: 40px 20px; }
+      .form-grid, .stat-row, .chart-row { grid-template-columns: 1fr; }
+      .topnav { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-root"></div>
+<div id="modal-root"></div>
+<script>
+    /* ---------------------------------------------------------------------- */
+    /* Constants & Config                                                      */
+    /* ---------------------------------------------------------------------- */
+    const CCD_PASSWORD = "ccd2026";
+    const CATEGORIES = ["Apparel", "Drinkware", "Stationery", "Tech Accessory", "Souvenir", "Other"];
+    const STATUS_META = {
+      pending:  { label: "Pending", color: "#000000" },
+      approved: { label: "Approved", color: "#000000" },
+      issued:   { label: "Issued", color: "#7e7576" },
+      rejected: { label: "Rejected", color: "#ba1a1a" },
+    };
+    const ICONS = {
+      gift: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+      clock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+      check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
+      check_circle: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2F6F62" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+      x: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+      pkg: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>',
+      alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+      search: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+      plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+      trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+      chevron: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>',
+      refresh: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+    };
+
+    /* ---------------------------------------------------------------------- */
+    /* Storage                                                                 */
+    /* ---------------------------------------------------------------------- */
+    const memoryStore = {};
+    async function storageGet(key) {
+      if (window.storage) { try { const r = await window.storage.get(key, true); return r ? r.value : null; } catch { return null; } }
+      return memoryStore[key] || null;
+    }
+    async function storageSet(key, value) {
+      if (window.storage) { try { await window.storage.set(key, value, true); return; } catch { memoryStore[key] = value; return; } }
+      memoryStore[key] = value;
+    }
+
+    const uid = (p) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+    function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+    function formatDate(d) {
+      if (!d) return "—";
+      try { return new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
+      catch { return d; }
+    }
+
+    function notify(message, kind = "success") {
+      const el = document.createElement("div");
+      el.className = `toast ${kind === "error" ? "bg-red-600" : ""}`;
+      el.innerHTML = `<span>${esc(message)}</span>`;
+      document.getElementById("toast-root").appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    const SEED_GIFTS = [
+      { id: uid("g"), name: "Insulated Tumbler", category: "Drinkware", quantity: 42, lowStock: 10, image: "https://images.unsplash.com/photo-1574634534894-89d7576c8259?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Branded Polo Shirt", category: "Apparel", quantity: 18, lowStock: 15, image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Notebook Set", category: "Stationery", quantity: 60, lowStock: 20, image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Wireless Charger", category: "Tech Accessory", quantity: 6, lowStock: 8, image: "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+    ];
+
+    let state = {
+      view: "request", adminTab: "dashboard", authed: false,
+      gifts: [], requests: [], loaded: false,
+      selectedGifts: {}, // { giftId: quantity }
+      pendingImage: null,
+      requestFilter: "all", inventoryQuery: "", showGiftForm: false,
+      isRefreshing: false,
+      currentRequestData: null
+    };
+
+    const GET_REQUESTS_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com/powerautomate/automations/direct/cu/04/workflows/bfed2f41e60c467d8c0c5ab927c40e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWvD-kCPeLhN94juTyuMp9npnWtFz8hJ_iep34Z9nGo";
+
+    const CREATE_REQUEST_API =
+"https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/1e34b5e67fbf4f9a8c381048b917082f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=x5VmNDzaKvJFX-KIVh2lIwPrmVUBg0ZFeAsAtDNjQm4";
+
+    const GET_INVENTORY_API =
+"https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/55b1aafd1f374e6397fcfd2f1c84080a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=otP6LULBv8RIfrOUlBCrWVcjP8IbwU_qJu9Vwl7Y73k";
+
+    async function loadAll() {
+      if (state.isRefreshing) return;
+      state.isRefreshing = true;
+      render();
+      
+      try {
+        const response = await fetch(GET_REQUESTS_API, { method: "POST" });
+       const data = await response.json();
+
+const requests = data.requests || [];
+const items = data.items || [];
+
+state.requests = requests.map(req => ({
+
+    id: req.ID,
+
+    requesterName: req.RequestorName,
+
+    department: req.Department,
+
+    company: req.Company,
+
+    email: req.Email,
+
+    mobileNo: req.MobileNo,
+
+    eventName: req.EventName,
+
+    eventDate: req.EventDate,
+
+    reason: req.Purpose,
+
+    status: (req.Status || "Pending").toLowerCase(),
+
+    submittedAt: req.Created,
+
+    items: items.filter(
+        item => Number(item.RequestID) === Number(req.ID)
+    )
+
+}));
+      } catch(e) { 
+        state.requests = state.requests.length > 0 ? state.requests : []; 
+        if (state.loaded) notify("Fetch failed, showing local data", "error");
+      }
+      
+const inventoryResponse =
+    await fetch(GET_INVENTORY_API,{
+        method:"POST"
+    });
+
+const inventoryData =
+    await inventoryResponse.json();
+
+state.gifts = inventoryData.map(item => ({
+
+    id: item.GiftID,
+
+    name: item.GiftName,
+
+    category: item.Category,
+
+    quantity: Number(item.StockQty),
+
+    lowStock: Number(item.LowStockQty),
+
+    image: item.ImageURL,
+
+    createdAt: Date.now()
+
+}));
+      state.loaded = true;
+      state.isRefreshing = false;
+      render();
+    }
+
+    async function persistGifts(next) { state.gifts = next; await storageSet("gifts", JSON.stringify(next)); }
+    async function persistRequests(next) { state.requests = next; await storageSet("requests", JSON.stringify(next)); }
+
+    /* ---------------------------------------------------------------------- */
+    /* Rendering                                                               */
+    /* ---------------------------------------------------------------------- */
+    function render() {
+      const app = document.getElementById("app");
+      app.innerHTML = `
+        <header class="topbar">
+          <button class="brand" id="brand-btn">
+
+  <img src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg"
+    alt="PHB Logo"
+    class="h-8 w-auto mr-3"
+  />
+
+  <span class="brand-mark">
+    ${ICONS.gift}
+  </span>
+
+  <span class="brand-text">
+    iGIFT <em>· CCD Inventory</em>
+  </span>
+
+</button>
+          <nav class="topnav">
+            <button class="nav-pill ${state.view === "request" ? "active" : ""}" data-nav="request">Request</button>
+            <button class="nav-pill ${state.view === "admin" || state.view === "login" ? "active" : ""}" data-nav="ccd">${state.authed ? "Admin" : "Login"}</button>
+          </nav>
+        </header>
+        <main class="main-area">${mainHTML()}</main>
+      `;
+      bindEvents();
+      if (state.view === "admin" && state.adminTab === "dashboard") renderCharts();
+    }
+
+    function mainHTML() {
+      if (!state.loaded && !state.isRefreshing) return `<div class="loading-block"><span class="spin">${ICONS.clock}</span> Initializing...</div>`;
+      if (state.view === "request") return requestViewHTML();
+      if (state.view === "login") return loginViewHTML();
+      return adminShellHTML();
+    }
+
+    function requestViewHTML() {
+      const selectedEntries = Object.entries(state.selectedGifts);
+      
+      return `
+      <div class="max-w-6xl mx-auto">
+        <div class="hero-tag">
+          <p class="eyebrow">Inventory Request Portal</p>
+          <h1>Corporate Gift</h1>
+          <p class="hero-sub">Select items from our current inventory for your upcoming events. CCD will review and confirm availability within 24 hours.</p>
+        </div>
+        <form id="request-form" class="space-y-12">
+          <div class="card">
+            <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Event Details</h3>
+            <div class="space-y-6">
+              <div class="w-full">
+                ${fieldHTML("requesterName", "Name", `<input name="requesterName" required placeholder="Full name" />`)}
+              </div>
+              
+              <div class="form-grid">
+                <div class="grid grid-cols-2 gap-6 col-span-2">
+
+  ${fieldHTML("department", "Department",
+    `<input name="department" required placeholder="e.g. Marketing" />`)}
+
+  ${fieldHTML("company", "Company",
+    `<input name="company" required placeholder="e.g. PHB Asset Management Berhad" />`)}
+
+  ${fieldHTML("email", "Email",
+    `<input type="email" name="email" required placeholder="muhammad@phb.com.my" />`)}
+
+  ${fieldHTML("mobileNo", "Mobile No",
+    `<input name="mobileNo" required placeholder="012-3456789" />`)}
+
+  ${fieldHTML("eventName", "Event Name",
+    `<input name="eventName" required placeholder="e.g. Signing Ceremony" />`)}
+
+  ${fieldHTML("eventDate", "Event Date",
+    `<input type="date" name="eventDate" id="event-date-input" required />`)}
+
+</div>
+              </div>
+            </div>
+          </div>
+
+<div class="card">
+  <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">
+      Catalog
+  </h3>
+
+  <p class="text-[12px] text-gray-500 mb-6">
+      You may select multiple gift items and specify the required quantity for each selection.
+  </p>
+
+  <div class="gift-picker" id="gift-picker">
+              ${state.gifts.map(g => `
+                <div class="gift-option ${state.selectedGifts[g.id] ? "selected" : ""}" data-gift-id="${g.id}">
+                  <button type="button" class="gift-option-top" data-toggle-gift="${g.id}">
+                    <span class="gift-thumb">${g.image ? `<img src="${g.image}" alt="" />` : `<div class="opacity-20">${ICONS.gift}</div>`}</span>
+                    <span class="gift-option-text">
+                      <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">${esc(g.category)}</span>
+                      <strong>${esc(g.name)}</strong>
+                    </span>
+                  </button>
+                  <div class="gift-qty-input">
+                    <div class="flex items-center gap-3">
+                      <span class="text-[9px] font-headline font-bold uppercase tracking-widest whitespace-nowrap">Quantity</span>
+                      <input type="number" 
+                        min="1" 
+                        max="${g.quantity}" 
+                        placeholder=" "
+                        class="gift-qty-input-field w-full text-xs p-2 border border-gray-200 outline-none" 
+                        data-qty-gift="${g.id}" 
+                        value="${state.selectedGifts[g.id] || 1}" 
+                      />
+                    </div>
+                  </div>
+                </div>`).join("")}
+            </div>
+            <span class="field-error" id="err-giftSelection"></span>
+            <div id="stock-warnings" class="mt-4 space-y-2"></div>
+          </div>
+
+          <div class="flex flex-col md:flex-row gap-8">
+            <div class="flex-1">
+              <div class="card h-full">
+                <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Purpose</h3>
+                ${fieldHTML("reason", "Description of Request", `<textarea rows="6" name="reason" required placeholder="Briefly describe the usage and distribution plan..."></textarea>`)}
+              </div>
+            </div>
+            <div class="w-full md:w-80" id="order-summary-container">
+              ${orderSummaryHTML(selectedEntries)}
+            </div>
+          </div>
+        </form>
+      </div>`;
+    }
+
+    function orderSummaryHTML(selectedEntries) {
+      const totalItems = selectedEntries.reduce((acc, [_, qty]) => acc + (parseInt(qty) || 0), 0);
+      const hasItems = selectedEntries.length > 0;
+      
+      return `
+      <div class="selection-card h-full flex flex-col">
+        <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Your Selection</h3>
+        
+        <div class="flex-grow">
+          ${!hasItems ? `
+            <div class="flex flex-col items-center justify-center h-full py-12 text-gray-400">
+              <div class="mb-4 opacity-30 scale-150">${ICONS.gift}</div>
+              <p class="font-headline text-[10px] uppercase font-bold tracking-widest">No items selected</p>
+            </div>
+          ` : `
+            <table class="order-summary-table mb-8">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-right">Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${selectedEntries.map(([gid, qty]) => {
+                  const g = state.gifts.find(item => item.id === gid);
+                  return `
+                    <tr>
+                      <td class="pr-4">${esc(g.name)}</td>
+                      <td class="text-right font-bold">${qty}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+            
+            <div class="order-summary-total mb-10 pt-4">
+              <span class="text-[10px] uppercase font-bold">Total Units</span>
+              <span class="text-2xl font-headline font-bold">${totalItems}</span>
+            </div>
+          `}
+        </div>
+
+        <button type="submit" 
+          class="btn-primary full brand-submit ${!hasItems ? 'opacity-50 cursor-not-allowed' : ''}" 
+          id="submit-btn" 
+          ${!hasItems ? 'disabled' : ''}
+        >Submit Request</button>
+        
+        <p class="text-[9px] text-gray-500 mt-6 text-center leading-relaxed font-sans normal-case tracking-normal">
+          Your request will be submitted to the CCD team for final verification and inventory reservation.
+        </p>
+      </div>`;
+    }
+
+    function fieldHTML(name, label, inner) {
+      return `<label class="field">
+        <span class="field-label">${label}</span>
+        ${inner}
+        <span class="field-error" id="err-${name}"></span>
+      </label>`;
+    }
+
+    function loginViewHTML() {
+      return `
+      <div class="flex justify-center pt-20">
+        <form class="card w-full max-sm text-center" id="login-form">
+          <div class="brand-mark mx-auto mb-6">${ICONS.pkg}</div>
+          <h2 class="mb-2">Admin Access</h2>
+          <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">Internal Use Only</p>
+          <label class="field text-left">
+            <span class="field-label">Password</span>
+            <input type="password" name="password" placeholder="••••••••" class="text-center" />
+          </label>
+          <p class="field-error mb-4" id="login-error"></p>
+          <button type="submit" class="btn-primary w-full">Authenticate</button>
+        </form>
+      </div>`;
+    }
+
+    function adminShellHTML() {
+      const pending = state.requests.filter(r => r.status === "pending").length;
+      return `
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.adminTab === "dashboard" ? "active" : ""}" data-tab="dashboard">Dashboard</button>
+          <button class="admin-tab ${state.adminTab === "inventory" ? "active" : ""}" data-tab="inventory">Inventory</button>
+          <button class="admin-tab ${state.adminTab === "requests" ? "active" : ""}" data-tab="requests">${pending ? `(${pending})` : ""} Requests</button>
+          <button class="admin-tab logout" id="logout-btn">Sign Out</button>
+        </div>
+        <div id="admin-content">
+          ${state.adminTab === "dashboard" ? dashboardHTML() : state.adminTab === "inventory" ? inventoryHTML() : requestsHTML()}
+        </div>
+      `;
+    }
+
+    function dashboardHTML() {
+      const totalUnits = state.gifts.reduce((s, g) => s + g.quantity, 0);
+      return `
+        <div class="stat-row">
+          ${statCardHTML("Active Inventory", state.gifts.length)}
+          ${statCardHTML("Stock Volume", totalUnits)}
+          ${statCardHTML("Open Requests", state.requests.filter(r => r.status === "pending").length)}
+          ${statCardHTML("Issued Units", state.requests.filter(r => r.status === "issued").length)}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="card">
+            <h3 class="text-xs font-bold mb-8">Stock Analysis</h3>
+            
+<div style="height:300px;">
+  <canvas id="stockChart"></canvas>
+</div>
+
+          </div>
+          <div class="card">
+            <h3 class="text-xs font-bold mb-8">Request Distribution</h3>
+            
+<div style="height:300px;">
+  <canvas id="statusChart"></canvas>
+</div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function statCardHTML(label, value) {
+      return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
+    }
+
+    function inventoryHTML() {
+      return `
+       <div class="flex justify-between items-center mb-12">
+
+  <div class="flex items-center border-b border-black py-2 w-full max-w-xs">
+
+    <span class="mr-3">${ICONS.search}</span>
+
+    <input
+      id="inv-search"
+      placeholder="SEARCH INVENTORY"
+      class="bg-transparent border-none outline-none text-xs font-headline font-bold uppercase tracking-widest w-full"
+      value="${esc(state.inventoryQuery)}"
+    />
+
+  </div>
+
+  <div class="flex items-center gap-3">
+
+      <button
+          id="refresh-inventory"
+          class="btn-ghost sm border-none px-2 flex items-center gap-2 hover:bg-black/5 transition-colors"
+          ${state.isRefreshing ? 'disabled' : ''}
+      >
+          <span class="${state.isRefreshing ? 'spin' : ''}">
+              ${ICONS.refresh}
+          </span>
+
+          <span class="text-[10px] font-bold uppercase tracking-widest">
+              ${state.isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </span>
+      </button>
+
+      <button class="btn-primary sm" id="toggle-gift-form">
+          ${ICONS.plus} New Item
+      </button>
+
+  </div>
+
+</div>
+        <div id="gift-form-slot">${state.showGiftForm ? giftFormHTML() : ""}</div>
+        <div class="relative min-h-[200px]">
+
+  ${state.isRefreshing ? `
+    <div class="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
+      <div class="flex flex-col items-center gap-4">
+        <span class="spin">${ICONS.refresh}</span>
+        <span class="font-headline text-[9px] font-bold uppercase tracking-widest text-black">
+          Synchronizing with API
+        </span>
+      </div>
+    </div>
+  ` : ''}
+
+  <div class="gift-grid">
+
+          ${state.gifts.map(g => `
+          <div class="bg-white border border-gray-100 p-4">
+            <div class="gift-card-img">${g.image ? `<img src="${g.image}" />` : ICONS.gift}</div>
+            <div class="gift-card-body">
+              <div class="gift-card-top">
+                <strong>${esc(g.name)}</strong>
+                ${g.quantity <= g.lowStock ? `<span class="low-pill">Low</span>` : ""}
+              </div>
+              <div class="text-[10px] uppercase font-bold text-gray-400 mb-6">${esc(g.category)}</div>
+              <div class="flex justify-between items-end">
+                <div class="text-xl font-headline font-bold">${g.quantity} <span class="text-[9px] text-gray-400 uppercase tracking-tighter ml-1">In Stock</span></div>
+                <div class="flex gap-4">
+                  <button class="text-[10px] uppercase font-bold tracking-widest hover:underline" data-edit-gift="${g.id}">Adjust</button>
+                  <button class="text-[10px] uppercase font-bold tracking-widest text-red-500 hover:underline" data-remove-gift="${g.id}">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>`).join("")}
+  </div>
+</div>`;
+
+    }
+
+    function requestsHTML() {
+      const filtered = state.requestFilter === "all" ? state.requests : state.requests.filter(r => r.status === state.requestFilter);
+      return `
+        <div class="flex items-center justify-between mb-12 border-b border-gray-100 pb-2">
+          <div class="flex gap-8 overflow-x-auto">
+            ${["all", "pending", "approved", "issued", "rejected"].map(f => `
+              <button class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap pb-2 ${state.requestFilter === f ? "text-black border-b border-black" : "text-gray-400"}" data-filter="${f}">${f}</button>
+            `).join("")}
+          </div>
+          <button id="refresh-requests" class="btn-ghost sm border-none px-2 flex items-center gap-2 hover:bg-black/5 transition-colors" ${state.isRefreshing ? 'disabled' : ''}>
+            <span class="${state.isRefreshing ? 'spin' : ''}">${ICONS.refresh}</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest">${state.isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+          </button>
+        </div>
+        <div class="relative min-h-[200px]">
+          ${state.isRefreshing ? `
+            <div class="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
+              <div class="flex flex-col items-center gap-4">
+                 <span class="spin">${ICONS.refresh}</span>
+                 <span class="font-headline text-[9px] font-bold uppercase tracking-widest text-black">Synchronizing with API</span>
+              </div>
+            </div>
+          ` : ''}
+          <div class="space-y-4">
+            ${filtered.length === 0 ? `
+              <div class="text-center py-20 text-gray-400 font-headline text-[10px] uppercase font-bold tracking-widest">No matching requests found</div>
+            ` : filtered.map(r => `
+            <div class="request-card bg-white flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="badge" style="color:${STATUS_META[r.status].color}">${STATUS_META[r.status].label}		  </span>
+                  <div class="text-xs font-headline font-bold uppercase">
+<div class="mt-3 flex flex-col gap-1">
+    ${r.items.map(i => `
+        <div class="text-[11px] uppercase tracking-wide text-gray-500">
+            ${i.GiftName}
+            <span class="font-bold text-black ml-1">
+                × ${i.Quantity}
+            </span>
+        </div>
+    `).join("")}
+</div>
+		</div>
+                </div>
+               <div class="mt-3 text-[11px] text-gray-500 space-y-1">
+
+    <div class="uppercase tracking-wide">
+        ${esc(r.requesterName)}
+        |
+        ${esc(r.department)}
+        |
+        ${esc(r.company || "-")}
+    </div>
+
+    <div>
+        ${esc(r.email || "-")}
+        |
+        ${esc(r.mobileNo || "-")}
+    </div>
+
+    <div class="uppercase tracking-wide">
+        ${esc(r.eventName)}
+        |
+        ${formatDate(r.eventDate)}
+    </div>
+
+    <div>
+        ${esc(r.reason || "-")}
+    </div>
+
+</div>
+              </div>
+              <div class="flex gap-3">
+                ${r.status === "pending" ? `
+                  <button class="btn-primary sm" data-approve="${r.id}">Approve</button>
+                  <button class="btn-ghost sm danger" data-reject="${r.id}">Decline</button>
+                ` : ""}
+                ${r.status === "approved" ? `
+                  <button class="btn-primary sm" data-issue="${r.id}">Issue Items</button>
+                ` : ""}
+              </div>
+            </div>`).join("")}
+          </div>
+        </div>`;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* Event Binding & Logic                                                   */
+    /* ---------------------------------------------------------------------- */
+    function bindEvents() {
+      document.getElementById("brand-btn").onclick = () => { state.view = state.authed ? "admin" : "request"; render(); };
+      document.querySelectorAll("[data-nav]").forEach(btn => {
+        btn.onclick = () => {
+          const k = btn.dataset.nav;
+          state.view = k === "request" ? "request" : (state.authed ? "admin" : "login");
+          render();
+        };
+      });
+
+      if (state.view === "request") bindRequestEvents();
+      if (state.view === "login") bindLoginEvents();
+      if (state.view === "admin") bindAdminEvents();
+    }
+
+    function bindRequestEvents() {
+      const form = document.getElementById("request-form");
+      if (!form) return;
+
+      const dateInput = document.getElementById("event-date-input");
+      if (dateInput) {
+        const updateDateClass = () => {
+          if (dateInput.value) dateInput.classList.add("has-value");
+          else dateInput.classList.remove("has-value");
+        };
+        dateInput.onchange = updateDateClass;
+        dateInput.onblur = updateDateClass;
+        updateDateClass();
+      }
+
+      document.querySelectorAll("[data-toggle-gift]").forEach(btn => {
+        btn.onclick = () => {
+          const gid = btn.dataset.toggleGift;
+          if (state.selectedGifts[gid]) {
+            delete state.selectedGifts[gid];
+          } else {
+            state.selectedGifts[gid] = 1;
+          }
+          refreshRequestUI();
+        };
+      });
+
+      document.querySelectorAll("[data-qty-gift]").forEach(input => {
+        input.oninput = (e) => {
+          const gid = input.dataset.qtyGift;
+          state.selectedGifts[gid] = parseInt(e.target.value) || 0;
+          refreshRequestUI();
+        };
+      });
+
+      function refreshRequestUI() {
+        const summaryContainer = document.getElementById("order-summary-container");
+        const selectedEntries = Object.entries(state.selectedGifts);
+        
+        summaryContainer.innerHTML = orderSummaryHTML(selectedEntries);
+
+        document.querySelectorAll(".gift-option").forEach(opt => {
+          const gid = opt.dataset.giftId;
+          if (state.selectedGifts[gid]) {
+            opt.classList.add("selected");
+          } else {
+            opt.classList.remove("selected");
+          }
+        });
+
+        updateStockWarnings();
+      }
+
+      function updateStockWarnings() {
+        const container = document.getElementById("stock-warnings");
+        if (!container) return;
+        container.innerHTML = "";
+        
+        Object.entries(state.selectedGifts).forEach(([gid, qty]) => {
+          const g = state.gifts.find(item => item.id === gid);
+          if (g && qty > g.quantity) {
+            const div = document.createElement("div");
+            div.className = "flex items-center gap-2 text-[10px] font-bold text-red-600 uppercase";
+            div.innerHTML = `${ICONS.alert} Overstock: ${g.name} (Max: ${g.quantity})`;
+            container.appendChild(div);
+          }
+        });
+      }
+
+      form.onsubmit = (ev) => {
+        ev.preventDefault();
+        const fd = new FormData(form);
+        const selectedIds = Object.keys(state.selectedGifts).filter(id => state.selectedGifts[id] > 0);
+        
+        if (selectedIds.length === 0) { 
+          notify("Please select at least one gift", "error"); 
+          return; 
+        }
+        
+        for (const gid of selectedIds) {
+          const g = state.gifts.find(item => item.id === gid);
+          if (state.selectedGifts[gid] > g.quantity) {
+            notify(`Quantity for ${g.name} exceeds stock`, "error");
+            return;
+          }
+        }
+
+
+state.currentRequestData = {
+
+  requesterName: fd.get("requesterName"),
+
+  department: fd.get("department"),
+
+  email: fd.get("email"),
+
+  company: fd.get("company"),
+
+  mobileNo: fd.get("mobileNo"),
+
+  eventName: fd.get("eventName"),
+
+  eventDate: fd.get("eventDate"),
+
+  reason: fd.get("reason"),
+
+  selectedItems: selectedIds.map(id => ({
+      name: state.gifts.find(g => g.id === id).name,
+      qty: state.selectedGifts[id]
+  }))
+};
+
+
+        openConfirmationModal();
+      };
+    }
+
+    function openConfirmationModal() {
+      const modalRoot = document.getElementById("modal-root");
+      const data = state.currentRequestData;
+      
+      modalRoot.innerHTML = `
+        <div class="card w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+          <h2 class="text-lg font-bold mb-6 border-b pb-4">Confirm Request</h2>
+          <div class="space-y-6 mb-8">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Company / Requester</p>
+              <p class="text-sm font-bold uppercase">${esc(data.company)} / ${esc(data.requesterName)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Event</p>
+              <p class="text-sm font-bold uppercase">${esc(data.eventName)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Items Summary</p>
+              <ul class="space-y-2">
+                ${data.selectedItems.map(i => `
+                  <li class="flex justify-between text-xs border-b border-gray-50 pb-1">
+                    <span>${esc(i.name)}</span>
+                    <span class="font-bold">x${i.qty}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button id="modal-confirm" class="btn-primary brand-submit flex-1">Confirm & Submit</button>
+            <button id="modal-cancel" class="btn-ghost flex-1">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("modal-cancel").onclick = () => { modalRoot.innerHTML = ""; };
+      document.getElementById("modal-confirm").onclick = handleFinalSubmit;
+    }
+
+    async function handleFinalSubmit() {
+      const modalRoot = document.getElementById("modal-root");
+      const confirmBtn = document.getElementById("modal-confirm");
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+
+      try {
+        console.log("Submitting");
+console.log(state.currentRequestData);
+
+const response = await fetch(
+  CREATE_REQUEST_API,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(state.currentRequestData)
+  }
+);
+
+if (!response.ok) {
+  throw new Error("Failed to submit request");
+}
+        
+        modalRoot.innerHTML = `
+          <div class="card w-full max-w-md text-center py-12 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-center mb-6">${ICONS.check_circle}</div>
+            <h2 class="text-xl font-bold mb-2">Submission Successful</h2>
+            <p class="text-sm text-gray-500 mb-8 max-w-[280px] mx-auto">Your inventory request has been received. CCD will review and provide confirmation shortly.</p>
+            <button id="modal-close-success" class="btn-primary w-full brand-submit">Back to Portal</button>
+          </div>
+        `;
+
+        document.getElementById("modal-close-success").onclick = () => {
+          modalRoot.innerHTML = "";
+          state.selectedGifts = {};
+          state.currentRequestData = null;
+          render();
+        };
+      } catch (err) {
+        notify("Error submitting requests", "error");
+        modalRoot.innerHTML = "";
+      }
+    }
+
+    function bindLoginEvents() {
+      const f = document.getElementById("login-form");
+      if (!f) return;
+      f.onsubmit = (ev) => {
+        ev.preventDefault();
+        if (ev.target.password.value === CCD_PASSWORD) { state.authed = true; state.view = "admin"; render(); }
+        else document.getElementById("login-error").textContent = "ACCESS DENIED";
+      };
+    }
+
+    function bindAdminEvents() {
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.onclick = () => { state.adminTab = btn.dataset.tab; render(); };
+      });
+      document.getElementById("logout-btn").onclick = () => { state.authed = false; state.view = "request"; render(); };
+      
+      if (state.adminTab === "inventory") {
+
+    const search = document.getElementById("inv-search");
+
+    if(search)
+        search.oninput = (e) => {
+            state.inventoryQuery = e.target.value;
+        };
+
+    const refreshInventoryBtn =
+        document.getElementById("refresh-inventory");
+
+    if (refreshInventoryBtn) {
+        refreshInventoryBtn.onclick = () => {
+            loadAll();
+        };
+    }
+
+    document.querySelectorAll("[data-remove-gift]").forEach(btn => {
+        btn.onclick = () => {
+            if(confirm("Confirm removal?")) {
+                persistGifts(
+                    state.gifts.filter(
+                        g => g.id !== btn.dataset.removeGift
+                    )
+                );
+                render();
+            }
+        };
+    });
+}
+
+      if (state.adminTab === "requests") {
+        const refreshBtn = document.getElementById("refresh-requests");
+        if (refreshBtn) {
+          refreshBtn.onclick = () => loadAll();
+        }
+        document.querySelectorAll("[data-filter]").forEach(btn => {
+          btn.onclick = () => { state.requestFilter = btn.dataset.filter; render(); };
+        });
+        document.querySelectorAll("[data-approve]").forEach(btn => {
+          btn.onclick = () => { persistRequests(state.requests.map(r => r.id == btn.dataset.approve ? {...r, status: "approved"} : r)); render(); };
+        });
+        document.querySelectorAll("[data-issue]").forEach(btn => {
+          btn.onclick = () => { persistRequests(state.requests.map(r => r.id == btn.dataset.issue ? {...r, status: "issued"} : r)); render(); };
+        });
+      }
+    }
+
+function renderCharts() {
+
+  if (typeof Chart === "undefined") {
+    console.error("Chart.js not loaded");
+    return;
+  }
+
+  Chart.getChart("stockChart")?.destroy();
+  Chart.getChart("statusChart")?.destroy();
+
+  const stockCtx = document.getElementById("stockChart");
+
+  if (stockCtx && state.gifts.length > 0) {
+    new Chart(stockCtx, {
+      type: "bar",
+      data: {
+        labels: state.gifts.map(g => g.name),
+        datasets: [{
+          label: "Stock Qty",
+          data: state.gifts.map(g => g.quantity),
+          backgroundColor: "#000000"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  const statusCtx = document.getElementById("statusChart");
+
+  if (statusCtx) {
+
+    const counts = {
+      pending: 0,
+      approved: 0,
+      issued: 0,
+      rejected: 0
+    };
+
+    state.requests.forEach(r => counts[r.status]++);
+
+    new Chart(statusCtx, {
+      type: "doughnut",
+      data: {
+        labels: Object.keys(counts),
+        datasets: [{
+          data: Object.values(counts),
+          backgroundColor: [
+            "#000000",
+            "#444444",
+            "#888888",
+            "#CCCCCC"
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "70%",
+        plugins: {
+          legend: {
+            position: "bottom"
+          }
+        }
+      }
+    });
+
+  }
+}
+    loadAll();
+  </script>
+</body></html>
