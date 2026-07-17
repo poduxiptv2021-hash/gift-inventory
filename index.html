@@ -5,7 +5,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>iGIFT — CCD Inventory</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.jsscript>"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
     tailwind.config = {
@@ -327,7 +327,7 @@
       gifts: [], requests: [], loaded: false,
       selectedGifts: {}, // { giftId: quantity }
       pendingImage: null,
-      requestFilter: "all", inventoryQuery: "", showGiftForm: false,
+      requestFilter: "pending", inventoryQuery: "", showGiftForm: false,
       isRefreshing: false,
       currentRequestData: null
     };
@@ -641,8 +641,8 @@ state.gifts = inventoryData.map(item => ({
       return `
         <div class="admin-tabs">
           <button class="admin-tab ${state.adminTab === "dashboard" ? "active" : ""}" data-tab="dashboard">Dashboard</button>
-          <button class="admin-tab ${state.adminTab === "inventory" ? "active" : ""}" data-tab="inventory">Inventory</button>
           <button class="admin-tab ${state.adminTab === "requests" ? "active" : ""}" data-tab="requests">${pending ? `(${pending})` : ""} Requests</button>
+          <button class="admin-tab ${state.adminTab === "inventory" ? "active" : ""}" data-tab="inventory">Inventory</button>
           <button class="admin-tab logout" id="logout-btn">Sign Out</button>
         </div>
         <div id="admin-content">
@@ -1082,7 +1082,11 @@ if (!response.ok) {
 
     function bindAdminEvents() {
       document.querySelectorAll("[data-tab]").forEach(btn => {
-        btn.onclick = () => { state.adminTab = btn.dataset.tab; render(); };
+        btn.onclick = () => {
+          state.adminTab = btn.dataset.tab;
+          if (state.adminTab === "requests") state.requestFilter = "pending";
+          render();
+        };
       });
       document.getElementById("logout-btn").onclick = () => { state.authed = false; state.view = "request"; render(); };
       
@@ -1155,7 +1159,7 @@ function renderCharts() {
         datasets: [{
           label: "Stock Qty",
           data: state.gifts.map(g => g.quantity),
-          backgroundColor: "#000000"
+          backgroundColor: "#2F6F62"
         }]
       },
       options: {
@@ -1191,10 +1195,10 @@ function renderCharts() {
         datasets: [{
           data: Object.values(counts),
           backgroundColor: [
+            "#C89B3C",
+            "#2F6F62",
             "#000000",
-            "#444444",
-            "#888888",
-            "#CCCCCC"
+            "#ba1a1a"
           ]
         }]
       },
