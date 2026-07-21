@@ -273,8 +273,12 @@ const msalConfig = {
     }
 };
 
+
 const msalInstance =
     new msal.PublicClientApplication(msalConfig);
+
+const msalReady =
+    msalInstance.initialize();
 
 const ALLOWED_USERS = [
     "amirulhakimi@phb.com.my",
@@ -1109,9 +1113,12 @@ function bindLoginEvents() {
 
     if (!btn) return;
 
-    btn.onclick = async () => {
 
-        try {
+btn.onclick = async () => {
+    try {
+
+        await msalReady;
+
 
             const response =
                 await msalInstance.loginPopup({
