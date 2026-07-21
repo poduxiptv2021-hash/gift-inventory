@@ -280,6 +280,14 @@ const msalInstance =
 const msalReady =
     msalInstance.initialize();
 
+msalInstance.handleRedirectPromise()
+    .then((response) => {
+        console.log("Redirect Response:", response);
+    })
+    .catch((error) => {
+        console.error("Redirect Error:", error);
+    });
+
 const ALLOWED_USERS = [
     "amirulhakimi@phb.com.my",
     "elizayazmin@phb.com.my"
@@ -1120,26 +1128,20 @@ btn.onclick = async () => {
         await msalReady;
 
 
-
-const response =
-    await msalInstance.loginPopup({
-        scopes: [
-            "openid",
-            "profile",
-            "email"
-        ]
-    });
-
-alert("Login successful");
-console.log(response);
+            const response =
+                await msalInstance.loginPopup({
+                    scopes: [
+                        "openid",
+                        "profile",
+                        "email"
+                    ]
+                });
 
             const account =
                 response.account;
 
-	
-console.log("ACCOUNT");
-console.log(account);
-		
+alert("LOGIN RETURNED");
+
 console.log("Login successful");
 console.log(response);
 console.log(account);
