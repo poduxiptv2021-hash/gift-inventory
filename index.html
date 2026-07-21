@@ -1120,17 +1120,25 @@ btn.onclick = async () => {
         await msalReady;
 
 
-            const response =
-                await msalInstance.loginPopup({
-                    scopes: [
-                        "openid",
-                        "profile",
-                        "email"
-                    ]
-                });
+
+const response =
+    await msalInstance.loginPopup({
+        scopes: [
+            "openid",
+            "profile",
+            "email"
+        ]
+    });
+
+alert("Login successful");
+console.log(response);
 
             const account =
                 response.account;
+
+	
+console.log("ACCOUNT");
+console.log(account);
 		
 console.log("Login successful");
 console.log(response);
