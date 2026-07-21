@@ -1158,15 +1158,16 @@ render();
 
             render();
 
-        } catch (error) {
+        } 
+catch (error) {
+    console.error("MSAL Error:", error);
 
-            console.error(error);
+    alert(
+        "Microsoft sign-in failed:\n\n" +
+        (error.message || JSON.stringify(error))
+    );
+}
 
-            alert(
-                "Microsoft sign-in failed."
-            );
-
-        }
 
     };
 
