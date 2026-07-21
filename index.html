@@ -6,6 +6,7 @@
 <title>iGIFT — CCD Inventory</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src=".msauth.net/browser/2.39.0/js/msal-browser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
     tailwind.config = {
@@ -263,7 +264,15 @@
     /* ---------------------------------------------------------------------- */
     /* Constants & Config                                                      */
     /* ---------------------------------------------------------------------- */
-    const CCD_PASSWORD = "ccd2026";
+const msalConfig = {
+    auth: {
+        clientId: "3d36f5d5-4070-44f3-9bbf-a65429c401a0",
+        authority: "https://login.microsoftonline.com/cc9afa77-5900-4c38-8262-c226c4c2e27d",
+        redirectUri: window.location.origin
+    }
+};
+const msalInstance =
+    new msal.PublicClientApplication(msalConfig);
     const CATEGORIES = ["Apparel", "Drinkware", "Stationery", "Tech Accessory", "Souvenir", "Other"];
     const STATUS_META = {
       pending:  { label: "Pending", color: "#000000" },
@@ -619,22 +628,37 @@ state.gifts = inventoryData.map(item => ({
       </label>`;
     }
 
-    function loginViewHTML() {
-      return `
-      <div class="flex justify-center pt-20">
-        <form class="card w-full max-sm text-center" id="login-form">
-          <div class="brand-mark mx-auto mb-6">${ICONS.pkg}</div>
-          <h2 class="mb-2">Admin Access</h2>
-          <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">Internal Use Only</p>
-          <label class="field text-left">
-            <span class="field-label">Password</span>
-            <input type="password" name="password" placeholder="••••••••" class="text-center" />
-          </label>
-          <p class="field-error mb-4" id="login-error"></p>
-          <button type="submit" class="btn-primary w-full">Authenticate</button>
-        </form>
-      </div>`;
-    }
+function loginViewHTML() {
+  return `
+  <div class="flex justify-center pt-20">
+
+    <div class="card w-full max-sm text-center">
+
+      <div class="brand-mark mx-auto mb-6">
+        ${ICONS.pkg}
+      </div>
+
+      <h2 class="mb-2">
+        Admin Access
+      </h2>
+
+      <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">
+        Sign in using Microsoft Account
+      </p>
+
+      <button
+        id="microsoft-login"
+        class="btn-primary w-full">
+
+        Sign In With Microsoft
+
+      </button>
+
+    </div>
+
+  </div>
+  `;
+}
 
     function adminShellHTML() {
       const pending = state.requests.filter(r => r.status === "pending").length;
@@ -1070,15 +1094,67 @@ if (!response.ok) {
       }
     }
 
-    function bindLoginEvents() {
-      const f = document.getElementById("login-form");
-      if (!f) return;
-      f.onsubmit = (ev) => {
-        ev.preventDefault();
-        if (ev.target.password.value === CCD_PASSWORD) { state.authed = true; state.view = "admin"; render(); }
-        else document.getElementById("login-error").textContent = "ACCESS DENIED";
-      };
-    }
+function bindLoginEvents() {
+
+    const btn =
+        document.getElementById("microsoft-login");
+
+    if (!btn) return;
+
+    btn.onclick = async () => {
+
+        try {
+
+            const response =
+                await msalInstance.loginPopup({
+                    scopes: [
+                        "openid",
+                        "profile",
+                        "email"
+                    ]
+                });
+
+            const account =
+                response.account;
+
+            if (
+                !account.username
+                    .toLowerCase()
+                    .endsWith("@phb.com.my")
+            ) {
+
+                alert(
+                    "Only PHB users are allowed."
+                );
+
+                return;
+
+            }
+
+            state.authed = true;
+
+            localStorage.setItem(
+                "msUser",
+                JSON.stringify(account)
+            );
+
+            state.view = "admin";
+
+            render();
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Microsoft sign-in failed."
+            );
+
+        }
+
+    };
+
+}
 
     function bindAdminEvents() {
       document.querySelectorAll("[data-tab]").forEach(btn => {
@@ -1088,7 +1164,28 @@ if (!response.ok) {
           render();
         };
       });
-      document.getElementById("logout-btn").onclick = () => { state.authed = false; state.view = "request"; render(); };
+      document.getElementById("logout-btn").onclick =
+async () => {
+
+    localStorage.removeItem("msUser");
+
+    state.authed = false;
+
+    state.view = "request";
+
+    try {
+
+        await msalInstance.logoutPopup();
+
+    } catch (e) {
+
+        console.log(e);
+
+    }
+
+    render();
+
+};
       
       if (state.adminTab === "inventory") {
 
@@ -1216,6 +1313,16 @@ function renderCharts() {
 
   }
 }
+
+const storedUser =
+    localStorage.getItem("msUser");
+
+if (storedUser) {
+
+    state.authed = true;
+
+}
+
     loadAll();
   </script>
 </body></html>
