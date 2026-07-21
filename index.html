@@ -6,7 +6,7 @@
 <title>iGIFT — CCD Inventory</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src=".msauth.net/browser/2.39.0/js/msal-browser.min.js"></script>
+<script src="https://alcdn.msauth.net/browser/2.39owser.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
     tailwind.config = {
@@ -268,11 +268,19 @@ const msalConfig = {
     auth: {
         clientId: "3d36f5d5-4070-44f3-9bbf-a65429c401a0",
         authority: "https://login.microsoftonline.com/cc9afa77-5900-4c38-8262-c226c4c2e27d",
-        redirectUri: window.location.origin
+        redirectUri:
+            "https://poduxiptv2021-hash.github.io/gift-inventory/"
     }
 };
+
 const msalInstance =
     new msal.PublicClientApplication(msalConfig);
+
+const ALLOWED_USERS = [
+    "amirulhakimi@phb.com.my",
+    "elizayazmin@phb.com.my"
+];
+
     const CATEGORIES = ["Apparel", "Drinkware", "Stationery", "Tech Accessory", "Souvenir", "Other"];
     const STATUS_META = {
       pending:  { label: "Pending", color: "#000000" },
@@ -1117,19 +1125,19 @@ function bindLoginEvents() {
             const account =
                 response.account;
 
-            if (
-                !account.username
-                    .toLowerCase()
-                    .endsWith("@phb.com.my")
-            ) {
+const email =
+    account.username.toLowerCase();
 
-                alert(
-                    "Only PHB users are allowed."
-                );
+if (!ALLOWED_USERS.includes(email)) {
 
-                return;
+    alert(
+        "You are not authorized to access CCD Admin."
+    );
 
-            }
+    await msalInstance.logoutPopup();
+
+    return;
+}
 
             state.authed = true;
 
