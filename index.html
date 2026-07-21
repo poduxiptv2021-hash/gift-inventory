@@ -1131,9 +1131,16 @@ btn.onclick = async () => {
 
             const account =
                 response.account;
+		
+console.log("Login successful");
+console.log(response);
+console.log(account);
+
 
 const email =
     account.username.toLowerCase();
+
+		console.log("Email:", email);
 
 if (!ALLOWED_USERS.includes(email)) {
     alert(
