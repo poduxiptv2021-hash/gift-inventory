@@ -1129,15 +1129,23 @@ const email =
     account.username.toLowerCase();
 
 if (!ALLOWED_USERS.includes(email)) {
-
     alert(
         "You are not authorized to access CCD Admin."
     );
 
     await msalInstance.logoutPopup();
-
     return;
 }
+
+state.authed = true;
+
+localStorage.setItem(
+    "msUser",
+    JSON.stringify(account)
+);
+
+state.view = "admin";
+render();
 
             state.authed = true;
 
