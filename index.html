@@ -280,13 +280,28 @@ const msalInstance =
 const msalReady =
     msalInstance.initialize();
 
-msalInstance.handleRedirectPromise()
-    .then((response) => {
-        console.log("Redirect Response:", response);
-    })
-    .catch((error) => {
-        console.error("Redirect Error:", error);
+// If this page has loaded *inside* the MSAL login popup (rather than the
+// main app window), stop here. MSAL's own polling in the opener window
+// is what closes the popup and resolves loginPopup() — if we let the full
+// app boot up in here too, our own handleRedirectPromise()/loadAll() calls
+// race with that polling, sometimes consuming the auth response first, so
+// the opener's promise never resolves and the popup never closes.
+const isAuthPopup = !!(window.opener && window.opener !== window);
+
+if (isAuthPopup) {
+    document.body.innerHTML =
+        '<p style="font-family:sans-serif;padding:2rem;">Completing sign-in…</p>';
+} else {
+    msalReady.then(() => {
+        msalInstance.handleRedirectPromise()
+            .then((response) => {
+                console.log("Redirect Response:", response);
+            })
+            .catch((error) => {
+                console.error("Redirect Error:", error);
+            });
     });
+}
 
 const ALLOWED_USERS = [
     "amirulhakimi@phb.com.my",
@@ -1127,7 +1142,6 @@ btn.onclick = async () => {
 
         await msalReady;
 
-
             const response =
                 await msalInstance.loginPopup({
                     scopes: [
@@ -1140,12 +1154,7 @@ btn.onclick = async () => {
             const account =
                 response.account;
 
-alert("LOGIN RETURNED");
-
-console.log("Login successful");
-console.log(response);
-console.log(account);
-
+console.log("Login successful", response, account);
 
 const email =
     account.username.toLowerCase();
@@ -1169,22 +1178,23 @@ localStorage.setItem(
 );
 
 state.view = "admin";
+
 render();
 
-            state.authed = true;
-
-            localStorage.setItem(
-                "msUser",
-                JSON.stringify(account)
-            );
-
-            state.view = "admin";
-
-            render();
-
-        } 
+        }
 catch (error) {
     console.error("MSAL Error:", error);
+
+    if (error && error.errorCode === "interaction_in_progress") {
+        // A previous popup attempt didn't finish cleanly and left MSAL's
+        // "interaction in progress" flag stuck. Clear it so the button
+        // works again without the user needing to clear storage by hand.
+        Object.keys(sessionStorage)
+            .filter(k => k.includes("interaction.status"))
+            .forEach(k => sessionStorage.removeItem(k));
+        alert("Sign-in got stuck from a previous attempt — cleared it, please click Sign in again.");
+        return;
+    }
 
     alert(
         "Microsoft sign-in failed:\n\n" +
@@ -1364,6 +1374,8 @@ if (storedUser) {
 
 }
 
+if (!isAuthPopup) {
     loadAll();
+}
   </script>
 </body></html>
