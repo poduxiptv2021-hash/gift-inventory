@@ -269,6 +269,8 @@ const msalConfig = {
         clientId: "3d36f5d5-4070-44f3-9bbf-a65429c401a0",
         authority: "https://login.microsoftonline.com/cc9afa77-5900-4c38-8262-c226c4c2e27d",
         redirectUri:
+            "https://poduxiptv2021-hash.github.io/gift-inventory/",
+        postLogoutRedirectUri:
             "https://poduxiptv2021-hash.github.io/gift-inventory/"
     }
 };
@@ -298,6 +300,7 @@ msalReady.then(() => {
                 }
                 state.authed = true;
                 localStorage.setItem("msUser", JSON.stringify(response.account));
+                msalInstance.setActiveAccount(response.account);
                 state.view = "admin";
                 render();
             }
@@ -1195,18 +1198,23 @@ catch (error) {
       document.getElementById("logout-btn").onclick =
 async () => {
 
-    // Local, app-level sign-out only — this doesn't sign the user out of
-    // their Microsoft account elsewhere, just ends their session in this
-    // app (avoids needing another popup/redirect round-trip through
-    // Microsoft's own sign-out flow, which has the same COOP considerations
-    // as sign-in).
+    // Full sign-out: end both the app session and the Microsoft session,
+    // via logoutRedirect() (same redirect approach as login — no popup,
+    // so no COOP/bridge issue here either). This navigates away to
+    // Microsoft's sign-out page and back, so nothing after the call runs
+    // in the success case.
     localStorage.removeItem("msUser");
-
     state.authed = false;
 
-    state.view = "request";
-
-    render();
+    try {
+        await msalReady;
+        const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+        await msalInstance.logoutRedirect({ account });
+    } catch (e) {
+        console.error("Logout error:", e);
+        state.view = "request";
+        render();
+    }
 
 };
       
