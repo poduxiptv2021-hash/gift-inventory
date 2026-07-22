@@ -280,37 +280,33 @@ const msalInstance =
 const msalReady =
     msalInstance.initialize();
 
-// If this page has loaded *inside* the MSAL login popup (rather than the
-// main app window), stop here. MSAL's own polling in the opener window
-// is what closes the popup and resolves loginPopup() — if we let the full
-// app boot up in here too, our own handleRedirectPromise()/loadAll() calls
-// race with that polling, sometimes consuming the auth response first, so
-// the opener's promise never resolves and the popup never closes.
-// window.opener alone isn't reliable here: login.microsoftonline.com sets a
-// Cross-Origin-Opener-Policy header that permanently severs window.opener
-// for the rest of that popup's lifetime, even after it redirects back to
-// our own origin. So also check the URL itself for the auth response
-// (e.g. "#code=...", "#access_token=...", "#error=...") which Azure AD
-// appends when it lands back on our redirectUri inside the popup.
-const authResponseInUrl = /[#&](code|access_token|id_token|error)=/.test(
-    window.location.hash + window.location.search
-);
-const isAuthPopup = authResponseInUrl || !!(window.opener && window.opener !== window);
-
-if (isAuthPopup) {
-    document.body.innerHTML =
-        '<p style="font-family:sans-serif;padding:2rem;">Completing sign-in…</p>';
-} else {
-    msalReady.then(() => {
-        msalInstance.handleRedirectPromise()
-            .then((response) => {
-                console.log("Redirect Response:", response);
-            })
-            .catch((error) => {
-                console.error("Redirect Error:", error);
-            });
-    });
-}
+// Using loginRedirect (full-page redirect) instead of loginPopup. Popups
+// no longer close reliably: login.microsoftonline.com now sends a
+// Cross-Origin-Opener-Policy header that permanently isolates the popup
+// from this app, and MSAL's fix for that (the "redirect bridge") requires
+// a JS bundler to set up, which a plain static HTML file doesn't have.
+// A full-page redirect has no popup to close, so it sidesteps the issue
+// entirely — this just needs to process the response on the way back.
+msalReady.then(() => {
+    msalInstance.handleRedirectPromise()
+        .then((response) => {
+            if (response && response.account) {
+                const email = response.account.username.toLowerCase();
+                if (!ALLOWED_USERS.includes(email)) {
+                    alert("You are not authorized to access CCD Admin.");
+                    return;
+                }
+                state.authed = true;
+                localStorage.setItem("msUser", JSON.stringify(response.account));
+                state.view = "admin";
+                render();
+            }
+        })
+        .catch((error) => {
+            console.error("Redirect Error:", error);
+            alert("Microsoft sign-in failed:\n\n" + (error.message || JSON.stringify(error)));
+        });
+});
 
 const ALLOWED_USERS = [
     "amirulhakimi@phb.com.my",
@@ -1151,51 +1147,23 @@ btn.onclick = async () => {
 
         await msalReady;
 
-            const response =
-                await msalInstance.loginPopup({
-                    scopes: [
-                        "openid",
-                        "profile",
-                        "email"
-                    ]
-                });
-
-            const account =
-                response.account;
-
-console.log("Login successful", response, account);
-
-const email =
-    account.username.toLowerCase();
-
-		console.log("Email:", email);
-
-if (!ALLOWED_USERS.includes(email)) {
-    alert(
-        "You are not authorized to access CCD Admin."
-    );
-
-    await msalInstance.logoutPopup();
-    return;
-}
-
-state.authed = true;
-
-localStorage.setItem(
-    "msUser",
-    JSON.stringify(account)
-);
-
-state.view = "admin";
-
-render();
+        await msalInstance.loginRedirect({
+            scopes: [
+                "openid",
+                "profile",
+                "email"
+            ]
+        });
+        // The page navigates away to Microsoft's sign-in page here.
+        // Nothing after this line runs — the response is handled by
+        // handleRedirectPromise() when the browser comes back.
 
         }
 catch (error) {
     console.error("MSAL Error:", error);
 
     if (error && error.errorCode === "interaction_in_progress") {
-        // A previous popup attempt didn't finish cleanly and left MSAL's
+        // A previous attempt didn't finish cleanly and left MSAL's
         // "interaction in progress" flag stuck. Clear it so the button
         // works again without the user needing to clear storage by hand.
         Object.keys(sessionStorage)
@@ -1227,21 +1195,16 @@ catch (error) {
       document.getElementById("logout-btn").onclick =
 async () => {
 
+    // Local, app-level sign-out only — this doesn't sign the user out of
+    // their Microsoft account elsewhere, just ends their session in this
+    // app (avoids needing another popup/redirect round-trip through
+    // Microsoft's own sign-out flow, which has the same COOP considerations
+    // as sign-in).
     localStorage.removeItem("msUser");
 
     state.authed = false;
 
     state.view = "request";
-
-    try {
-
-        await msalInstance.logoutPopup();
-
-    } catch (e) {
-
-        console.log(e);
-
-    }
 
     render();
 
@@ -1383,8 +1346,6 @@ if (storedUser) {
 
 }
 
-if (!isAuthPopup) {
-    loadAll();
-}
+loadAll();
   </script>
 </body></html>
