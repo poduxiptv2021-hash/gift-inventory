@@ -286,7 +286,16 @@ const msalReady =
 // app boot up in here too, our own handleRedirectPromise()/loadAll() calls
 // race with that polling, sometimes consuming the auth response first, so
 // the opener's promise never resolves and the popup never closes.
-const isAuthPopup = !!(window.opener && window.opener !== window);
+// window.opener alone isn't reliable here: login.microsoftonline.com sets a
+// Cross-Origin-Opener-Policy header that permanently severs window.opener
+// for the rest of that popup's lifetime, even after it redirects back to
+// our own origin. So also check the URL itself for the auth response
+// (e.g. "#code=...", "#access_token=...", "#error=...") which Azure AD
+// appends when it lands back on our redirectUri inside the popup.
+const authResponseInUrl = /[#&](code|access_token|id_token|error)=/.test(
+    window.location.hash + window.location.search
+);
+const isAuthPopup = authResponseInUrl || !!(window.opener && window.opener !== window);
 
 if (isAuthPopup) {
     document.body.innerHTML =
