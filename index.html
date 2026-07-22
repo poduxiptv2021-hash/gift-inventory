@@ -289,26 +289,51 @@ const msalReady =
 // a JS bundler to set up, which a plain static HTML file doesn't have.
 // A full-page redirect has no popup to close, so it sidesteps the issue
 // entirely — this just needs to process the response on the way back.
-msalReady.then(() => {
-    msalInstance.handleRedirectPromise()
-        .then((response) => {
-            if (response && response.account) {
-                const email = response.account.username.toLowerCase();
-                if (!ALLOWED_USERS.includes(email)) {
-                    alert("You are not authorized to access CCD Admin.");
-                    return;
-                }
-                state.authed = true;
-                localStorage.setItem("msUser", JSON.stringify(response.account));
-                msalInstance.setActiveAccount(response.account);
-                state.view = "admin";
-                render();
-            }
-        })
-        .catch((error) => {
-            console.error("Redirect Error:", error);
-            alert("Microsoft sign-in failed:\n\n" + (error.message || JSON.stringify(error)));
-        });
+msalReady.then(async () => {
+    try {
+
+        const response =
+            await msalInstance.handleRedirectPromise();
+
+        // No login response returned.
+        // This happens during normal page loads and after logout.
+        if (!response) {
+            return;
+        }
+
+        const email =
+            response.account.username.toLowerCase();
+
+        if (!ALLOWED_USERS.includes(email)) {
+            alert(
+                "You are not authorized to access CCD Admin."
+            );
+            return;
+        }
+
+        state.authed = true;
+
+        localStorage.setItem(
+            "msUser",
+            JSON.stringify(response.account)
+        );
+
+        msalInstance.setActiveAccount(
+            response.account
+        );
+
+        state.view = "admin";
+
+        render();
+
+    } catch (error) {
+
+        console.warn(
+            "Ignoring MSAL redirect error:",
+            error
+        );
+
+    }
 });
 
 const ALLOWED_USERS = [
@@ -1203,18 +1228,32 @@ async () => {
     // so no COOP/bridge issue here either). This navigates away to
     // Microsoft's sign-out page and back, so nothing after the call runs
     // in the success case.
-    localStorage.removeItem("msUser");
-    state.authed = false;
 
-    try {
-        await msalReady;
-        const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
-        await msalInstance.logoutRedirect({ account });
-    } catch (e) {
-        console.error("Logout error:", e);
-        state.view = "request";
-        render();
-    }
+localStorage.removeItem("msUser");
+
+sessionStorage.clear();
+
+state.authed = false;
+state.view = "request";
+
+try {
+    await msalReady;
+
+    const account =
+        msalInstance.getActiveAccount() ||
+        msalInstance.getAllAccounts()[0];
+
+    await msalInstance.logoutRedirect({
+        account
+    });
+
+} catch (e) {
+
+    console.error("Logout error:", e);
+
+    state.view = "request";
+    render();
+}
 
 };
       
