@@ -338,6 +338,8 @@ msalReady.then(async () => {
 
 const ALLOWED_USERS = [
     "amirulhakimi@phb.com.my",
+    "muhammadjazli@phb.com.my",
+    "wardatul@phb.com.my",
     "elizayazmin@phb.com.my"
 ];
 
@@ -1188,22 +1190,37 @@ btn.onclick = async () => {
 
         }
 catch (error) {
+
     console.error("MSAL Error:", error);
 
-    if (error && error.errorCode === "interaction_in_progress") {
-        // A previous attempt didn't finish cleanly and left MSAL's
-        // "interaction in progress" flag stuck. Clear it so the button
-        // works again without the user needing to clear storage by hand.
-        Object.keys(sessionStorage)
-            .filter(k => k.includes("interaction.status"))
-            .forEach(k => sessionStorage.removeItem(k));
-        alert("Sign-in got stuck from a previous attempt — cleared it, please click Sign in again.");
+    // Ignore timeout/session-expired errors
+    if (
+        error &&
+        (
+            error.errorCode === "timed_out" ||
+            String(error.message || "").includes("timed_out")
+        )
+    ) {
         return;
     }
 
-    alert(
-        "Microsoft sign-in failed:\n\n" +
-        (error.message || JSON.stringify(error))
+    if (error && error.errorCode === "interaction_in_progress") {
+
+        Object.keys(sessionStorage)
+            .filter(k => k.includes("interaction.status"))
+            .forEach(k => sessionStorage.removeItem(k));
+
+        notify(
+            "Please try signing in again",
+            "error"
+        );
+
+        return;
+    }
+
+    notify(
+        "Microsoft sign-in failed",
+        "error"
     );
 }
 
