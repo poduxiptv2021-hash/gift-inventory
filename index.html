@@ -3,7 +3,7 @@
 <html lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>iGIFT — CCD Inventory</title>
+<title>iGIFT — Corporate Gift Portal</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@latest/lib/msal-browser.min.js"></script>
@@ -254,7 +254,939 @@
       .form-grid, .stat-row, .chart-row { grid-template-columns: 1fr; }
       .topnav { gap: 16px; }
     }
-  </style>
+  
+
+    /* ------------------------------------------------------------------ */
+    /* v6 visual consistency pass                                         */
+    /* ------------------------------------------------------------------ */
+    :root {
+      --page-bg: #f7f7f6;
+      --surface: #ffffff;
+      --surface-soft: #f3f3f1;
+      --ink: #171817;
+      --muted: #686b69;
+      --line: #dedfdd;
+      --line-strong: #bfc1be;
+      --accent: #000000;
+      --danger: #a81717;
+      --radius: 8px;
+      --shadow: 0 10px 30px rgba(20, 22, 20, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--page-bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .topbar {
+      min-height: 72px;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+      gap: 24px;
+    }
+    .brand { min-height: 72px; gap: 10px; flex-shrink: 0; }
+    .brand img { height: 30px !important; width: auto; margin-right: 8px !important; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      line-height: 1;
+    }
+    .brand-mark svg { width: 18px; height: 18px; }
+    .brand-text { font-size: 15px; line-height: 1; letter-spacing: .08em; }
+    .topnav { min-height: 72px; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-pill {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .nav-pill:hover { background: var(--surface-soft); }
+    .nav-pill.active { background: #111; color: #fff; border-color: #111; }
+
+    .main-area {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 40px 72px;
+    }
+    .sheet, .card, .chart-card, .stat-card, .selection-card {
+      border-radius: var(--radius) !important;
+    }
+    .sheet {
+      padding: 36px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card {
+      border: 1px solid var(--line) !important;
+      background: var(--surface);
+      box-shadow: none;
+    }
+    .card:hover { border-color: var(--line-strong) !important; }
+    .stat-card, .chart-card {
+      border: 1px solid var(--line) !important;
+      background: var(--surface);
+      box-shadow: none;
+    }
+    .stat-card { padding: 24px; min-height: 126px; }
+    .chart-card { padding: 24px; }
+    .selection-card { border: 1px solid #000 !important; padding: 28px; }
+
+    h1 { margin: 0; font-size: clamp(25px, 3vw, 34px); line-height: 1.18; letter-spacing: .025em; }
+    h2 { line-height: 1.25; }
+    h3 { line-height: 1.35; }
+    .eyebrow { margin: 0 0 10px; line-height: 1.2; letter-spacing: .13em; }
+    .subtext { margin-top: 10px; max-width: 720px; color: var(--muted); line-height: 1.55; }
+
+    .admin-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      min-height: 46px;
+      margin: 0 0 24px;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+    .admin-tab {
+      min-height: 45px;
+      padding: 0 16px;
+      border: 0 !important;
+      border-bottom: 2px solid transparent !important;
+      background: transparent;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .09em;
+      white-space: nowrap;
+    }
+    .admin-tab:hover { color: #000; background: var(--surface-soft); }
+    .admin-tab.active { color: #000; border-bottom-color: #000 !important; background: transparent; }
+
+    .form-grid { gap: 20px 24px; }
+    .field { gap: 7px; margin-bottom: 0; }
+    .field label { margin: 0; line-height: 1.25; color: #343634; }
+    .field input, .field select, .field textarea,
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: 6px !important;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: none !important;
+      line-height: 1.4;
+    }
+    textarea { min-height: 104px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: #111 !important;
+      outline: 2px solid rgba(0,0,0,.10) !important;
+      outline-offset: 1px;
+    }
+    input[readonly] { background: #f3f3f1; color: #555957; }
+
+    .btn-primary, .btn-ghost {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      border-radius: 6px !important;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .08em;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+    }
+    .btn-primary { border: 1px solid #000 !important; background: #000; color: #fff; }
+    .btn-primary:hover { background: #252525; border-color: #252525 !important; transform: translateY(-1px); }
+    .btn-ghost { border: 1px solid var(--line-strong) !important; background: #fff; color: #222; }
+    .btn-ghost:hover { border-color: #222 !important; background: var(--surface-soft); }
+    .btn-primary.sm, .btn-ghost.sm { min-height: 36px; padding: 0 14px; }
+    .btn-ghost.danger { color: var(--danger); border-color: #d8aaaa !important; }
+    .btn-ghost.danger:hover { background: #fff3f3; border-color: var(--danger) !important; }
+
+    .badge {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: #fff;
+      font-size: 9px;
+      line-height: 1.2;
+      letter-spacing: .07em;
+      white-space: nowrap;
+    }
+
+    .gift-grid { gap: 18px; }
+    .gift-option { border: 1px solid var(--line) !important; border-radius: var(--radius) !important; overflow: hidden; }
+    .gift-option:hover { border-color: var(--line-strong) !important; }
+    .gift-option.selected { border: 2px solid #000 !important; }
+    .gift-option.selected .gift-option-body { padding: 19px; }
+    .gift-option-img { aspect-ratio: 16 / 10; height: auto; object-fit: cover; }
+    .gift-option-body { padding: 20px; }
+
+    .order-summary-table th, .order-summary-table td { vertical-align: middle; }
+    .order-summary-table th { padding: 0 0 10px; }
+    .order-summary-table td { padding: 12px 0; }
+
+    .loading-block { min-height: 260px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    #toast-root { right: 20px; bottom: 20px; display: grid; gap: 10px; }
+    .toast { min-width: 280px; max-width: 420px; padding: 14px 16px; border-radius: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.16); }
+    #modal-root { padding: 24px; background: rgba(13,14,13,.48); }
+    #modal-root > * { max-height: calc(100vh - 48px); overflow-y: auto; }
+
+    /* Login cards */
+    .main-area > .max-w-5xl { max-width: 960px; }
+    .main-area > .max-w-5xl .card { min-height: 330px; padding: 34px !important; }
+    .main-area > .max-w-5xl .card h2 { margin: 0 0 12px; }
+    .main-area > .max-w-5xl .card p { line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .topbar { padding: 0 24px; }
+      .main-area { padding: 36px 24px 56px; }
+      .sheet { padding: 28px; }
+    }
+    @media (max-width: 640px) {
+      .topbar { min-height: auto; padding: 12px 16px; align-items: flex-start; }
+      .brand { min-height: 42px; }
+      .brand img { height: 26px !important; }
+      .topnav { min-height: 42px; width: 100%; justify-content: flex-start; gap: 6px; }
+      .topnav > span { width: 100%; margin: 2px 0 4px; }
+      .nav-pill { min-height: 36px; padding: 0 11px; }
+      .main-area { padding: 28px 16px 44px; }
+      .sheet { padding: 22px 18px; }
+      .main-area > .max-w-5xl { padding-top: 16px !important; }
+      .main-area > .max-w-5xl .card { min-height: 0; padding: 24px !important; }
+      .admin-tabs { margin-bottom: 18px; padding: 0; }
+      .admin-tab { padding: 0 12px; }
+      .stat-card, .chart-card { padding: 20px; }
+      .selection-card { padding: 22px 18px; }
+      .btn-primary, .btn-ghost { width: 100%; }
+      .flex.gap-3, .flex.gap-4 { flex-wrap: wrap; }
+      #modal-root { padding: 12px; }
+      #modal-root > * { max-height: calc(100vh - 24px); }
+    }
+
+
+    /* v7 viewport and layout stability fixes */
+    html { overflow-y: scroll; scrollbar-gutter: stable; }
+    body.login-page { overflow: hidden; }
+    body.login-page .main-area {
+      height: calc(100dvh - 72px);
+      min-height: 0;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    body.login-page .main-area > .max-w-5xl {
+      width: 100%;
+      max-width: 920px;
+      padding-top: 0 !important;
+    }
+    body.login-page .main-area > .max-w-5xl > .text-center { margin-bottom: 22px !important; }
+    body.login-page .main-area > .max-w-5xl .brand-mark { margin-bottom: 14px !important; }
+    body.login-page .main-area > .max-w-5xl h1 { font-size: clamp(25px, 3.4vh, 34px); margin-bottom: 8px !important; }
+    body.login-page .main-area > .max-w-5xl .card { min-height: 260px; padding: 26px !important; }
+    body.login-page .main-area > .max-w-5xl .card .mb-6 { margin-bottom: 16px !important; }
+    body.login-page .main-area > .max-w-5xl .card .mb-8 { margin-bottom: 20px !important; }
+    @media (max-height: 720px) and (min-width: 641px) {
+      body.login-page .main-area { padding-top: 12px; padding-bottom: 12px; }
+      body.login-page .main-area > .max-w-5xl > .text-center { margin-bottom: 14px !important; }
+      body.login-page .main-area > .max-w-5xl .card { min-height: 225px; padding: 20px !important; }
+      body.login-page .main-area > .max-w-5xl .card p { line-height: 1.4; }
+    }
+    @media (max-width: 640px) {
+      body.login-page { overflow-y: auto; }
+      body.login-page .main-area { height: auto; min-height: calc(100dvh - 66px); overflow: visible; align-items: flex-start; }
+    }
+
+
+    /* v8: make sign-out actions clearly distinguishable */
+    #global-logout,
+    #logout-btn,
+    .admin-tab.logout {
+      color: #b42318 !important;
+      background: #fff5f4 !important;
+      border: 1px solid #f0b7b2 !important;
+      border-radius: 6px !important;
+      font-weight: 700 !important;
+    }
+    #global-logout {
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+    }
+    #logout-btn,
+    .admin-tab.logout {
+      min-height: 36px !important;
+      margin-left: auto;
+      padding: 0 14px !important;
+      align-self: center;
+      border-bottom: 1px solid #f0b7b2 !important;
+    }
+    #global-logout:hover,
+    #logout-btn:hover,
+    .admin-tab.logout:hover {
+      color: #ffffff !important;
+      background: #b42318 !important;
+      border-color: #b42318 !important;
+    }
+    #global-logout:focus-visible,
+    #logout-btn:focus-visible,
+    .admin-tab.logout:focus-visible {
+      outline: 3px solid rgba(180, 35, 24, 0.22) !important;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      #logout-btn,
+      .admin-tab.logout { margin-left: 0; }
+    }
+
+    [hidden] { display: none !important; }
+
+    [data-login-role]:disabled { opacity: .65; cursor: wait; transform: none !important; }
+
+
+    /* v24: subtle separation for individual request records */
+    .request-card {
+      background: #ffffff !important;
+      border: 2px solid #c8cdd1 !important;
+      box-shadow: 0 2px 8px rgba(24, 39, 52, 0.045) !important;
+      padding: 20px 24px !important;
+    }
+    .request-card:hover {
+      background: #ffffff !important;
+      border-color: #9fa8ae !important;
+      box-shadow: 0 4px 12px rgba(24, 39, 52, 0.065) !important;
+    }
+    .request-card h3 { margin-top: 3px !important; line-height: 1.22; }
+    .request-card .mt-5 { margin-top: 14px !important; }
+    .request-card .pt-5 { padding-top: 14px !important; }
+    .request-card .mb-4 { margin-bottom: 10px !important; }
+    .request-card .mb-2 { margin-bottom: 5px !important; }
+    .request-card .gap-y-4 { row-gap: 8px !important; }
+    .request-card .leading-6 { line-height: 1.4 !important; }
+    .request-card p { line-height: 1.45; }
+    @media (max-width: 640px) {
+      .request-card { padding: 18px !important; }
+    }
+
+
+    /* v28: light-green border applies only to User My Requests cards */
+    .user-request-card {
+      border-color: #9fc9ad !important;
+    }
+    .user-request-card:hover {
+      border-color: #72ad86 !important;
+    }
+
+
+    /* v29: dedicated landing page branding */
+    body.login-page .topbar {
+      display: none !important;
+    }
+    body.login-page .main-area {
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+    }
+    .landing-phb-logo {
+      display: block;
+      width: auto;
+      height: 64px;
+      margin: 0 auto 20px;
+      object-fit: contain;
+    }
+    @media (max-height: 720px) and (min-width: 641px) {
+      .landing-phb-logo {
+        height: 50px;
+        margin-bottom: 12px;
+      }
+    }
+    @media (max-width: 640px) {
+      body.login-page .main-area {
+        min-height: 100dvh !important;
+      }
+      .landing-phb-logo {
+        height: 52px;
+        margin-bottom: 16px;
+      }
+    }
+
+
+    /* v31: modern My Requests view, scoped to User portal only */
+    .my-requests-view {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .my-requests-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #dedfdd;
+    }
+    .my-requests-header .subtext { margin-bottom: 0; }
+    .my-request-list { display: grid; gap: 16px; }
+    .my-request-record {
+      position: relative;
+      display: grid;
+      grid-template-columns: 5px minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid #dfe2e0;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 5px 18px rgba(27, 40, 34, 0.055);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .my-request-record:hover {
+      transform: translateY(-2px);
+      border-color: #bfc7c2;
+      box-shadow: 0 10px 26px rgba(27, 40, 34, 0.085);
+    }
+    .my-request-rail { background: #c89b3c; }
+    .my-request-record.is-approved .my-request-rail { background: #2f6f62; }
+    .my-request-record.is-issued .my-request-rail { background: #252525; }
+    .my-request-record.is-closed .my-request-rail { background: #a23b4c; }
+    .my-request-main { padding: 24px 26px 22px; }
+    .my-request-topline,
+    .my-request-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .my-request-topline { margin-bottom: 16px; }
+    .my-request-date,
+    .my-request-event-date {
+      display: grid;
+      gap: 2px;
+    }
+    .my-request-date span,
+    .my-request-event-date span,
+    .my-request-section-label,
+    .my-request-purpose > span,
+    .my-request-sequence {
+      margin: 0;
+      color: #848a86;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .my-request-date strong,
+    .my-request-event-date strong {
+      color: #343835;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .my-request-status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: #fff7e7;
+      color: #926711;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .is-approved .my-request-status { background: #e8f2ee; color: #245f52; }
+    .is-issued .my-request-status { background: #eeeeed; color: #242424; }
+    .is-closed .my-request-status { background: #f9e9ec; color: #913244; }
+    .my-request-title-row { align-items: flex-end; }
+    .my-request-title-row h2 {
+      margin: 5px 0 0;
+      color: #181a19;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(17px, 2vw, 21px);
+      font-weight: 700;
+      letter-spacing: .035em;
+      line-height: 1.28;
+      text-transform: uppercase;
+    }
+    .my-request-event-date { min-width: 120px; text-align: right; }
+    .my-request-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 18px;
+      margin-top: 12px;
+      color: #696f6b;
+      font-size: 12px;
+    }
+    .my-request-meta span {
+      position: relative;
+    }
+    .my-request-meta span:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #adb2af;
+    }
+    .my-request-purpose {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 7px;
+      background: #f6f7f6;
+    }
+    .my-request-purpose p {
+      margin: 5px 0 0;
+      color: #353a37;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .my-request-items {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #eceeec;
+    }
+    .my-request-item-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 10px;
+    }
+    .my-request-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 36px;
+      padding: 7px 8px 7px 12px;
+      border: 1px solid #d9ddda;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #242725;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .my-request-item strong {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 25px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #1e211f;
+      color: #ffffff;
+      font-size: 10px;
+    }
+    .my-request-empty-items { margin: 0; color: #858b87; font-size: 12px; }
+    .my-requests-empty {
+      padding: 72px 28px;
+      border: 1px dashed #cfd3d0;
+      border-radius: 10px;
+      background: #ffffff;
+      text-align: center;
+    }
+    .my-requests-empty-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      background: #f0f2f0;
+      color: #646a66;
+    }
+    .my-requests-empty h2 { margin: 0 0 6px; font-size: 16px; }
+    .my-requests-empty p { margin: 0; color: #727773; font-size: 13px; }
+    @media (max-width: 640px) {
+      .my-requests-header { align-items: flex-start; }
+      .my-requests-header .btn-primary { width: auto; }
+      .my-request-main { padding: 20px 18px 18px; }
+      .my-request-title-row { align-items: flex-start; }
+      .my-request-event-date { min-width: 0; text-align: left; }
+      .my-request-title-row,
+      .my-request-topline { gap: 14px; }
+      .my-request-meta span::after { display: none; }
+      .my-request-item { width: 100%; justify-content: space-between; }
+    }
+
+
+    /* v32: compact My Requests density, User view only */
+    .my-requests-header {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+    }
+    .my-requests-header .eyebrow { margin-bottom: 5px; }
+    .my-requests-header h1 { font-size: clamp(23px, 2.5vw, 30px); }
+    .my-requests-header .subtext { margin-top: 5px; font-size: 12px; }
+    .my-request-list { gap: 10px; }
+    .my-request-record {
+      grid-template-columns: 4px minmax(0, 1fr);
+      border-radius: 8px;
+      box-shadow: 0 3px 12px rgba(27, 40, 34, 0.045);
+    }
+    .my-request-record:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 17px rgba(27, 40, 34, 0.07);
+    }
+    .my-request-main { padding: 15px 18px 14px; }
+    .my-request-topline { margin-bottom: 9px; }
+    .my-request-topline,
+    .my-request-title-row { gap: 16px; }
+    .my-request-date,
+    .my-request-event-date { gap: 0; }
+    .my-request-date span,
+    .my-request-event-date span,
+    .my-request-section-label,
+    .my-request-purpose > span,
+    .my-request-sequence { font-size: 8px; }
+    .my-request-date strong,
+    .my-request-event-date strong { font-size: 11px; }
+    .my-request-status {
+      min-height: 24px;
+      padding: 4px 9px;
+      font-size: 8px;
+    }
+    .my-request-title-row h2 {
+      margin-top: 2px;
+      font-size: clamp(15px, 1.7vw, 18px);
+      line-height: 1.2;
+    }
+    .my-request-event-date { min-width: 105px; }
+    .my-request-meta {
+      gap: 4px 16px;
+      margin-top: 7px;
+      font-size: 11px;
+    }
+    .my-request-purpose {
+      margin-top: 10px;
+      padding: 9px 11px;
+      border-radius: 6px;
+    }
+    .my-request-purpose p {
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .my-request-items {
+      margin-top: 10px;
+      padding-top: 9px;
+    }
+    .my-request-item-list {
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .my-request-item {
+      min-height: 30px;
+      gap: 8px;
+      padding: 4px 6px 4px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .my-request-item strong {
+      min-width: 21px;
+      height: 19px;
+      padding: 0 6px;
+      font-size: 9px;
+    }
+    @media (max-width: 640px) {
+      .my-requests-header { margin-bottom: 14px; padding-bottom: 13px; }
+      .my-request-main { padding: 14px 13px 13px; }
+      .my-request-topline { margin-bottom: 8px; }
+      .my-request-title-row { flex-direction: column; gap: 7px; }
+      .my-request-event-date { min-width: 0; }
+      .my-request-purpose { margin-top: 9px; }
+      .my-request-items { margin-top: 9px; }
+    }
+
+.workflow-note{display:flex;gap:10px;align-items:center;margin-bottom:18px;padding:10px 12px;border:1px solid #e6d59d;background:#fffaf0;border-radius:7px;font-size:11px;color:#67562e}.workflow-note strong{text-transform:uppercase;letter-spacing:.08em;font-size:9px}.admin-workflow-card{padding:20px;border:1px solid #dfe2e0;border-radius:9px;background:#fff;box-shadow:0 3px 12px rgba(24,39,52,.045)}.admin-workflow-head{display:flex;justify-content:space-between;gap:20px}.admin-workflow-head h3{margin:3px 0 4px;font-size:17px;text-transform:uppercase}.admin-workflow-head p{margin:0;color:#707571;font-size:11px}.workflow-status{display:inline-flex;align-items:center;height:27px;padding:0 10px;border:1px solid;border-radius:999px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.workflow-item-grid{display:grid;gap:7px;margin-top:15px}.workflow-item-row{display:grid;grid-template-columns:minmax(180px,1fr) repeat(3,auto);gap:16px;align-items:center;padding:10px 12px;background:#f7f8f7;border-radius:6px;font-size:11px}.workflow-item-row strong{font-size:12px}.workflow-item-row span{color:#747a76}.workflow-item-row b{color:#191b1a}.workflow-details{margin-top:12px;border-top:1px solid #eceeec;padding-top:10px}.workflow-details summary{cursor:pointer;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.workflow-timeline{display:grid;gap:0;margin-top:12px}.workflow-timeline-item{position:relative;display:grid;grid-template-columns:16px 1fr;gap:9px;padding-bottom:13px}.workflow-timeline-item:not(:last-child)::before{content:"";position:absolute;left:5px;top:10px;bottom:0;width:1px;background:#d2d7d3}.workflow-dot{width:11px;height:11px;border-radius:50%;background:#abb3ad;border:3px solid #fff;box-shadow:0 0 0 1px #abb3ad}.workflow-timeline-item.current .workflow-dot{background:#2f6f62;box-shadow:0 0 0 1px #2f6f62}.workflow-timeline-item strong{font-size:11px}.workflow-timeline-item p,.workflow-timeline-item small{margin:1px 0 0;color:#777d79;font-size:10px}.workflow-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:12px}.workflow-wait{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#956b19}.workflow-modal{width:min(860px,100%);max-height:90vh;overflow:auto;margin:auto;padding:26px;background:#fff;border-radius:10px;box-shadow:0 24px 70px rgba(0,0,0,.22)}.workflow-modal-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.workflow-modal-head h2{margin:3px 0 0}.workflow-modal-copy{margin:12px 0 18px;color:#686e6a;font-size:12px}.modal-item-list{display:grid;gap:9px;margin-bottom:18px}.modal-item-row{display:grid;grid-template-columns:minmax(220px,1fr) 90px minmax(180px,1fr);gap:10px;align-items:center;padding:11px;background:#f5f6f5;border-radius:7px}.modal-item-row div{display:grid}.modal-item-row small{color:#747a76;font-size:10px}.modal-item-row input{min-height:38px!important}.inventory-low-stock{border-color:#d4a53d!important;background:#fffaf0!important}@media(max-width:720px){.workflow-item-row{grid-template-columns:1fr 1fr}.workflow-item-row strong{grid-column:1/-1}.admin-workflow-head{flex-direction:column}.workflow-actions{justify-content:flex-start;flex-wrap:wrap}.modal-item-row{grid-template-columns:1fr}.workflow-note{align-items:flex-start;flex-direction:column}}
+
+
+    /* v38: improve secondary-description readability across the portal */
+    .modal-item-row small {
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+      color: #626963 !important;
+      margin-top: 3px;
+    }
+    .workflow-item-row span {
+      font-size: 12px !important;
+      line-height: 1.4 !important;
+    }
+    .workflow-timeline-item p,
+    .workflow-timeline-item small {
+      font-size: 11px !important;
+      line-height: 1.45 !important;
+    }
+    .inventory-card .text-xs,
+    .gift-option .text-xs,
+    .request-card .text-xs,
+    .admin-workflow-card .text-xs {
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+    }
+    .subtext {
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+    }
+
+
+    /* v39: reserved-stock visibility */
+    .request-stock-summary {
+      display: block;
+      margin-top: 5px;
+      color: #69706b;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+    .request-stock-summary b { color: #2f6f62; font-weight: 700; }
+    .inventory-stock-breakdown {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .inventory-stock-breakdown > div {
+      padding: 10px 9px;
+      border: 1px solid #e0e3e1;
+      border-radius: 6px;
+      background: #f7f8f7;
+    }
+    .inventory-stock-breakdown span {
+      display: block;
+      color: #7a807c;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .inventory-stock-breakdown strong {
+      display: block;
+      margin-top: 4px;
+      color: #202321;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .inventory-stock-breakdown .available {
+      border-color: #a9cab4;
+      background: #eef7f1;
+    }
+    .inventory-stock-breakdown .available strong { color: #2f6f62; }
+    @media (max-width: 640px) {
+      .inventory-stock-breakdown { grid-template-columns: 1fr; }
+    }
+
+
+    /* v40: show NA until each operational stage is reached */
+    .workflow-item-row .quantity-na {
+      color: #9aa09c !important;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+    }
+
+
+    /* v43: recipient acknowledgement and signature capture */
+    .collection-details-grid { margin-bottom: 18px; }
+    .signature-section {
+      margin: 18px 0 14px;
+      padding: 16px;
+      border: 1px solid #d9ddda;
+      border-radius: 8px;
+      background: #f7f8f7;
+    }
+    .signature-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+    .signature-heading p {
+      margin: 3px 0 0;
+      color: #6e746f;
+      font-size: 12px;
+    }
+    .signature-canvas {
+      display: block;
+      width: 100%;
+      height: 150px;
+      border: 1px solid #aeb5b0;
+      border-radius: 6px;
+      background: #ffffff;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .signature-error {
+      min-height: 18px;
+      margin: 5px 0 0;
+      color: #b42318;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .collection-acknowledgement {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: #343936;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .collection-acknowledgement input {
+      width: 17px;
+      height: 17px;
+      min-height: 0 !important;
+      margin-top: 1px;
+      accent-color: #000000;
+    }
+    @media (max-width: 640px) {
+      .signature-heading { flex-direction: column; }
+      .signature-heading .btn-ghost { width: auto; }
+      .signature-canvas { height: 130px; }
+    }
+
+
+    /* v44: simplified collection details */
+    .collection-details-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 640px) {
+      .collection-details-grid { grid-template-columns: 1fr; }
+    }
+
+
+    /* v46: User request audit trail and collection alert */
+    .user-ready-notice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid #9fc8b4;
+      border-radius: 7px;
+      background: #edf7f1;
+    }
+    .user-ready-notice strong {
+      color: #245f4d;
+      font-size: 13px;
+    }
+    .user-ready-notice p {
+      margin: 2px 0 0;
+      color: #49685b;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .user-ready-notice > span {
+      flex-shrink: 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #2f6f62;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .user-audit-details {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #eceeec;
+    }
+    .user-audit-details summary {
+      cursor: pointer;
+      color: #404541;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .user-audit-timeline {
+      display: grid;
+      margin-top: 12px;
+    }
+    .user-audit-entry {
+      position: relative;
+      display: grid;
+      grid-template-columns: 15px minmax(0, 1fr);
+      gap: 9px;
+      padding-bottom: 12px;
+    }
+    .user-audit-entry:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      bottom: 0;
+      left: 5px;
+      width: 1px;
+      background: #d5d9d6;
+    }
+    .user-audit-dot {
+      width: 11px;
+      height: 11px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      background: #aab1ac;
+      box-shadow: 0 0 0 1px #aab1ac;
+    }
+    .user-audit-entry.current .user-audit-dot {
+      background: #2f6f62;
+      box-shadow: 0 0 0 1px #2f6f62;
+    }
+    .user-audit-entry strong { color: #2c312e; font-size: 11px; }
+    .user-audit-entry p,
+    .user-audit-entry small {
+      display: block;
+      margin: 1px 0 0;
+      color: #737a75;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    @media (max-width: 640px) {
+      .user-ready-notice { align-items: flex-start; flex-direction: column; }
+    }
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -264,6 +1196,9 @@
     /* ---------------------------------------------------------------------- */
     /* Constants & Config                                                      */
     /* ---------------------------------------------------------------------- */
+// TEMPORARY LOCAL TEST MODE ONLY. Change to false before publishing.
+const LOCAL_TEST_MODE = true;
+
 const msalConfig = {
     auth: {
         clientId: "3d36f5d5-4070-44f3-9bbf-a65429c401a0",
@@ -276,11 +1211,23 @@ const msalConfig = {
 };
 
 
-const msalInstance =
-    new msal.PublicClientApplication(msalConfig);
+const msalAvailable = typeof window.msal !== "undefined" && window.msal.PublicClientApplication;
 
-const msalReady =
-    msalInstance.initialize();
+const msalInstance = LOCAL_TEST_MODE
+  ? {
+      initialize: async () => {},
+      handleRedirectPromise: async () => null,
+      setActiveAccount: () => {},
+      getActiveAccount: () => null,
+      getAllAccounts: () => [],
+      loginRedirect: async () => {},
+      logoutRedirect: async () => {}
+    }
+  : (msalAvailable ? new window.msal.PublicClientApplication(msalConfig) : null);
+
+const msalReady = msalInstance
+  ? msalInstance.initialize()
+  : Promise.reject(new Error("Microsoft Authentication Library could not be loaded."));
 
 // Using loginRedirect (full-page redirect) instead of loginPopup. Popups
 // no longer close reliably: login.microsoftonline.com now sends a
@@ -289,50 +1236,40 @@ const msalReady =
 // a JS bundler to set up, which a plain static HTML file doesn't have.
 // A full-page redirect has no popup to close, so it sidesteps the issue
 // entirely — this just needs to process the response on the way back.
-msalReady.then(async () => {
+if (!LOCAL_TEST_MODE) msalReady.then(async () => {
     try {
+        const response = await msalInstance.handleRedirectPromise();
+        if (!response || !response.account) return;
 
-        const response =
-            await msalInstance.handleRedirectPromise();
+        const email = String(response.account.username || "").toLowerCase();
+        const role = sessionStorage.getItem("pendingLoginRole") || "user";
+        sessionStorage.removeItem("pendingLoginRole");
 
-        // No login response returned.
-        // This happens during normal page loads and after logout.
-        if (!response) {
+        if (role === "admin" && !ALLOWED_USERS.includes(email)) {
+            localStorage.removeItem("portalSession");
+            state.authed = false;
+            state.role = null;
+            state.view = "login";
+            render();
+            notify("This account is not authorized for CCD Admin", "error");
             return;
         }
 
-        const email =
-            response.account.username.toLowerCase();
-
-        if (!ALLOWED_USERS.includes(email)) {
-            alert(
-                "You are not authorized to access CCD Admin."
-            );
-            return;
-        }
-
+        msalInstance.setActiveAccount(response.account);
         state.authed = true;
+        state.role = role;
+        state.account = response.account;
+        state.view = role === "admin" ? "admin" : "user";
+        state.adminTab = "dashboard";
+        state.userTab = "requests";
 
-        localStorage.setItem(
-            "msUser",
-            JSON.stringify(response.account)
-        );
-
-        msalInstance.setActiveAccount(
-            response.account
-        );
-
-        state.view = "admin";
-
+        localStorage.setItem("portalSession", JSON.stringify({
+            role,
+            account: response.account
+        }));
         render();
-
     } catch (error) {
-
-        console.warn(
-            "Ignoring MSAL redirect error:",
-            error
-        );
-
+        console.warn("Ignoring MSAL redirect error:", error);
     }
 });
 
@@ -345,11 +1282,43 @@ const ALLOWED_USERS = [
 
     const CATEGORIES = ["Apparel", "Drinkware", "Stationery", "Tech Accessory", "Souvenir", "Other"];
     const STATUS_META = {
-      pending:  { label: "Pending", color: "#000000" },
-      approved: { label: "Approved", color: "#000000" },
-      issued:   { label: "Issued", color: "#7e7576" },
-      rejected: { label: "Rejected", color: "#ba1a1a" },
+      "pending approval":      { label: "Pending", color: "#C89B3C" },
+      "approved":             { label: "Approved", color: "#2F6F62" },
+      "rejected by approver": { label: "Rejected by Approver", color: "#ba1a1a" },
+      "issued":               { label: "Issued", color: "#7e7576" },
+      "declined by ccd":      { label: "Declined by CCD", color: "#ba1a1a" },
+      "ready for collection": { label: "Ready for Collection", color: "#296b58" },
+      "partially ready for collection": { label: "Partially Ready", color: "#9a6b14" },
+      "collected":            { label: "Collected", color: "#252525" },
+      "partially collected":  { label: "Partially Collected", color: "#5f596f" }
     };
+
+    function normalizeStatus(value) {
+      const raw = String(value || "Pending Approval").trim().toLowerCase();
+      const aliases = {
+        "pending": "pending approval",
+        "pending approval": "pending approval",
+        "approved": "approved",
+        "rejected": "rejected by approver",
+        "rejected by approver": "rejected by approver",
+        "issued": "issued",
+        "declined": "declined by ccd",
+        "declined by ccd": "declined by ccd",
+        "ready for collection": "ready for collection",
+        "partially ready for collection": "partially ready for collection",
+        "collected": "collected",
+        "partially collected": "partially collected"
+      };
+      return aliases[raw] || raw;
+    }
+
+    function getStatusMeta(value) {
+      const normalized = normalizeStatus(value);
+      return STATUS_META[normalized] || {
+        label: normalized.replace(/\b\w/g, character => character.toUpperCase()),
+        color: "#7e7576"
+      };
+    }
     const ICONS = {
       gift: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
       clock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
@@ -380,10 +1349,35 @@ const ALLOWED_USERS = [
 
     const uid = (p) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
     function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+    const PORTAL_TIME_ZONE = "Asia/Kuala_Lumpur";
+
     function formatDate(d) {
       if (!d) return "—";
-      try { return new Date(d).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
-      catch { return d; }
+      try {
+        return new Intl.DateTimeFormat("en-GB", {
+          timeZone: PORTAL_TIME_ZONE,
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        }).format(new Date(d));
+      } catch { return d; }
+    }
+
+    function formatDateTime(d) {
+      if (!d) return "—";
+      try {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: PORTAL_TIME_ZONE,
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }).formatToParts(new Date(d));
+        const value = type => parts.find(part => part.type === type)?.value || "";
+        return `${value("day")}/${value("month")}/${value("year")} ${value("hour")}:${value("minute")} ${value("dayPeriod").toUpperCase()}`;
+      } catch { return d; }
     }
 
     function notify(message, kind = "success") {
@@ -402,13 +1396,16 @@ const ALLOWED_USERS = [
     ];
 
     let state = {
-      view: "request", adminTab: "dashboard", authed: false,
+      view: "login", adminTab: "dashboard", userTab: "requests", authed: false,
+      role: null, account: null,
       gifts: [], requests: [], loaded: false,
       selectedGifts: {}, // { giftId: quantity }
       pendingImage: null,
-      requestFilter: "pending", inventoryQuery: "", showGiftForm: false,
+      requestFilter: "approved", inventoryQuery: "", showGiftForm: false,
       isRefreshing: false,
-      currentRequestData: null
+      currentRequestData: null,
+      requestAudit: {},
+      workflowPrototype: true
     };
 
     const GET_REQUESTS_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com/powerautomate/automations/direct/cu/04/workflows/bfed2f41e60c467d8c0c5ab927c40e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWvD-kCPeLhN94juTyuMp9npnWtFz8hJ_iep34Z9nGo";
@@ -425,44 +1422,65 @@ const ALLOWED_USERS = [
       render();
       
       try {
-        const response = await fetch(GET_REQUESTS_API, { method: "POST" });
-       const data = await response.json();
+        const response = await fetch(GET_REQUESTS_API, {
+          method: "POST",
+          headers: { "Accept": "application/json" }
+        });
 
-const requests = data.requests || [];
-const items = data.items || [];
+        // Read as text first because Power Automate responses can be returned
+        // as direct JSON, a JSON-encoded string, or a statusCode/body wrapper.
+        const responseText = await response.text();
+        if (!responseText.trim()) {
+          throw new Error(`Get Requests returned an empty response (HTTP ${response.status})`);
+        }
 
-state.requests = requests.map(req => ({
+        let rawData;
+        try {
+          rawData = JSON.parse(responseText);
+        } catch (parseError) {
+          throw new Error(`Get Requests returned invalid JSON (HTTP ${response.status})`);
+        }
 
-    id: req.ID,
+        let data = rawData;
 
-    requesterName: req.RequestorName,
+        // Only unwrap body when requests/items are not already at the top level.
+        if (!Array.isArray(data?.requests) && data && Object.prototype.hasOwnProperty.call(data, "body")) {
+          data = data.body;
+          if (typeof data === "string") {
+            data = JSON.parse(data);
+          }
+        }
 
-    department: req.Department,
+        const requests = Array.isArray(data?.requests) ? data.requests : [];
+        const items = Array.isArray(data?.items) ? data.items : [];
 
-    company: req.Company,
+        if (!Array.isArray(data?.requests)) {
+          throw new Error("Get Requests response does not contain a requests array");
+        }
 
-    email: req.Email,
+        state.requests = requests.map(req => ({
+          id: req.ID ?? req.ItemInternalId,
+          requesterName: req.RequestorName || "",
+          department: req.Department || "",
+          company: req.Company || "",
+          email: String(req.Email || "").trim().toLowerCase(),
+          mobileNo: req.MobileNo || "",
+          eventName: req.EventName || "",
+          eventDate: req.EventDate || "",
+          reason: req.Purpose || "",
+          status: normalizeStatus(req.Status),
+          submittedAt: req.Created || req.Modified,
+          items: items.filter(item =>
+            String(item.RequestID) === String(req.ID ?? req.ItemInternalId)
+          )
+        }));
 
-    mobileNo: req.MobileNo,
-
-    eventName: req.EventName,
-
-    eventDate: req.EventDate,
-
-    reason: req.Purpose,
-
-    status: (req.Status || "Pending").toLowerCase(),
-
-    submittedAt: req.Created,
-
-    items: items.filter(
-        item => Number(item.RequestID) === Number(req.ID)
-    )
-
-}));
-      } catch(e) { 
-        state.requests = state.requests.length > 0 ? state.requests : []; 
-        if (state.loaded) notify("Fetch failed, showing local data", "error");
+        console.info("Loaded gift requests:", state.requests.length);
+      } catch(e) {
+        console.error("Get Requests error:", e);
+        state.requests = state.requests.length > 0 ? state.requests : [];
+        const detail = String(e?.message || "Unknown error");
+        notify(`Requests could not be loaded: ${detail}`, "error");
       }
       
 const inventoryResponse =
@@ -481,9 +1499,11 @@ state.gifts = inventoryData.map(item => ({
 
     category: item.Category,
 
-    quantity: Number(item.StockQty),
+    quantity: Number(item.StockQty || 0),
 
-    lowStock: Number(item.LowStockQty),
+    reserved: Math.max(0, Number(item.ReservedQty || 0)),
+
+    lowStock: Number(item.LowStockQty || 0),
 
     image: item.ImageURL,
 
@@ -495,6 +1515,18 @@ state.gifts = inventoryData.map(item => ({
       render();
     }
 
+    function physicalStock(gift) {
+      return Math.max(0, Number(gift?.quantity || 0));
+    }
+
+    function reservedStock(gift) {
+      return Math.min(physicalStock(gift), Math.max(0, Number(gift?.reserved || 0)));
+    }
+
+    function availableStock(gift) {
+      return Math.max(0, physicalStock(gift) - reservedStock(gift));
+    }
+
     async function persistGifts(next) { state.gifts = next; await storageSet("gifts", JSON.stringify(next)); }
     async function persistRequests(next) { state.requests = next; await storageSet("requests", JSON.stringify(next)); }
 
@@ -503,40 +1535,35 @@ state.gifts = inventoryData.map(item => ({
     /* ---------------------------------------------------------------------- */
     function render() {
       const app = document.getElementById("app");
+      const signedIn = state.authed && state.role;
+      document.body.classList.toggle("login-page", !signedIn || state.view === "login");
       app.innerHTML = `
         <header class="topbar">
           <button class="brand" id="brand-btn">
-
-  <img src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg"
-    alt="PHB Logo"
-    class="h-8 w-auto mr-3"
-  />
-
-  <span class="brand-mark">
-    ${ICONS.gift}
-  </span>
-
-  <span class="brand-text">
-    iGIFT
-  </span>
-
-</button>
+            <img src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg" alt="PHB Logo" class="h-8 w-auto mr-3" />
+            <span class="brand-mark">${ICONS.gift}</span>
+            <span class="brand-text">iGIFT</span>
+          </button>
           <nav class="topnav">
-            <button class="nav-pill ${state.view === "request" ? "active" : ""}" data-nav="request">Request</button>
-            <button class="nav-pill ${state.view === "admin" || state.view === "login" ? "active" : ""}" data-nav="ccd">${state.authed ? "Admin" : "Login"}</button>
+            ${signedIn ? `<span class="text-[10px] uppercase tracking-widest text-gray-500 hidden md:inline">${esc(state.account?.name || state.account?.username || "Signed in")}</span>` : ""}
+            ${state.role === "user" ? `<button class="nav-pill ${state.userTab === "requests" ? "active" : ""}" data-user-tab="requests">My Requests</button><button class="nav-pill ${state.userTab === "new" ? "active" : ""}" data-user-tab="new">New Request</button>` : ""}
+            ${signedIn ? `<button class="nav-pill" id="global-logout">Sign Out</button>` : ""}
           </nav>
         </header>
-        <main class="main-area">${mainHTML()}</main>
-      `;
+        <main class="main-area">${mainHTML()}</main>`;
       bindEvents();
       if (state.view === "admin" && state.adminTab === "dashboard") renderCharts();
     }
 
     function mainHTML() {
       if (!state.loaded && !state.isRefreshing) return `<div class="loading-block"><span class="spin">${ICONS.clock}</span> Initializing...</div>`;
-      if (state.view === "request") return requestViewHTML();
-      if (state.view === "login") return loginViewHTML();
-      return adminShellHTML();
+      if (!state.authed || state.view === "login") return loginViewHTML();
+      if (state.role === "user") {
+        if (!state.userTab) state.userTab = "requests";
+        return userShellHTML();
+      }
+      if (state.role === "admin") return adminShellHTML();
+      return loginViewHTML();
     }
 
     function requestViewHTML() {
@@ -600,6 +1627,7 @@ state.gifts = inventoryData.map(item => ({
                     <span class="gift-option-text">
                       <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">${esc(g.category)}</span>
                       <strong>${esc(g.name)}</strong>
+                      <span class="request-stock-summary"><b>${availableStock(g)}</b> available</span>
                     </span>
                   </button>
                   <div class="gift-qty-input">
@@ -607,7 +1635,7 @@ state.gifts = inventoryData.map(item => ({
                       <span class="text-[9px] font-headline font-bold uppercase tracking-widest whitespace-nowrap">Quantity</span>
                       <input type="number" 
                         min="1" 
-                        max="${g.quantity}" 
+                        max="${availableStock(g)}" 
                         placeholder=" "
                         class="gift-qty-input-field w-full text-xs p-2 border border-gray-200 outline-none" 
                         data-qty-gift="${g.id}" 
@@ -698,46 +1726,229 @@ state.gifts = inventoryData.map(item => ({
       </label>`;
     }
 
-function loginViewHTML() {
-  return `
-  <div class="flex justify-center pt-20">
+let localRoleNavigationInProgress = false;
 
-    <div class="card w-full max-sm text-center">
+function enterLocalTestRole(role) {
+  if (!LOCAL_TEST_MODE || localRoleNavigationInProgress) return;
+  localRoleNavigationInProgress = true;
 
-      <div class="brand-mark mx-auto mb-6">
-        ${ICONS.pkg}
-      </div>
+  const safeRole = role === "admin" ? "admin" : "user";
+  const testEmail = safeRole === "admin"
+    ? (ALLOWED_USERS[0] || "admin@phb.com.my")
+    : "test.user@phb.com.my";
 
-      <h2 class="mb-2">
-        Admin Access
-      </h2>
+  state.authed = true;
+  state.role = safeRole;
+  state.account = {
+    name: safeRole === "admin" ? "Local Test Admin" : "Local Test User",
+    username: testEmail
+  };
+  state.view = safeRole === "admin" ? "admin" : "user";
+  state.adminTab = "dashboard";
+  state.userTab = "requests";
+  state.selectedGifts = {};
 
-      <p class="text-xs text-gray-400 mb-8 uppercase tracking-widest">
-        Sign in using Microsoft Account
-      </p>
-
-      <button
-        id="microsoft-login"
-        class="btn-primary w-full">
-
-        Sign In With Microsoft
-
-      </button>
-
-    </div>
-
-  </div>
-  `;
+  document.body.classList.remove("login-page");
+  render();
+  window.scrollTo(0, 0);
+  requestAnimationFrame(() => { localRoleNavigationInProgress = false; });
 }
 
+function loginViewHTML() {
+  return `
+  <div class="max-w-5xl mx-auto pt-10 md:pt-16">
+    <div class="text-center mb-10">
+      <img
+        src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg"
+        alt="PHB Logo"
+        class="landing-phb-logo"
+      />
+      <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-3">CORPORATE COMMUNICATIONS DEPARTMENT</p>
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">iGIFT PORTAL</h1>
+      <p class="text-sm text-gray-500">_____</p>
+      ${LOCAL_TEST_MODE ? `<div class="inline-flex mt-4 px-4 py-2 bg-amber-50 border border-amber-300 text-amber-800 text-[10px] font-bold uppercase tracking-widest">Local Test Mode · Microsoft login bypassed</div>` : ""}
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <section class="card p-8 md:p-10 flex flex-col">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Employee Access</p>
+        <h2 class="text-2xl font-bold mb-3">User</h2>
+        <p class="text-sm text-gray-500 mb-8 flex-1">Open My Requests to track requests submitted using your account, or select New Request to submit new request.</p>
+        <button type="button" class="btn-primary w-full" data-login-role="user">Login as User</button>
+      </section>
+      <section class="card p-8 md:p-10 flex flex-col border-t-4 border-black">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">CCD Access</p>
+        <h2 class="text-2xl font-bold mb-3">Admin</h2>
+        <p class="text-sm text-gray-500 mb-8 flex-1">View the CCD dashboard, manage inventory, review approved requests and record gift issuance.</p>
+        <button type="button" class="btn-primary w-full" data-login-role="admin">Login as Admin</button>
+      </section>
+    </div>
+  </div>`;
+}
+
+    function userShellHTML() {
+      return `<div>
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.userTab === "requests" ? "active" : ""}" data-user-tab="requests">My Requests</button>
+          <button class="admin-tab ${state.userTab === "new" ? "active" : ""}" data-user-tab="new">New Request</button>
+        </div>
+        <div>${state.userTab === "new" ? requestViewHTML() : myRequestsHTML()}</div>
+      </div>`;
+    }
+
+    function userRequestAuditHTML(request) {
+      const status = normalizeStatus(request.status);
+      const liveEntries = Array.isArray(state.requestAudit[request.id])
+        ? state.requestAudit[request.id]
+        : [];
+      const baselineEntries = [
+        {
+          key: "submitted",
+          title: "Request submitted",
+          date: request.submittedAt,
+          actor: request.requesterName || "Requester"
+        }
+      ];
+
+      if (status !== "pending approval") {
+        baselineEntries.push({
+          key: "approved",
+          title: status === "rejected by approver" ? "Superior decision completed" : "Approved by Superior",
+          date: request.ApprovedDate || request.approvedDate || request.submittedAt,
+          actor: request.ApproverName || request.approverName || "Superior"
+        });
+      }
+
+      const entries = [...baselineEntries, ...liveEntries]
+        .filter((entry, index, array) => {
+          const signature = `${entry.key || entry.title}|${entry.date || ""}|${entry.actor || ""}`;
+          return array.findIndex(candidate =>
+            `${candidate.key || candidate.title}|${candidate.date || ""}|${candidate.actor || ""}` === signature
+          ) === index;
+        })
+        .sort((a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime());
+
+      return `<div class="user-audit-timeline">${entries.map((entry, index) => `
+        <div class="user-audit-entry ${index === entries.length - 1 ? "current" : ""}">
+          <span class="user-audit-dot"></span>
+          <div>
+            <strong>${esc(entry.title)}</strong>
+            <p>${formatDateTime(entry.date)} · ${esc(entry.actor || "System")}</p>
+            ${entry.remark ? `<small>${esc(entry.remark)}</small>` : ""}
+          </div>
+        </div>
+      `).join("")}</div>`;
+    }
+
+    function myRequestsHTML() {
+      const email = String(state.account?.username || "").trim().toLowerCase();
+      const mine = state.requests
+        .filter(r => String(r.email || "").trim().toLowerCase() === email)
+        .sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+      const statusClass = (status) => {
+        const normalized = normalizeStatus(status);
+        if (normalized === "approved") return "is-approved";
+        if (normalized === "issued") return "is-issued";
+        if (normalized === "rejected by approver" || normalized === "declined by ccd") return "is-closed";
+        return "is-pending";
+      };
+
+      return `<section class="my-requests-view">
+        <div class="my-requests-header">
+          <div>
+            <h1>My Requests</h1>
+            <p class="subtext">Track gift requests submitted using ${esc(email)}</p>
+          </div>
+          <button class="btn-primary sm" data-user-tab="new">New Request</button>
+        </div>
+
+        ${mine.length ? `
+          <div class="my-request-list">
+            ${mine.map((r, index) => {
+              const meta = getStatusMeta(r.status);
+              const items = Array.isArray(r.items) ? r.items : [];
+              const totalUnits = items.reduce((sum, item) => sum + Number(item.Quantity || item.Qty || 0), 0);
+              return `<article class="my-request-record ${statusClass(r.status)}">
+                <div class="my-request-rail" aria-hidden="true"></div>
+                <div class="my-request-main">
+                  <div class="my-request-topline">
+                    <div class="my-request-date">
+                      <span>Submitted</span>
+                      <strong>${formatDateTime(r.submittedAt)}</strong>
+                    </div>
+                    <span class="my-request-status">${esc(meta.label)}</span>
+                  </div>
+
+                  <div class="my-request-title-row">
+                    <div>
+                      <p class="my-request-sequence">Request ${String(mine.length - index).padStart(2, "0")}</p>
+                      <h2>${esc(r.eventName || "Gift Request")}</h2>
+                    </div>
+                    <div class="my-request-event-date">
+                      <span>Event date</span>
+                      <strong>${formatDate(r.eventDate)}</strong>
+                    </div>
+                  </div>
+
+                  <div class="my-request-meta">
+                    <span>${esc(r.department || "Department not specified")}</span>
+                    ${r.company ? `<span>${esc(r.company)}</span>` : ""}
+                    <span>${items.length} item type${items.length === 1 ? "" : "s"} · ${totalUnits} unit${totalUnits === 1 ? "" : "s"}</span>
+                  </div>
+
+                  ${r.reason ? `<div class="my-request-purpose">
+                    <span>Purpose</span>
+                    <p>${esc(r.reason)}</p>
+                  </div>` : ""}
+
+                  <div class="my-request-items">
+                    <span class="my-request-section-label">Requested items</span>
+                    <div class="my-request-item-list">
+                      ${items.length ? items.map(item => `
+                        <div class="my-request-item">
+                          <span>${esc(item.GiftName || item.GiftID || "Gift item")}</span>
+                          <strong>${esc(item.Quantity || item.Qty || 0)}</strong>
+                        </div>
+                      `).join("") : `<p class="my-request-empty-items">Item details are not available.</p>`}
+                    </div>
+                  </div>
+
+                  ${["ready for collection", "partially ready for collection"].includes(normalizeStatus(r.status)) ? `
+                    <div class="user-ready-notice" role="status">
+                      <div>
+                        <strong>${normalizeStatus(r.status) === "partially ready for collection" ? "Some gifts are ready for collection" : "Your gifts are ready for collection"}</strong>
+                        <p>Please proceed to CCD to collect the quantity marked as ready. Bring your staff identification for verification.</p>
+                      </div>
+                      <span>Collection required</span>
+                    </div>
+                  ` : ""}
+
+                  <details class="user-audit-details">
+                    <summary>View request audit trail</summary>
+                    ${userRequestAuditHTML(r)}
+                  </details>
+                </div>
+              </article>`;
+            }).join("")}
+          </div>
+        ` : `
+          <div class="my-requests-empty">
+            <div class="my-requests-empty-mark">${ICONS.pkg}</div>
+            <h2>No requests yet</h2>
+            <p>Use the New Request tab to submit your first corporate gift request.</p>
+          </div>
+        `}
+      </section>`;
+    }
+
     function adminShellHTML() {
-      const pending = state.requests.filter(r => r.status === "pending").length;
+      const pending = state.requests.filter(r => r.status === "pending approval").length;
       return `
         <div class="admin-tabs">
           <button class="admin-tab ${state.adminTab === "dashboard" ? "active" : ""}" data-tab="dashboard">Dashboard</button>
           <button class="admin-tab ${state.adminTab === "requests" ? "active" : ""}" data-tab="requests">${pending ? `(${pending})` : ""} Requests</button>
           <button class="admin-tab ${state.adminTab === "inventory" ? "active" : ""}" data-tab="inventory">Inventory</button>
-          <button class="admin-tab logout" id="logout-btn">Sign Out</button>
+          
         </div>
         <div id="admin-content">
           ${state.adminTab === "dashboard" ? dashboardHTML() : state.adminTab === "inventory" ? inventoryHTML() : requestsHTML()}
@@ -746,13 +1957,20 @@ function loginViewHTML() {
     }
 
     function dashboardHTML() {
-      const totalUnits = state.gifts.reduce((s, g) => s + g.quantity, 0);
+      const totalUnits = state.gifts.reduce((s, g) => s + physicalStock(g), 0);
+      const pendingApprovalCount = state.requests.filter(
+        request => normalizeStatus(request.status) === "pending approval"
+      ).length;
+      const pendingIssuanceCount = state.requests.filter(
+        request => normalizeStatus(request.status) === "approved"
+      ).length;
+
       return `
         <div class="stat-row">
           ${statCardHTML("Active Inventory", state.gifts.length)}
           ${statCardHTML("Stock Volume", totalUnits)}
-          ${statCardHTML("Open Requests", state.requests.filter(r => r.status === "pending").length)}
-          ${statCardHTML("Issued Units", state.requests.filter(r => r.status === "issued").length)}
+          ${statCardHTML("Pending Approval", pendingApprovalCount)}
+          ${statCardHTML("Pending Issuance", pendingIssuanceCount)}
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div class="card">
@@ -841,11 +2059,15 @@ function loginViewHTML() {
             <div class="gift-card-body">
               <div class="gift-card-top">
                 <strong>${esc(g.name)}</strong>
-                ${g.quantity <= g.lowStock ? `<span class="low-pill">Low</span>` : ""}
+                ${availableStock(g) <= g.lowStock ? `<span class="low-pill">Low</span>` : ""}
               </div>
               <div class="text-[10px] uppercase font-bold text-gray-400 mb-6">${esc(g.category)}</div>
-              <div class="flex justify-between items-end">
-                <div class="text-xl font-headline font-bold">${g.quantity} <span class="text-[9px] text-gray-400 uppercase tracking-tighter ml-1">In Stock</span></div>
+              <div class="inventory-stock-breakdown">
+                <div><span>Physical</span><strong>${physicalStock(g)}</strong></div>
+                <div><span>Reserved</span><strong>${reservedStock(g)}</strong></div>
+                <div class="available"><span>Available</span><strong>${availableStock(g)}</strong></div>
+              </div>
+              <div class="flex justify-end items-end mt-5">
                 <div class="flex gap-4">
                   <button class="text-[10px] uppercase font-bold tracking-widest hover:underline" data-edit-gift="${g.id}">Adjust</button>
                   <button class="text-[10px] uppercase font-bold tracking-widest text-red-500 hover:underline" data-remove-gift="${g.id}">Remove</button>
@@ -858,108 +2080,348 @@ function loginViewHTML() {
 
     }
 
-    function requestsHTML() {
-      const filtered = state.requestFilter === "all" ? state.requests : state.requests.filter(r => r.status === state.requestFilter);
-      return `
-        <div class="flex items-center justify-between mb-12 border-b border-gray-100 pb-2">
-          <div class="flex gap-8 overflow-x-auto">
-            ${["all", "pending", "approved", "issued", "rejected"].map(f => `
-              <button class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap pb-2 ${state.requestFilter === f ? "text-black border-b border-black" : "text-gray-400"}" data-filter="${f}">${f}</button>
-            `).join("")}
+    function requestAuditHTML(request) {
+      const status = normalizeStatus(request.status);
+      const liveEntries = Array.isArray(state.requestAudit[request.id])
+        ? state.requestAudit[request.id]
+        : [];
+
+      // Baseline events must always remain visible. Previously, the first live
+      // issuance event replaced this baseline array, causing Submitted and
+      // Superior Approval to disappear from the timeline.
+      const baselineEntries = [
+        {
+          key: "submitted",
+          title: "Request submitted",
+          date: request.submittedAt,
+          actor: request.requesterName || "Requester"
+        }
+      ];
+
+      if (status !== "pending approval") {
+        baselineEntries.push({
+          key: "approved",
+          title: "Superior approval completed",
+          date: request.ApprovedDate || request.approvedDate || request.submittedAt,
+          actor: request.ApproverName || request.approverName || "Superior"
+        });
+      }
+
+      // Merge baseline and live events instead of choosing one or the other.
+      const entries = [...baselineEntries, ...liveEntries]
+        .filter((entry, index, array) => {
+          const signature = `${entry.key || entry.title}|${entry.date || ""}|${entry.actor || ""}`;
+          return array.findIndex(candidate =>
+            `${candidate.key || candidate.title}|${candidate.date || ""}|${candidate.actor || ""}` === signature
+          ) === index;
+        })
+        .sort((a, b) => {
+          const aTime = new Date(a.date || 0).getTime();
+          const bTime = new Date(b.date || 0).getTime();
+          return aTime - bTime;
+        });
+
+      return `<div class="workflow-timeline">${entries.map((entry, index) => `
+        <div class="workflow-timeline-item ${index === entries.length - 1 ? "current" : ""}">
+          <span class="workflow-dot"></span>
+          <div>
+            <strong>${esc(entry.title)}</strong>
+            <p>${formatDateTime(entry.date)} · ${esc(entry.actor || "System")}</p>
+            ${entry.remark ? `<small>${esc(entry.remark)}</small>` : ""}
           </div>
-          <button id="refresh-requests" class="btn-ghost sm border-none px-2 flex items-center gap-2 hover:bg-black/5 transition-colors" ${state.isRefreshing ? 'disabled' : ''}>
-            <span class="${state.isRefreshing ? 'spin' : ''}">${ICONS.refresh}</span>
-            <span class="text-[10px] font-bold uppercase tracking-widest">${state.isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
-          </button>
-        </div>
-        <div class="relative min-h-[200px]">
-          ${state.isRefreshing ? `
-            <div class="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
-              <div class="flex flex-col items-center gap-4">
-                 <span class="spin">${ICONS.refresh}</span>
-                 <span class="font-headline text-[9px] font-bold uppercase tracking-widest text-black">Synchronizing with API</span>
-              </div>
-            </div>
-          ` : ''}
-          <div class="space-y-4">
-            ${filtered.length === 0 ? `
-              <div class="text-center py-20 text-gray-400 font-headline text-[10px] uppercase font-bold tracking-widest">No matching requests found</div>
-            ` : filtered.map(r => `
-            <div class="request-card bg-white flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div>
-                <div class="flex items-center gap-3 mb-2">
-                  <span class="badge" style="color:${STATUS_META[r.status].color}">${STATUS_META[r.status].label}		  </span>
-                  <div class="text-xs font-headline font-bold uppercase">
-<div class="mt-3 flex flex-col gap-1">
-    ${r.items.map(i => `
-        <div class="text-[11px] uppercase tracking-wide text-gray-500">
-            ${i.GiftName}
-            <span class="font-bold text-black ml-1">
-                × ${i.Quantity}
-            </span>
-        </div>
-    `).join("")}
-</div>
-		</div>
-                </div>
-               <div class="mt-3 text-[11px] text-gray-500 space-y-1">
-
-    <div class="uppercase tracking-wide">
-        ${esc(r.requesterName)}
-        |
-        ${esc(r.department)}
-        |
-        ${esc(r.company || "-")}
-    </div>
-
-    <div>
-        ${esc(r.email || "-")}
-        |
-        ${esc(r.mobileNo || "-")}
-    </div>
-
-    <div class="uppercase tracking-wide">
-        ${esc(r.eventName)}
-        |
-        ${formatDate(r.eventDate)}
-    </div>
-
-    <div>
-        ${esc(r.reason || "-")}
-    </div>
-
-</div>
-              </div>
-              <div class="flex gap-3">
-                ${r.status === "pending" ? `
-                  <button class="btn-primary sm" data-approve="${r.id}">Approve</button>
-                  <button class="btn-ghost sm danger" data-reject="${r.id}">Decline</button>
-                ` : ""}
-                ${r.status === "approved" ? `
-                  <button class="btn-primary sm" data-issue="${r.id}">Issue Items</button>
-                ` : ""}
-              </div>
-            </div>`).join("")}
-          </div>
-        </div>`;
+        </div>`).join("")}</div>`;
     }
+
+    function requestsHTML() {
+      const filtered = state.requestFilter === "all" ? state.requests : state.requests.filter(r => {
+        const status = normalizeStatus(r.status);
+        if (state.requestFilter === "ready") return ["ready for collection", "partially ready for collection"].includes(status);
+        if (state.requestFilter === "collected") return ["collected", "partially collected"].includes(status);
+        return status === state.requestFilter;
+      });
+      const filters = [
+        ["all","All"], ["pending approval","Pending"], ["approved","Approved"], ["ready","Ready for Collection"],
+        ["collected","Collected"], ["rejected by approver","Rejected"], ["declined by ccd","Declined"]
+      ];
+      return `<div>
+        <div class="workflow-note"><strong>Operational workflow preview</strong><span>Prepare and collection actions update this browser only until the Power Automate flows are connected.</span></div>
+        <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-2 gap-4">
+          <div class="flex gap-6 overflow-x-auto">${filters.map(([value,label]) => `<button class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap pb-2 ${state.requestFilter === value ? "text-black border-b-2 border-black" : "text-gray-400"}" data-filter="${value}">${label}</button>`).join("")}</div>
+          <button id="refresh-requests" class="btn-ghost sm">Refresh</button>
+        </div>
+        <div class="space-y-4">${filtered.length ? filtered.map(r => {
+          const status = normalizeStatus(r.status);
+          const meta = getStatusMeta(status);
+          const items = Array.isArray(r.items) ? r.items : [];
+          return `<article class="admin-workflow-card">
+            <div class="admin-workflow-head">
+              <div><p class="eyebrow">${esc(r.department || "Request")}</p><h3>${esc(r.eventName || "Gift Request")}</h3><p>${esc(r.requesterName || "")} · ${formatDate(r.eventDate)}</p></div>
+              <span class="workflow-status" style="color:${meta.color};border-color:${meta.color}">${esc(meta.label)}</span>
+            </div>
+            <div class="workflow-item-grid">${items.map((item,i) => {
+              const requested = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
+              const readyStage = [
+                "ready for collection",
+                "partially ready for collection",
+                "collected",
+                "partially collected"
+              ].includes(status);
+              const collectedStage = ["collected", "partially collected"].includes(status);
+              const readyValue = readyStage
+                ? Number(item.IssueQty ?? item.Quantity ?? item.Qty ?? 0)
+                : "NA";
+              const collectedValue = collectedStage
+                ? Number(item.CollectedQty ?? item.IssueQty ?? item.Quantity ?? item.Qty ?? 0)
+                : "NA";
+              return `<div class="workflow-item-row">
+                <strong>${esc(item.GiftName || item.GiftID || "Gift item")}</strong>
+                <span>Requested <b>${requested}</b></span>
+                <span>Ready <b class="${readyStage ? "" : "quantity-na"}">${readyValue}</b></span>
+                <span>Collected <b class="${collectedStage ? "" : "quantity-na"}">${collectedValue}</b></span>
+              </div>`;
+            }).join("") || `<p class="text-sm text-gray-400">No item details available.</p>`}</div>
+            <details class="workflow-details"><summary>View audit trail</summary>${requestAuditHTML(r)}</details>
+            <div class="workflow-actions">
+              ${status === "pending approval" ? `<span class="workflow-wait">Awaiting Superior approval in Microsoft Teams</span>` : ""}
+              ${status === "approved" ? `<button class="btn-primary sm" data-prepare-request="${r.id}">Prepare for Collection</button><button class="btn-ghost sm danger" data-ccd-decline="${r.id}">Decline</button>` : ""}
+              ${["ready for collection","partially ready for collection"].includes(status) ? `<button class="btn-primary sm" data-collect-request="${r.id}">Confirm Collection</button>` : ""}
+            </div>
+          </article>`;
+        }).join("") : `<div class="text-center py-16 text-gray-400 text-sm">No matching requests found</div>`}</div>
+      </div>`;
+    }
+
+    function openPrepareModal(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) return;
+      const rows = (request.items || []).map((item,index) => {
+        const requested = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
+        const approved = requested;
+        const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
+        const stock = availableStock(gift);
+        return `<div class="modal-item-row"><div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Requested ${requested} · Available ${stock}</small></div><input type="number" min="0" max="${Math.min(approved,stock)}" value="${Math.min(approved,stock)}" data-prepare-qty="${index}"><input placeholder="CCD remark, if reduced" data-prepare-remark="${index}"></div>`;
+      }).join("");
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal"><div class="workflow-modal-head"><div><p class="eyebrow">CCD Preparation</p><h2>Prepare for Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div><p class="workflow-modal-copy">Confirm the quantity CCD can prepare from the requested amount. Inventory will not be deducted at this stage.</p><div class="modal-item-list">${rows}</div><label class="field"><span class="field-label">Collection instructions</span><textarea id="collection-instructions" placeholder="Collection location, contact person and collection period"></textarea></label><button class="btn-primary full" data-confirm-prepare="${request.id}">Confirm Ready for Collection</button></div>`;
+      bindWorkflowModalEvents();
+    }
+
+    function openCollectionModal(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) return;
+      const rows = (request.items || []).map((item,index) => {
+        const ready = Number(item.IssueQty ?? item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
+        return `<div class="modal-item-row"><div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Ready quantity ${ready}</small></div><input type="number" min="0" max="${ready}" value="${ready}" data-collected-qty="${index}"></div>`;
+      }).join("");
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal collection-signature-modal">
+        <div class="workflow-modal-head">
+          <div><p class="eyebrow">Collection</p><h2>Confirm Gift Collection</h2></div>
+          <button class="btn-ghost sm" data-close-workflow>Close</button>
+        </div>
+        <p class="workflow-modal-copy">The recipient must verify the quantities, complete the acknowledgement details and sign below. Inventory is deducted only after confirmation.</p>
+        <div class="modal-item-list">${rows}</div>
+        <div class="form-grid collection-details-grid">
+          <label class="field"><span class="field-label">Collected by</span><input id="collected-by" required placeholder="Recipient full name" value="${esc(request.requesterName || "")}"></label>
+          <label class="field"><span class="field-label">Collection date & time</span><input id="collection-datetime" type="datetime-local" required></label>
+        </div>
+        <div class="signature-section">
+          <div class="signature-heading"><div><span class="field-label">Recipient signature</span><p>Sign inside the box using a mouse, touch screen or stylus.</p></div><button type="button" class="btn-ghost sm" id="clear-signature">Clear Signature</button></div>
+          <canvas id="collection-signature" class="signature-canvas" aria-label="Recipient signature canvas"></canvas>
+          <p id="signature-error" class="signature-error" aria-live="polite"></p>
+        </div>
+        <label class="collection-acknowledgement"><input type="checkbox" id="collection-ack" required><span>I acknowledge that the quantities shown above were received in good order.</span></label>
+        <button class="btn-primary full" data-confirm-collection="${request.id}">Confirm Collected</button>
+      </div>`;
+      const dateTime = document.getElementById("collection-datetime");
+      if (dateTime) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        dateTime.value = now.toISOString().slice(0,16);
+      }
+      bindWorkflowModalEvents();
+      initializeSignatureCanvas();
+    }
+
+    function initializeSignatureCanvas() {
+      const canvas = document.getElementById("collection-signature");
+      if (!canvas) return;
+      const context = canvas.getContext("2d");
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const displayWidth = Math.max(canvas.clientWidth, 300);
+      const displayHeight = 150;
+      canvas.width = Math.floor(displayWidth * ratio);
+      canvas.height = Math.floor(displayHeight * ratio);
+      canvas.style.height = `${displayHeight}px`;
+      context.scale(ratio, ratio);
+      context.lineWidth = 2.2;
+      context.lineCap = "round";
+      context.lineJoin = "round";
+      context.strokeStyle = "#171817";
+      canvas.dataset.signed = "false";
+
+      let drawing = false;
+      const point = event => {
+        const rect = canvas.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      };
+      canvas.addEventListener("pointerdown", event => {
+        drawing = true;
+        canvas.setPointerCapture(event.pointerId);
+        const p = point(event);
+        context.beginPath();
+        context.moveTo(p.x, p.y);
+        event.preventDefault();
+      });
+      canvas.addEventListener("pointermove", event => {
+        if (!drawing) return;
+        const p = point(event);
+        context.lineTo(p.x, p.y);
+        context.stroke();
+        canvas.dataset.signed = "true";
+        const error = document.getElementById("signature-error");
+        if (error) error.textContent = "";
+        event.preventDefault();
+      });
+      const stop = event => {
+        drawing = false;
+        if (event?.pointerId !== undefined && canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+      };
+      canvas.addEventListener("pointerup", stop);
+      canvas.addEventListener("pointercancel", stop);
+      canvas.addEventListener("pointerleave", stop);
+
+      const clear = document.getElementById("clear-signature");
+      if (clear) clear.onclick = () => {
+        context.clearRect(0, 0, displayWidth, displayHeight);
+        canvas.dataset.signed = "false";
+        const error = document.getElementById("signature-error");
+        if (error) error.textContent = "";
+      };
+    }
+
+    function bindWorkflowModalEvents() {
+      document.querySelectorAll("[data-close-workflow]").forEach(b => b.onclick = () => document.getElementById("modal-root").innerHTML = "");
+      const prepare = document.querySelector("[data-confirm-prepare]");
+      if (prepare) prepare.onclick = () => {
+        const request = state.requests.find(r => String(r.id) === String(prepare.dataset.confirmPrepare));
+        let partial = false;
+        request.items.forEach((item,index) => {
+          const approved = Number(item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
+          item.RequestedQty = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
+          item.ApprovedQty = approved;
+          const previousReady = Number(item.IssueQty || 0);
+          item.IssueQty = Number(document.querySelector(`[data-prepare-qty="${index}"]`)?.value || 0);
+          item.CCDIssueRemark = document.querySelector(`[data-prepare-remark="${index}"]`)?.value || "";
+          const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
+          if (gift) gift.reserved = Math.max(0, reservedStock(gift) - previousReady + item.IssueQty);
+          if (item.IssueQty < approved) partial = true;
+        });
+        request.status = partial ? "partially ready for collection" : "ready for collection";
+        state.requestAudit[request.id] = [...(state.requestAudit[request.id] || []), { key: "prepared", title: partial ? "Partially prepared by CCD" : "Ready for collection", date: new Date().toISOString(), actor: state.account?.name || "CCD Officer", remark: document.getElementById("collection-instructions")?.value || "" }];
+        document.getElementById("modal-root").innerHTML = ""; notify("Request marked ready for collection"); render();
+      };
+      const collect = document.querySelector("[data-confirm-collection]");
+      if (collect) collect.onclick = () => {
+        const request = state.requests.find(r => String(r.id) === String(collect.dataset.confirmCollection));
+        const collectedBy = document.getElementById("collected-by")?.value.trim();
+        const collectionDateTime = document.getElementById("collection-datetime")?.value;
+        const acknowledgement = document.getElementById("collection-ack")?.checked;
+        const signatureCanvas = document.getElementById("collection-signature");
+        const signatureError = document.getElementById("signature-error");
+
+        if (!collectedBy || !collectionDateTime) {
+          notify("Complete the recipient name and collection date", "error");
+          return;
+        }
+        if (!acknowledgement) {
+          notify("Recipient acknowledgement is required", "error");
+          return;
+        }
+        if (!signatureCanvas || signatureCanvas.dataset.signed !== "true") {
+          if (signatureError) signatureError.textContent = "Recipient signature is required.";
+          notify("Recipient signature is required", "error");
+          return;
+        }
+
+        const signatureDataUrl = signatureCanvas.toDataURL("image/png");
+        let partial = false;
+        request.items.forEach((item,index) => {
+          const ready = Number(item.IssueQty ?? item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
+          item.CollectedQty = Number(document.querySelector(`[data-collected-qty="${index}"]`)?.value || 0);
+          if (item.CollectedQty < ready) partial = true;
+          const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
+          if (gift) {
+            gift.quantity = Math.max(0, physicalStock(gift) - item.CollectedQty);
+            gift.reserved = Math.max(0, reservedStock(gift) - item.CollectedQty);
+          }
+        });
+        request.status = partial ? "partially collected" : "collected";
+        request.collectionReceipt = {
+          collectedBy,
+          collectionDateTime,
+          signatureDataUrl,
+          acknowledgement: true,
+          remark: ""
+        };
+        state.requestAudit[request.id] = [...(state.requestAudit[request.id] || []), {
+          key: "collected",
+          title: partial ? "Partial collection recorded" : "Collection confirmed",
+          date: collectionDateTime,
+          actor: state.account?.name || "CCD Officer",
+          remark: `Collected by ${collectedBy}`
+        }];
+        document.getElementById("modal-root").innerHTML = ""; notify("Collection recorded and local stock updated"); render();
+      };
+    }
+
 
     /* ---------------------------------------------------------------------- */
     /* Event Binding & Logic                                                   */
     /* ---------------------------------------------------------------------- */
     function bindEvents() {
-      document.getElementById("brand-btn").onclick = () => { state.view = state.authed ? "admin" : "request"; render(); };
-      document.querySelectorAll("[data-nav]").forEach(btn => {
-        btn.onclick = () => {
-          const k = btn.dataset.nav;
-          state.view = k === "request" ? "request" : (state.authed ? "admin" : "login");
-          render();
-        };
+      const brand = document.getElementById("brand-btn");
+      if (brand) brand.onclick = () => {
+        if (!state.authed) state.view = "login";
+        else if (state.role === "admin") state.view = "admin";
+        else { state.view = "user"; state.userTab = "requests"; }
+        render();
+      };
+
+      document.querySelectorAll("[data-user-tab]").forEach(btn => {
+        btn.onclick = () => { state.userTab = btn.dataset.userTab; state.view = "user"; render(); };
       });
 
-      if (state.view === "request") bindRequestEvents();
-      if (state.view === "login") bindLoginEvents();
-      if (state.view === "admin") bindAdminEvents();
+      const logout = document.getElementById("global-logout");
+      if (logout) logout.onclick = logoutPortal;
+
+      if (!state.authed || state.view === "login") bindLoginEvents();
+      if (state.role === "user" && state.userTab === "new") bindRequestEvents();
+      if (state.role === "admin" && state.view === "admin") bindAdminEvents();
+    }
+
+    async function logoutPortal() {
+      localStorage.removeItem("portalSession");
+      localStorage.removeItem("msUser");
+      state.authed = false;
+      state.role = null;
+      state.account = null;
+      state.view = "login";
+
+      if (LOCAL_TEST_MODE) {
+        sessionStorage.clear();
+        // A clean reload avoids stale event handlers or pending async renders
+        // from the previous User/Admin session.
+        window.location.reload();
+        return;
+      }
+
+      try {
+        await msalReady;
+        const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+        await msalInstance.logoutRedirect({ account });
+      } catch (error) {
+        console.error("Logout error:", error);
+        render();
+      }
     }
 
     function bindRequestEvents() {
@@ -1022,10 +2484,10 @@ function loginViewHTML() {
         
         Object.entries(state.selectedGifts).forEach(([gid, qty]) => {
           const g = state.gifts.find(item => item.id === gid);
-          if (g && qty > g.quantity) {
+          if (g && qty > availableStock(g)) {
             const div = document.createElement("div");
             div.className = "flex items-center gap-2 text-[10px] font-bold text-red-600 uppercase";
-            div.innerHTML = `${ICONS.alert} Overstock: ${g.name} (Max: ${g.quantity})`;
+            div.innerHTML = `${ICONS.alert} Not available: ${g.name} (Maximum: ${availableStock(g)})`;
             container.appendChild(div);
           }
         });
@@ -1043,8 +2505,8 @@ function loginViewHTML() {
         
         for (const gid of selectedIds) {
           const g = state.gifts.find(item => item.id === gid);
-          if (state.selectedGifts[gid] > g.quantity) {
-            notify(`Quantity for ${g.name} exceeds stock`, "error");
+          if (state.selectedGifts[gid] > availableStock(g)) {
+            notify(`Quantity for ${g.name} exceeds available stock`, "error");
             return;
           }
         }
@@ -1152,10 +2614,12 @@ if (!response.ok) {
           </div>
         `;
 
-        document.getElementById("modal-close-success").onclick = () => {
+        document.getElementById("modal-close-success").onclick = async () => {
           modalRoot.innerHTML = "";
           state.selectedGifts = {};
           state.currentRequestData = null;
+          await loadAll();
+          if (state.role === "user") { state.userTab = "requests"; state.view = "user"; }
           render();
         };
       } catch (err) {
@@ -1165,79 +2629,51 @@ if (!response.ok) {
     }
 
 function bindLoginEvents() {
+  const roleButtons = document.querySelectorAll("[data-login-role]");
 
-    const btn =
-        document.getElementById("microsoft-login");
+  roleButtons.forEach((btn) => {
+    btn.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
 
-    if (!btn) return;
+      const role = event.currentTarget.dataset.loginRole;
 
+      if (LOCAL_TEST_MODE) {
+        roleButtons.forEach((button) => { button.disabled = true; });
+        enterLocalTestRole(role);
+        return;
+      }
 
-btn.onclick = async () => {
-    try {
+      sessionStorage.setItem("pendingLoginRole", role);
 
+      try {
         await msalReady;
-
         await msalInstance.loginRedirect({
-            scopes: [
-                "openid",
-                "profile",
-                "email"
-            ]
+          scopes: ["openid", "profile", "email"]
         });
-        // The page navigates away to Microsoft's sign-in page here.
-        // Nothing after this line runs — the response is handled by
-        // handleRedirectPromise() when the browser comes back.
-
-        }
-catch (error) {
-
-    console.error("MSAL Error:", error);
-
-    // Ignore timeout/session-expired errors
-    if (
-        error &&
-        (
-            error.errorCode === "timed_out" ||
-            String(error.message || "").includes("timed_out")
-        )
-    ) {
-        return;
-    }
-
-    if (error && error.errorCode === "interaction_in_progress") {
-
-        Object.keys(sessionStorage)
-            .filter(k => k.includes("interaction.status"))
-            .forEach(k => sessionStorage.removeItem(k));
-
-        notify(
-            "Please try signing in again",
-            "error"
-        );
-
-        return;
-    }
-
-    notify(
-        "Microsoft sign-in failed",
-        "error"
-    );
-}
-
-
-    };
-
+      } catch (error) {
+        console.error("MSAL Error:", error);
+        if (
+          error?.errorCode === "timed_out" ||
+          String(error?.message || "").includes("timed_out")
+        ) return;
+        notify("Microsoft sign-in could not be started", "error");
+      }
+    });
+  });
 }
 
     function bindAdminEvents() {
       document.querySelectorAll("[data-tab]").forEach(btn => {
         btn.onclick = () => {
           state.adminTab = btn.dataset.tab;
-          if (state.adminTab === "requests") state.requestFilter = "pending";
+          if (state.adminTab === "requests") state.requestFilter = "approved";
           render();
         };
       });
-      document.getElementById("logout-btn").onclick =
+      const adminLogout = document.getElementById("logout-btn");
+      if (adminLogout) adminLogout.onclick = logoutPortal;
+      /* legacy logout disabled
 async () => {
 
     // Full sign-out: end both the app session and the Microsoft session,
@@ -1272,7 +2708,7 @@ try {
     render();
 }
 
-};
+*/
       
       if (state.adminTab === "inventory") {
 
@@ -1314,12 +2750,21 @@ try {
         document.querySelectorAll("[data-filter]").forEach(btn => {
           btn.onclick = () => { state.requestFilter = btn.dataset.filter; render(); };
         });
-        document.querySelectorAll("[data-approve]").forEach(btn => {
-          btn.onclick = () => { persistRequests(state.requests.map(r => r.id == btn.dataset.approve ? {...r, status: "approved"} : r)); render(); };
-        });
-        document.querySelectorAll("[data-issue]").forEach(btn => {
-          btn.onclick = () => { persistRequests(state.requests.map(r => r.id == btn.dataset.issue ? {...r, status: "issued"} : r)); render(); };
-        });
+          // Approval is controlled only by the Microsoft Teams Approval flow.
+          // CCD has no approve action in the portal.
+          document.querySelectorAll("[data-issue]").forEach(btn => {
+            btn.onclick = () => issueGiftRequest(btn.dataset.issue);
+          });
+          document.querySelectorAll("[data-ccd-decline]").forEach(btn => {
+            btn.onclick = () => declineGiftRequest(btn.dataset.ccdDecline);
+          });
+          document.querySelectorAll("[data-prepare-request]").forEach(btn => {
+            btn.onclick = () => openPrepareModal(btn.dataset.prepareRequest);
+          });
+          document.querySelectorAll("[data-collect-request]").forEach(btn => {
+            btn.onclick = () => openCollectionModal(btn.dataset.collectRequest);
+          });
+
       }
     }
 
@@ -1367,22 +2812,38 @@ function renderCharts() {
       pending: 0,
       approved: 0,
       issued: 0,
-      rejected: 0
+      rejected: 0,
+      declined: 0
     };
 
-    state.requests.forEach(r => counts[r.status]++);
+    state.requests.forEach(request => {
+      const status = normalizeStatus(request.status);
+
+      if (status === "pending approval") counts.pending += 1;
+      else if (status === "approved") counts.approved += 1;
+      else if (status === "issued") counts.issued += 1;
+      else if (status === "rejected by approver") counts.rejected += 1;
+      else if (status === "declined by ccd") counts.declined += 1;
+    });
 
     new Chart(statusCtx, {
       type: "doughnut",
       data: {
-        labels: Object.keys(counts),
+        labels: ["pending", "approved", "issued", "rejected", "declined"],
         datasets: [{
-          data: Object.values(counts),
+          data: [
+            counts.pending,
+            counts.approved,
+            counts.issued,
+            counts.rejected,
+            counts.declined
+          ],
           backgroundColor: [
             "#C89B3C",
             "#2F6F62",
             "#000000",
-            "#ba1a1a"
+            "#ba1a1a",
+            "#7f3948"
           ]
         }]
       },
@@ -1401,15 +2862,42 @@ function renderCharts() {
   }
 }
 
-const storedUser =
-    localStorage.getItem("msUser");
+window.addEventListener("error", (event) => {
+  console.error("Portal runtime error:", event.error || event.message);
+});
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Portal promise error:", event.reason);
+});
 
-if (storedUser) {
-
-    state.authed = true;
-
+if (LOCAL_TEST_MODE) {
+  // Always show the front page first during local testing.
+  localStorage.removeItem("portalSession");
+  localStorage.removeItem("msUser");
+  sessionStorage.removeItem("pendingLoginRole");
+  state.authed = false;
+  state.role = null;
+  state.account = null;
+  state.view = "login";
+  state.userTab = "requests";
+  state.adminTab = "dashboard";
+} else {
+  const storedSession = localStorage.getItem("portalSession");
+  if (storedSession) {
+    try {
+      const session = JSON.parse(storedSession);
+      if (session?.role && session?.account) {
+        state.authed = true;
+        state.role = session.role;
+        state.account = session.account;
+        state.view = session.role === "admin" ? "admin" : "user";
+        state.userTab = "requests";
+        msalReady.then(() => msalInstance.setActiveAccount(session.account)).catch(() => {});
+      }
+    } catch (error) {
+      localStorage.removeItem("portalSession");
+    }
+  }
 }
-
 loadAll();
   </script>
 </body></html>
