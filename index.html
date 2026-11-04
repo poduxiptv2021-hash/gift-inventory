@@ -1186,6 +1186,48 @@
     @media (max-width: 640px) {
       .user-ready-notice { align-items: flex-start; flex-direction: column; }
     }
+
+
+    /* v51: purpose shown on Admin request cards */
+    .admin-request-purpose {
+      margin-top: 13px;
+      padding: 10px 12px;
+      border-left: 3px solid #2f6f62;
+      border-radius: 0 6px 6px 0;
+      background: #f5f7f5;
+    }
+    .admin-request-purpose span {
+      display: block;
+      color: #737a75;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .admin-request-purpose p {
+      margin: 3px 0 0;
+      color: #343936;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+
+    /* v52 Phase 1: audit trail functionality deferred */
+    .workflow-details,
+    .user-audit-details,
+    .workflow-timeline,
+    .user-audit-timeline {
+      display: none !important;
+    }
+
+    /* v58: authenticated Microsoft identity fields */
+    input[readonly][name="requesterName"],
+    input[readonly][name="email"] {
+      background: #f1f4f2 !important;
+      color: #3f4742 !important;
+      cursor: not-allowed;
+    }
 </style>
 </head>
 <body>
@@ -1197,7 +1239,7 @@
     /* Constants & Config                                                      */
     /* ---------------------------------------------------------------------- */
 // TEMPORARY LOCAL TEST MODE ONLY. Change to false before publishing.
-const LOCAL_TEST_MODE = true;
+const LOCAL_TEST_MODE = false;
 
 const msalConfig = {
     auth: {
@@ -1294,7 +1336,19 @@ const ALLOWED_USERS = [
     };
 
     function normalizeStatus(value) {
-      const raw = String(value || "Pending Approval").trim().toLowerCase();
+      // SharePoint Choice columns can arrive as plain text or as an object,
+      // for example { Value: "Approved" }. Extract the readable value first.
+      let statusValue = value;
+      if (statusValue && typeof statusValue === "object") {
+        statusValue = statusValue.Value
+          ?? statusValue.value
+          ?? statusValue.Label
+          ?? statusValue.label
+          ?? statusValue.Title
+          ?? statusValue.title
+          ?? "Pending Approval";
+      }
+      const raw = String(statusValue || "Pending Approval").trim().toLowerCase();
       const aliases = {
         "pending": "pending approval",
         "pending approval": "pending approval",
@@ -1410,8 +1464,9 @@ const ALLOWED_USERS = [
 
     const GET_REQUESTS_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com/powerautomate/automations/direct/cu/04/workflows/bfed2f41e60c467d8c0c5ab927c40e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWvD-kCPeLhN94juTyuMp9npnWtFz8hJ_iep34Z9nGo";
 
-    const CREATE_REQUEST_API =
-"https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/07/workflows/1e34b5e67fbf4f9a8c381048b917082f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=x5VmNDzaKvJFX-KIVh2lIwPrmVUBg0ZFeAsAtDNjQm4";
+    const CREATE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/211263645b7143bdb3bd5e63403993d7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lCGZhOtIJNZVc8jG1Mmp_u4DPEaB5026hm2yyoKE6rg";
+    const PREPARE_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/29/workflows/d74784b90fe24c7687f6596c61560727/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-GrZW25-118Yg8o_NsWJFIkVDLG2yl74tE9E1FhT2fs";
+    const CONFIRM_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/5468dcf16a6d47129f9a815d03c748bf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=daP-okqE2Wz49sZaU3iflLTZfkH16NH9CHFs_LB646E";
 
     const GET_INVENTORY_API =
 "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/55b1aafd1f374e6397fcfd2f1c84080a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=otP6LULBv8RIfrOUlBCrWVcjP8IbwU_qJu9Vwl7Y73k";
@@ -1472,7 +1527,14 @@ const ALLOWED_USERS = [
           submittedAt: req.Created || req.Modified,
           items: items.filter(item =>
             String(item.RequestID) === String(req.ID ?? req.ItemInternalId)
-          )
+          ).map(item => ({
+              ...item,
+              id: item.ID ?? item.ItemInternalId,
+              RequestedQty: Number(item.RequestedQty ?? item.Quantity ?? item.Qty ?? 0),
+              ReadyQty: Number(item.ReadyQty ?? item.IssueQty ?? 0),
+              CollectedQty: Number(item.CollectedQty ?? 0),
+              CCDRemark: item.CCDRemark ?? item.CCDIssueRemark ?? ""
+            }))
         }));
 
         console.info("Loaded gift requests:", state.requests.length);
@@ -1581,7 +1643,7 @@ state.gifts = inventoryData.map(item => ({
             <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Event Details</h3>
             <div class="space-y-6">
               <div class="w-full">
-                ${fieldHTML("requesterName", "Name", `<input name="requesterName" required placeholder="Full name" />`)}
+                ${fieldHTML("requesterName", "Name", `<input name="requesterName" required readonly value="${esc(state.account?.name || "")}" placeholder="Signed-in Microsoft account" />`)}
               </div>
               
               <div class="form-grid">
@@ -1594,7 +1656,7 @@ state.gifts = inventoryData.map(item => ({
     `<input name="company" required placeholder="e.g. PHB Asset Management Berhad" />`)}
 
   ${fieldHTML("email", "Email",
-    `<input type="email" name="email" required placeholder="muhammad@phb.com.my" />`)}
+    `<input type="email" name="email" required readonly value="${esc(String(state.account?.username || "").toLowerCase())}" placeholder="Signed-in Microsoft email" />`)}
 
   ${fieldHTML("mobileNo", "Mobile No",
     `<input name="mobileNo" required placeholder="012-3456789" />`)}
@@ -2144,7 +2206,7 @@ function loginViewHTML() {
         ["collected","Collected"], ["rejected by approver","Rejected"], ["declined by ccd","Declined"]
       ];
       return `<div>
-        <div class="workflow-note"><strong>Operational workflow preview</strong><span>Prepare and collection actions update this browser only until the Power Automate flows are connected.</span></div>
+        
         <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-2 gap-4">
           <div class="flex gap-6 overflow-x-auto">${filters.map(([value,label]) => `<button class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap pb-2 ${state.requestFilter === value ? "text-black border-b-2 border-black" : "text-gray-400"}" data-filter="${value}">${label}</button>`).join("")}</div>
           <button id="refresh-requests" class="btn-ghost sm">Refresh</button>
@@ -2158,6 +2220,10 @@ function loginViewHTML() {
               <div><p class="eyebrow">${esc(r.department || "Request")}</p><h3>${esc(r.eventName || "Gift Request")}</h3><p>${esc(r.requesterName || "")} · ${formatDate(r.eventDate)}</p></div>
               <span class="workflow-status" style="color:${meta.color};border-color:${meta.color}">${esc(meta.label)}</span>
             </div>
+            <div class="admin-request-purpose">
+              <span>Purpose</span>
+              <p>${esc(r.reason || "No purpose provided.")}</p>
+            </div>
             <div class="workflow-item-grid">${items.map((item,i) => {
               const requested = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
               const readyStage = [
@@ -2168,10 +2234,10 @@ function loginViewHTML() {
               ].includes(status);
               const collectedStage = ["collected", "partially collected"].includes(status);
               const readyValue = readyStage
-                ? Number(item.IssueQty ?? item.Quantity ?? item.Qty ?? 0)
+                ? Number(item.ReadyQty ?? item.IssueQty ?? 0)
                 : "NA";
               const collectedValue = collectedStage
-                ? Number(item.CollectedQty ?? item.IssueQty ?? item.Quantity ?? item.Qty ?? 0)
+                ? Number(item.CollectedQty ?? 0)
                 : "NA";
               return `<div class="workflow-item-row">
                 <strong>${esc(item.GiftName || item.GiftID || "Gift item")}</strong>
@@ -2191,17 +2257,45 @@ function loginViewHTML() {
       </div>`;
     }
 
+    function readFlowResponse(response, fallbackMessage) {
+      return response.text().then(text => {
+        let data = {};
+        if (text.trim()) {
+          try { data = JSON.parse(text); }
+          catch { data = { message: text }; }
+        }
+        if (data && Object.prototype.hasOwnProperty.call(data, "body")) {
+          if (typeof data.body === "string") {
+            try { data = JSON.parse(data.body); } catch { data = { message: data.body }; }
+          } else if (data.body && typeof data.body === "object") data = data.body;
+        }
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || `${fallbackMessage} (HTTP ${response.status})`);
+        }
+        return data;
+      });
+    }
+
     function openPrepareModal(requestId) {
       const request = state.requests.find(r => String(r.id) === String(requestId));
       if (!request) return;
       const rows = (request.items || []).map((item,index) => {
-        const requested = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
-        const approved = requested;
-        const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
+        const requested = Number(item.RequestedQty ?? item.Quantity ?? item.Qty ?? 0);
+        const gift = state.gifts.find(g => String(g.id) === String(item.GiftID));
         const stock = availableStock(gift);
-        return `<div class="modal-item-row"><div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Requested ${requested} · Available ${stock}</small></div><input type="number" min="0" max="${Math.min(approved,stock)}" value="${Math.min(approved,stock)}" data-prepare-qty="${index}"><input placeholder="CCD remark, if reduced" data-prepare-remark="${index}"></div>`;
+        return `<div class="modal-item-row">
+          <div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Requested ${requested} · Available ${stock}</small></div>
+          <input type="number" min="0" max="${Math.min(requested,stock)}" value="${Math.min(requested,stock)}" data-prepare-qty="${index}">
+          <input placeholder="CCD remark, if reduced" data-prepare-remark="${index}">
+        </div>`;
       }).join("");
-      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal"><div class="workflow-modal-head"><div><p class="eyebrow">CCD Preparation</p><h2>Prepare for Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div><p class="workflow-modal-copy">Confirm the quantity CCD can prepare from the requested amount. Inventory will not be deducted at this stage.</p><div class="modal-item-list">${rows}</div><label class="field"><span class="field-label">Collection instructions</span><textarea id="collection-instructions" placeholder="Collection location, contact person and collection period"></textarea></label><button class="btn-primary full" data-confirm-prepare="${request.id}">Confirm Ready for Collection</button></div>`;
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal">
+        <div class="workflow-modal-head"><div><p class="eyebrow">CCD Preparation</p><h2>Prepare for Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div>
+        <p class="workflow-modal-copy">Confirm the quantity CCD can prepare. The quantity becomes reserved, while Physical stock remains unchanged until collection.</p>
+        <div class="modal-item-list">${rows}</div>
+        <label class="field"><span class="field-label">Collection instructions</span><textarea id="collection-instructions" placeholder="Collection location, contact person and collection period"></textarea></label>
+        <button class="btn-primary full" data-confirm-prepare="${request.id}">Confirm Ready for Collection</button>
+      </div>`;
       bindWorkflowModalEvents();
     }
 
@@ -2209,24 +2303,19 @@ function loginViewHTML() {
       const request = state.requests.find(r => String(r.id) === String(requestId));
       if (!request) return;
       const rows = (request.items || []).map((item,index) => {
-        const ready = Number(item.IssueQty ?? item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
-        return `<div class="modal-item-row"><div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Ready quantity ${ready}</small></div><input type="number" min="0" max="${ready}" value="${ready}" data-collected-qty="${index}"></div>`;
+        const ready = Number(item.ReadyQty || 0);
+        return `<div class="modal-item-row">
+          <div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Ready quantity ${ready}</small></div>
+          <input type="number" value="${ready}" readonly data-collected-qty="${index}">
+        </div>`;
       }).join("");
-      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal collection-signature-modal">
-        <div class="workflow-modal-head">
-          <div><p class="eyebrow">Collection</p><h2>Confirm Gift Collection</h2></div>
-          <button class="btn-ghost sm" data-close-workflow>Close</button>
-        </div>
-        <p class="workflow-modal-copy">The recipient must verify the quantities, complete the acknowledgement details and sign below. Inventory is deducted only after confirmation.</p>
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal">
+        <div class="workflow-modal-head"><div><p class="eyebrow">Collection</p><h2>Confirm Gift Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div>
+        <p class="workflow-modal-copy">Confirm the recipient and acknowledgement. Phase 1 requires all Ready quantities to be collected.</p>
         <div class="modal-item-list">${rows}</div>
         <div class="form-grid collection-details-grid">
           <label class="field"><span class="field-label">Collected by</span><input id="collected-by" required placeholder="Recipient full name" value="${esc(request.requesterName || "")}"></label>
           <label class="field"><span class="field-label">Collection date & time</span><input id="collection-datetime" type="datetime-local" required></label>
-        </div>
-        <div class="signature-section">
-          <div class="signature-heading"><div><span class="field-label">Recipient signature</span><p>Sign inside the box using a mouse, touch screen or stylus.</p></div><button type="button" class="btn-ghost sm" id="clear-signature">Clear Signature</button></div>
-          <canvas id="collection-signature" class="signature-canvas" aria-label="Recipient signature canvas"></canvas>
-          <p id="signature-error" class="signature-error" aria-live="polite"></p>
         </div>
         <label class="collection-acknowledgement"><input type="checkbox" id="collection-ack" required><span>I acknowledge that the quantities shown above were received in good order.</span></label>
         <button class="btn-primary full" data-confirm-collection="${request.id}">Confirm Collected</button>
@@ -2238,141 +2327,94 @@ function loginViewHTML() {
         dateTime.value = now.toISOString().slice(0,16);
       }
       bindWorkflowModalEvents();
-      initializeSignatureCanvas();
-    }
-
-    function initializeSignatureCanvas() {
-      const canvas = document.getElementById("collection-signature");
-      if (!canvas) return;
-      const context = canvas.getContext("2d");
-      const ratio = Math.max(window.devicePixelRatio || 1, 1);
-      const displayWidth = Math.max(canvas.clientWidth, 300);
-      const displayHeight = 150;
-      canvas.width = Math.floor(displayWidth * ratio);
-      canvas.height = Math.floor(displayHeight * ratio);
-      canvas.style.height = `${displayHeight}px`;
-      context.scale(ratio, ratio);
-      context.lineWidth = 2.2;
-      context.lineCap = "round";
-      context.lineJoin = "round";
-      context.strokeStyle = "#171817";
-      canvas.dataset.signed = "false";
-
-      let drawing = false;
-      const point = event => {
-        const rect = canvas.getBoundingClientRect();
-        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      };
-      canvas.addEventListener("pointerdown", event => {
-        drawing = true;
-        canvas.setPointerCapture(event.pointerId);
-        const p = point(event);
-        context.beginPath();
-        context.moveTo(p.x, p.y);
-        event.preventDefault();
-      });
-      canvas.addEventListener("pointermove", event => {
-        if (!drawing) return;
-        const p = point(event);
-        context.lineTo(p.x, p.y);
-        context.stroke();
-        canvas.dataset.signed = "true";
-        const error = document.getElementById("signature-error");
-        if (error) error.textContent = "";
-        event.preventDefault();
-      });
-      const stop = event => {
-        drawing = false;
-        if (event?.pointerId !== undefined && canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
-      };
-      canvas.addEventListener("pointerup", stop);
-      canvas.addEventListener("pointercancel", stop);
-      canvas.addEventListener("pointerleave", stop);
-
-      const clear = document.getElementById("clear-signature");
-      if (clear) clear.onclick = () => {
-        context.clearRect(0, 0, displayWidth, displayHeight);
-        canvas.dataset.signed = "false";
-        const error = document.getElementById("signature-error");
-        if (error) error.textContent = "";
-      };
     }
 
     function bindWorkflowModalEvents() {
-      document.querySelectorAll("[data-close-workflow]").forEach(b => b.onclick = () => document.getElementById("modal-root").innerHTML = "");
-      const prepare = document.querySelector("[data-confirm-prepare]");
-      if (prepare) prepare.onclick = () => {
-        const request = state.requests.find(r => String(r.id) === String(prepare.dataset.confirmPrepare));
-        let partial = false;
-        request.items.forEach((item,index) => {
-          const approved = Number(item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
-          item.RequestedQty = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
-          item.ApprovedQty = approved;
-          const previousReady = Number(item.IssueQty || 0);
-          item.IssueQty = Number(document.querySelector(`[data-prepare-qty="${index}"]`)?.value || 0);
-          item.CCDIssueRemark = document.querySelector(`[data-prepare-remark="${index}"]`)?.value || "";
-          const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
-          if (gift) gift.reserved = Math.max(0, reservedStock(gift) - previousReady + item.IssueQty);
-          if (item.IssueQty < approved) partial = true;
-        });
-        request.status = partial ? "partially ready for collection" : "ready for collection";
-        state.requestAudit[request.id] = [...(state.requestAudit[request.id] || []), { key: "prepared", title: partial ? "Partially prepared by CCD" : "Ready for collection", date: new Date().toISOString(), actor: state.account?.name || "CCD Officer", remark: document.getElementById("collection-instructions")?.value || "" }];
-        document.getElementById("modal-root").innerHTML = ""; notify("Request marked ready for collection"); render();
+      document.querySelectorAll("[data-close-workflow]").forEach(button => {
+        button.onclick = () => { document.getElementById("modal-root").innerHTML = ""; };
+      });
+
+      const prepareButton = document.querySelector("[data-confirm-prepare]");
+      if (prepareButton) prepareButton.onclick = async () => {
+        const request = state.requests.find(r => String(r.id) === String(prepareButton.dataset.confirmPrepare));
+        const instructions = document.getElementById("collection-instructions")?.value.trim() || "";
+        const items = (request.items || []).map((item,index) => ({
+          requestItemId: Number(item.id),
+          giftId: String(item.GiftID || ""),
+          giftName: String(item.GiftName || "Gift item"),
+          readyQty: Number(document.querySelector(`[data-prepare-qty="${index}"]`)?.value || 0),
+          ccdRemark: document.querySelector(`[data-prepare-remark="${index}"]`)?.value.trim() || ""
+        }));
+        if (items.some(item => !item.requestItemId)) {
+          notify("Request item IDs are missing. Update the Get Requests flow to return item ID.", "error"); return;
+        }
+        if (!items.some(item => item.readyQty > 0)) {
+          notify("At least one item must have a Ready quantity", "error"); return;
+        }
+        prepareButton.disabled = true;
+        prepareButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+        try {
+          const response = await fetch(PREPARE_COLLECTION_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id),
+              preparedByName: state.account?.name || "CCD Officer",
+              preparedByEmail: String(state.account?.username || "").trim().toLowerCase(),
+              collectionInstructions: instructions,
+              items
+            })
+          });
+          await readFlowResponse(response, "Preparation could not be recorded");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Request marked Ready for Collection");
+          await loadAll();
+        } catch (error) {
+          prepareButton.disabled = false;
+          prepareButton.textContent = "Confirm Ready for Collection";
+          notify(error.message || "Preparation could not be recorded", "error");
+        }
       };
-      const collect = document.querySelector("[data-confirm-collection]");
-      if (collect) collect.onclick = () => {
-        const request = state.requests.find(r => String(r.id) === String(collect.dataset.confirmCollection));
+
+      const collectButton = document.querySelector("[data-confirm-collection]");
+      if (collectButton) collectButton.onclick = async () => {
+        const request = state.requests.find(r => String(r.id) === String(collectButton.dataset.confirmCollection));
         const collectedBy = document.getElementById("collected-by")?.value.trim();
-        const collectionDateTime = document.getElementById("collection-datetime")?.value;
-        const acknowledgement = document.getElementById("collection-ack")?.checked;
-        const signatureCanvas = document.getElementById("collection-signature");
-        const signatureError = document.getElementById("signature-error");
-
-        if (!collectedBy || !collectionDateTime) {
-          notify("Complete the recipient name and collection date", "error");
-          return;
+        const localDateTime = document.getElementById("collection-datetime")?.value;
+        const acknowledged = Boolean(document.getElementById("collection-ack")?.checked);
+        if (!collectedBy || !localDateTime) { notify("Complete the recipient name and collection date", "error"); return; }
+        if (!acknowledged) { notify("Recipient acknowledgement is required", "error"); return; }
+        const collectionDateTime = new Date(localDateTime).toISOString();
+        const items = (request.items || []).map((item,index) => ({
+          requestItemId: Number(item.id),
+          giftId: String(item.GiftID || ""),
+          giftName: String(item.GiftName || "Gift item"),
+          collectedQty: Number(document.querySelector(`[data-collected-qty="${index}"]`)?.value || 0)
+        }));
+        if (items.some(item => !item.requestItemId)) {
+          notify("Request item IDs are missing. Update the Get Requests flow to return item ID.", "error"); return;
         }
-        if (!acknowledgement) {
-          notify("Recipient acknowledgement is required", "error");
-          return;
+        collectButton.disabled = true;
+        collectButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+        try {
+          const response = await fetch(CONFIRM_COLLECTION_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id), collectedBy, collectionDateTime, acknowledged, items
+            })
+          });
+          await readFlowResponse(response, "Collection could not be confirmed");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Gift collection confirmed");
+          await loadAll();
+        } catch (error) {
+          collectButton.disabled = false;
+          collectButton.textContent = "Confirm Collected";
+          notify(error.message || "Collection could not be confirmed", "error");
         }
-        if (!signatureCanvas || signatureCanvas.dataset.signed !== "true") {
-          if (signatureError) signatureError.textContent = "Recipient signature is required.";
-          notify("Recipient signature is required", "error");
-          return;
-        }
-
-        const signatureDataUrl = signatureCanvas.toDataURL("image/png");
-        let partial = false;
-        request.items.forEach((item,index) => {
-          const ready = Number(item.IssueQty ?? item.ApprovedQty ?? item.Quantity ?? item.Qty ?? 0);
-          item.CollectedQty = Number(document.querySelector(`[data-collected-qty="${index}"]`)?.value || 0);
-          if (item.CollectedQty < ready) partial = true;
-          const gift = state.gifts.find(g => g.name === item.GiftName || String(g.id) === String(item.GiftID));
-          if (gift) {
-            gift.quantity = Math.max(0, physicalStock(gift) - item.CollectedQty);
-            gift.reserved = Math.max(0, reservedStock(gift) - item.CollectedQty);
-          }
-        });
-        request.status = partial ? "partially collected" : "collected";
-        request.collectionReceipt = {
-          collectedBy,
-          collectionDateTime,
-          signatureDataUrl,
-          acknowledgement: true,
-          remark: ""
-        };
-        state.requestAudit[request.id] = [...(state.requestAudit[request.id] || []), {
-          key: "collected",
-          title: partial ? "Partial collection recorded" : "Collection confirmed",
-          date: collectionDateTime,
-          actor: state.account?.name || "CCD Officer",
-          remark: `Collected by ${collectedBy}`
-        }];
-        document.getElementById("modal-root").innerHTML = ""; notify("Collection recorded and local stock updated"); render();
       };
     }
-
 
     /* ---------------------------------------------------------------------- */
     /* Event Binding & Logic                                                   */
@@ -2514,11 +2556,11 @@ function loginViewHTML() {
 
 state.currentRequestData = {
 
-  requesterName: fd.get("requesterName"),
+  requesterName: state.account?.name || fd.get("requesterName"),
 
   department: fd.get("department"),
 
-  email: fd.get("email"),
+  email: String(state.account?.username || fd.get("email") || "").trim().toLowerCase(),
 
   company: fd.get("company"),
 
@@ -2528,12 +2570,10 @@ state.currentRequestData = {
 
   eventDate: fd.get("eventDate"),
 
-  reason: fd.get("reason"),
+  purpose: fd.get("reason"),
 
-  selectedItems: selectedIds.map(id => ({
-      name: state.gifts.find(g => g.id === id).name,
-      qty: state.selectedGifts[id]
-  }))
+  items: selectedIds.map(id => ({ giftId: id, giftName: state.gifts.find(g => g.id === id).name, quantity: Number(state.selectedGifts[id] || 0) })),
+  selectedItems: selectedIds.map(id => ({ name: state.gifts.find(g => g.id === id).name, qty: state.selectedGifts[id] }))
 };
 
 
@@ -2597,7 +2637,7 @@ const response = await fetch(
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify(state.currentRequestData)
+    body: JSON.stringify({ ...state.currentRequestData, selectedItems: undefined })
   }
 );
 
