@@ -1469,6 +1469,7 @@ const ALLOWED_USERS = [
     const CREATE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/211263645b7143bdb3bd5e63403993d7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lCGZhOtIJNZVc8jG1Mmp_u4DPEaB5026hm2yyoKE6rg";
     const PREPARE_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/29/workflows/d74784b90fe24c7687f6596c61560727/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-GrZW25-118Yg8o_NsWJFIkVDLG2yl74tE9E1FhT2fs";
     const CONFIRM_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/5468dcf16a6d47129f9a815d03c748bf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=daP-okqE2Wz49sZaU3iflLTZfkH16NH9CHFs_LB646E";
+    const DECLINE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/e9dea9691bbf4ad1a71f61e6e74f1271/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=P0sxcCX-KOjwQ3bhl5et6Cj-xi2pvuYiKMBdA-Byt9w";
 
     const GET_INVENTORY_API =
 "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/55b1aafd1f374e6397fcfd2f1c84080a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=otP6LULBv8RIfrOUlBCrWVcjP8IbwU_qJu9Vwl7Y73k";
@@ -2260,6 +2261,72 @@ function loginViewHTML() {
           </article>`;
         }).join("") : `<div class="text-center py-16 text-gray-400 text-sm">No matching requests found</div>`}</div>
       </div>`;
+    }
+
+    function declineGiftRequest(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) {
+        notify("Request could not be found", "error");
+        return;
+      }
+
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal" style="width:min(620px,100%)">
+        <div class="workflow-modal-head">
+          <div>
+            <p class="eyebrow">CCD Decision</p>
+            <h2>Decline Request</h2>
+          </div>
+          <button type="button" class="btn-ghost sm" data-close-decline>Close</button>
+        </div>
+        <p class="workflow-modal-copy">
+          Provide a clear reason for declining <strong>${esc(request.eventName || "this gift request")}</strong>.
+          The requester will receive the reason by email.
+        </p>
+        <label class="field">
+          <span class="field-label">CCD Decline Reason</span>
+          <textarea id="ccd-decline-reason" rows="5" maxlength="1000" placeholder="Example: The requested gifts are unavailable and no suitable alternative is currently available." required></textarea>
+          <span class="field-error" id="ccd-decline-error"></span>
+        </label>
+        <button type="button" class="btn-primary full" id="confirm-ccd-decline">Confirm Decline</button>
+      </div>`;
+
+      const closeButton = document.querySelector('[data-close-decline]');
+      if (closeButton) closeButton.onclick = () => { document.getElementById("modal-root").innerHTML = ""; };
+
+      const confirmButton = document.getElementById("confirm-ccd-decline");
+      if (confirmButton) confirmButton.onclick = async () => {
+        const reason = document.getElementById("ccd-decline-reason")?.value.trim() || "";
+        const errorField = document.getElementById("ccd-decline-error");
+        if (reason.length < 5) {
+          if (errorField) errorField.textContent = "Please provide a decline reason of at least 5 characters.";
+          return;
+        }
+
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+
+        try {
+          const response = await fetch(DECLINE_REQUEST_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id),
+              declineReason: reason,
+              actionByName: state.account?.name || "CCD Officer",
+              actionByEmail: String(state.account?.username || "").trim().toLowerCase()
+            })
+          });
+
+          await readFlowResponse(response, "The request could not be declined");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Request declined by CCD");
+          await loadAll();
+        } catch (error) {
+          confirmButton.disabled = false;
+          confirmButton.textContent = "Confirm Decline";
+          notify(error.message || "The request could not be declined", "error");
+        }
+      };
     }
 
     function readFlowResponse(response, fallbackMessage) {
