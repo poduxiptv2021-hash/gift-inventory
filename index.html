@@ -2440,12 +2440,13 @@ function giftFormHTML() {
         saveBtn.disabled = true;
         saveBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
 
-        try {
+       try {
           const response = await fetch(UPDATE_INVENTORY_API, {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
             body: JSON.stringify({
-              giftID: String(gift.id),
+              itemId: Number(gift.id), // Must be the SharePoint numeric row ID (1, 2, 3...)
+              giftID: String(gift.giftID || "G001"),
               giftName: name,
               category: category,
               stockQty: quantity,
