@@ -2089,7 +2089,10 @@ function giftFormHTML() {
               ${fieldHTML("newItemQty", "Stock Quantity", `<input type="number" name="newItemQty" min="0" required value="50" />`)}
               ${fieldHTML("newItemLow", "Low Stock Alert Level", `<input type="number" name="newItemLow" min="0" required value="10" />`)}
             </div>
-            ${fieldHTML("newItemImage", "Image URL", `<input name="newItemImage" placeholder="https://..." />`)}
+            <label class="field">
+              <span class="field-label">Upload Image File</span>
+              <input type="file" id="newItemFile" accept="image/*" class="file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:bg-black file:text-white hover:file:bg-gray-800" />
+            </label>
             <div class="flex justify-end gap-3 mt-4">
               <button type="button" class="btn-ghost sm" id="cancel-new-gift">Cancel</button>
               <button type="submit" class="btn-primary sm brand-submit">Save Item</button>
@@ -3034,7 +3037,20 @@ try {
             const category = fd.get("newItemCategory");
             const stockQty = Number(fd.get("newItemQty") || 0);
             const lowStockQty = Number(fd.get("newItemLow") || 0);
-            const imageUrl = fd.get("newItemImage")?.trim() || "";
+            
+            const fileInput = document.getElementById("newItemFile");
+            let imageBase64 = "";
+            let fileName = "";
+
+            if (fileInput && fileInput.files[0]) {
+              const file = fileInput.files[0];
+              fileName = file.name;
+              imageBase64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.readAsDataURL(file);
+              });
+            }
 
             if (!giftName || !category) {
               notify("Please fill in all required fields", "error");
@@ -3047,17 +3063,25 @@ try {
               submitBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
             }
 
+            // Generate sequential GiftID (G001, G002, etc.) automatically
+            const maxNum = state.gifts.reduce((max, g) => {
+              const match = String(g.giftID || "").match(/G(\d+)/i);
+              return match ? Math.max(max, parseInt(match[1], 10)) : max;
+            }, 0);
+            const nextGiftID = `G${String(maxNum + 1).padStart(3, '0')}`;
+
             try {
               const response = await fetch(ADD_INVENTORY_API, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
                 body: JSON.stringify({
-                  giftID: Date.now().toString(),
+                  giftID: nextGiftID,
                   giftName,
                   category,
                   stockQty,
                   lowStockQty,
-                  imageUrl
+                  imageFileName: fileName,
+                  imageBase64: imageBase64
                 })
               });
               await readFlowResponse(response, "Failed to create inventory item");
