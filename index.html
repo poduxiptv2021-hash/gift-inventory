@@ -3070,7 +3070,7 @@ try {
             }, 0);
             const nextGiftID = `G${String(maxNum + 1).padStart(3, '0')}`;
 
-            try {
+           try {
               const response = await fetch(ADD_INVENTORY_API, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Accept": "application/json" },
@@ -3080,7 +3080,7 @@ try {
                   category,
                   stockQty,
                   lowStockQty,
-                  imageFileName: fileName,
+                  imageFileName: fileName, // Must match the token expected by Power Automate
                   imageBase64: imageBase64
                 })
               });
