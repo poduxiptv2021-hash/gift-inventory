@@ -1,698 +1,3251 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHB iGift Portal - Complete System</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        phb: { green: '#8CBE21', darkGreen: '#6B9417', black: '#111111', gray: '#F8F9FA', border: '#E5E7EB' }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F8F9FA; color: #111111; }
-        .fade-in { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-        .ms-logo { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px; width: 18px; height: 18px; }
-        .ms-logo span { display: block; width: 8.5px; height: 8.5px; }
-        .ms-red { background-color: #f25022; } .ms-green { background-color: #7fba00; }
-        .ms-blue { background-color: #00a4ef; } .ms-yellow { background-color: #ffb900; }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-phb-green selection:text-white">
 
-    <!-- Top Navigation Header -->
-    <header class="w-full bg-white border-b border-phb-border py-4 px-6 md:px-12 flex justify-between items-center shadow-sm">
-        <div class="flex items-center space-x-3">
-            <div class="bg-phb-black text-white p-2 rounded-lg flex items-center justify-center w-9 h-9 font-bold text-lg shadow-sm">
-                <i class="fa-solid fa-gift text-base"></i>
-            </div>
-            <div>
-                <span class="font-extrabold tracking-wider text-lg text-phb-black block leading-none">PHB</span>
-                <span class="text-[10px] tracking-widest text-gray-500 uppercase font-semibold">Pelaburan Hartanah Berhad</span>
-            </div>
-            <div class="h-6 w-[1px] bg-gray-300 mx-2 hidden sm:block"></div>
-            <span class="text-sm font-semibold text-gray-700 hidden sm:inline-block tracking-wide">iGIFT PORTAL</span>
-        </div>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>iGIFT — Corporate Gift Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@latest/lib/msal-browser.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#1b1b1b",
+            "on-secondary-container": "#616363",
+            "on-background": "#1b1c1c",
+            "on-error": "#ffffff",
+            "on-secondary-fixed": "#1a1c1c",
+            "secondary-container": "#dfe0e0",
+            "tertiary-fixed": "#e2e2e2",
+            "tertiary-container": "#1a1c1c",
+            "outline-variant": "#cfc4c5",
+            "on-primary-fixed": "#1b1b1b",
+            "on-primary-container": "#848484",
+            "on-secondary-fixed-variant": "#454747",
+            "surface-dim": "#dbdad9",
+            "surface-container-high": "#e9e8e7",
+            "primary": "#000000",
+            "on-primary-fixed-variant": "#474747",
+            "surface-container": "#efeded",
+            "secondary-fixed": "#e2e2e2",
+            "on-secondary": "#ffffff",
+            "on-error-container": "#93000a",
+            "secondary": "#5d5f5f",
+            "on-tertiary-fixed-variant": "#454747",
+            "error": "#ba1a1a",
+            "surface-tint": "#5e5e5e",
+            "inverse-surface": "#303031",
+            "primary-fixed": "#e2e2e2",
+            "surface-variant": "#e3e2e2",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-highest": "#e3e2e2",
+            "on-surface-variant": "#4c4546",
+            "outline": "#7e7576",
+            "inverse-primary": "#c6c6c6",
+            "background": "#fbf9f9",
+            "on-tertiary-fixed": "#1a1c1c",
+            "surface-container-low": "#f5f3f3",
+            "secondary-fixed-dim": "#c6c6c7",
+            "on-tertiary-container": "#838484",
+            "tertiary": "#000000",
+            "primary-fixed-dim": "#c6c6c6",
+            "max-w-6xl": "72rem",
+            "tertiary-fixed-dim": "#c6c6c6",
+            "surface-bright": "#fbf9f9",
+            "on-primary": "#ffffff",
+            "on-surface": "#1b1c1c",
+            "inverse-on-surface": "#f2f0f0",
+            "error-container": "#ffdad6",
+            "on-tertiary": "#ffffff",
+            "surface": "#fbf9f9",
+            "brand-green": "#2F6F62",
+            "brand-green-tint": "rgba(47, 111, 98, 0.06)",
+            "brand-red": "#A23B4C"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "stack-sm": "8px",
+            "stack-lg": "32px",
+            "container-max": "1280px",
+            "gutter": "24px",
+            "stack-md": "16px",
+            "margin-mobile": "16px",
+            "margin-desktop": "64px",
+            "stack-xl": "64px"
+          },
+          "fontFamily": {
+            "body-md": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Montserrat"],
+            "headline-lg": ["Montserrat"],
+            "headline-xl": ["Montserrat"],
+            "body-lg": ["Hanken Grotesk"],
+            "label-sm": ["Hanken Grotesk"],
+            "headline-md": ["Montserrat"],
+            "label-bold": ["Hanken Grotesk"],
+            "sans": ["Hanken Grotesk", "sans-serif"],
+            "headline": ["Montserrat", "sans-serif"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "fontWeight": "400" }],
+            "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+            "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "fontWeight": "400" }],
+            "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+            "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "700" }],
+            "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "700" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { background: #fbf9f9; color: #1b1c1c; font-family: 'Hanken Grotesk', sans-serif; -webkit-font-smoothing: antialiased; }
+    h1, h2, h3, .nav-pill, .brand-text, .eyebrow, .btn-primary, .admin-tab { font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
+    .spin { animation: spin 1s linear infinite; display:inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    button { cursor: pointer; }
+    svg { display:block; }
 
-        <div id="nav-user-info" class="hidden items-center space-x-4">
-            <div class="text-right hidden sm:block">
-                <p id="nav-user-name" class="text-xs font-bold uppercase tracking-wider text-gray-800"></p>
-                <p id="nav-user-email" class="text-[11px] text-gray-500"></p>
-            </div>
-            <span id="nav-user-role-badge" class="px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase rounded-full bg-gray-100 text-gray-700 border border-gray-200"></span>
-            <button onclick="handleSignOut()" class="border border-red-200 text-red-600 hover:bg-red-50 text-xs font-bold px-3 py-1.5 rounded transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span>SIGN OUT</span>
-            </button>
-        </div>
-    </header>
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding: 24px 40px; border-bottom: 1px solid #e2e2e2; background: #ffffff; }
+    .brand { display:flex; align-items:center; gap:12px; background:none; border:none; padding:0; }
+    .brand-mark { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; background: #000000; color: #ffffff; }
+    .brand-text { font-weight:700; font-size:14px; color: #000000; }
+    .brand-text em { font-style: normal; color: #7e7576; font-weight: 400; font-size: 11px; margin-left: 4px; }
 
-    <!-- Main Content Container -->
-    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
-        
-        <!-- STEP 1: LANDING VIEW -->
-        <div id="view-landing" class="w-full max-w-4xl fade-in">
-            <div class="text-center mb-10">
-                <div class="inline-flex items-center space-x-2 bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm mb-4">
-                    <span class="w-2.5 h-2.5 rounded-full bg-phb-green animate-pulse"></span>
-                    <span class="text-xs font-semibold text-gray-600 tracking-wider uppercase">Corporate Communications Department</span>
-                </div>
-                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-phb-black mb-2">iGIFT PORTAL</h1>
-                <p class="text-sm text-gray-500 max-w-lg mx-auto">Centralized corporate gift request and inventory management platform for PHB employees.</p>
-            </div>
+    .topnav { display:flex; gap:32px; }
+    .nav-pill { font-size:12px; font-weight:600; padding:4px 0; border-bottom: 2px solid transparent; color: #7e7576; transition: all .2s; background: transparent; }
+    .nav-pill:hover { color: #000000; }
+    .nav-pill.active { color: #000000; border-color: #000000; }
 
-            <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                <div class="bg-white rounded-2xl p-7 border border-phb-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">EMPLOYEE ACCESS</span>
-                        <h2 class="text-xl font-extrabold text-phb-black mt-1 mb-2">USER</h2>
-                        <p class="text-xs text-gray-500 leading-relaxed mb-6">Open My Requests to track requests submitted using your account, or select New Request to submit new request.</p>
-                    </div>
-                    <button onclick="openMSAuthModal('USER')" class="w-full bg-phb-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider uppercase transition shadow">
-                        LOGIN AS USER
-                    </button>
-                </div>
+    .main-area { max-width: 1280px; margin: 0 auto; padding: 64px 40px; }
+    .loading-block { display:flex; align-items:center; gap:10px; justify-content:center; padding: 80px 0; color: #7e7576; font-size: 14px; }
 
-                <div class="bg-white rounded-2xl p-7 border border-phb-border shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                    <div>
-                        <span class="text-[10px] font-bold tracking-widest text-gray-400 uppercase">CCD ACCESS</span>
-                        <h2 class="text-xl font-extrabold text-phb-black mt-1 mb-2">ADMIN</h2>
-                        <p class="text-xs text-gray-500 leading-relaxed mb-6">MView the CCD dashboard, manage inventory, review approved requests and record gift issuance.</p>
-                    </div>
-                    <button onclick="openMSAuthModal('ADMIN')" class="w-full bg-phb-black hover:bg-gray-800 text-white font-bold py-3 px-4 rounded-xl text-xs tracking-wider uppercase transition shadow">
-                        LOGIN AS ADMIN
-                    </button>
-                </div>
-            </div>
-        </div>
+    .card { background: #ffffff; border: 1px solid #e2e2e2; padding: 32px; }
+    .hero-tag { margin-bottom: 48px; }
+    .eyebrow { font-size:10px; font-weight:700; color: #000000; margin-bottom: 12px; }
+    .hero-tag h1 { font-size:32px; font-weight:700; line-height:1.2; margin-bottom: 16px; color: #000000; }
+    .hero-sub { color: #4c4546; font-size: 15px; line-height:1.6; max-width: 600px; margin:0; }
 
-        <!-- STEP 2: MS SSO SIMULATION MODAL -->
-        <div id="modal-ms-auth" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md p-8 fade-in relative">
-                <button onclick="closeMSAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+    .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .field { display:flex; flex-direction:column; gap:8px; font-size:12px; margin-bottom:20px; }
+    .field-label { font-family: 'Montserrat', sans-serif; font-weight:700; text-transform: uppercase; color: #000000; letter-spacing: 0.05em; }
+    .field input, .field select, .field textarea {
+      font-family:'Hanken Grotesk'; font-size:14px; padding:12px; border:1px solid #e2e2e2; background:#fff; color: #000; outline:none; width:100%; transition: all .2s;
+    }
 
-                <div class="flex items-center space-x-3 mb-6">
-                    <div class="ms-logo"><span class="ms-red"></span><span class="ms-green"></span><span class="ms-blue"></span><span class="ms-yellow"></span></div>
-                    <span class="font-semibold text-gray-600 text-base">Microsoft</span>
-                </div>
+    /* Form fields background logic */
+    .field input:placeholder-shown,
+    .field textarea:placeholder-shown,
+    .field select[value=""],
+    #event-date-input:not(.has-value) {
+      background-color: #ffffff !important;
+    }
 
-                <h3 class="text-xl font-bold text-gray-900 mb-1">Sign in</h3>
-                <p class="text-xs text-gray-500 mb-6">Use your PHB Microsoft 365 account to continue.</p>
+    /* Standard filled background: Brand Green Tint */
+    .field input:not(:placeholder-shown):not(.gift-qty-input-field), 
+    .field textarea:not(:placeholder-shown),
+    .field select:not([value=""]):not([value=""]),
+    #event-date-input.has-value {
+      background-color: rgba(47, 111, 98, 0.06) !important;
+    }
 
-                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Detected Active Account</span>
-                    <div class="flex items-center space-x-3">
-                        <div id="auth-avatar" class="w-10 h-10 rounded-full bg-phb-green text-white font-bold flex items-center justify-center text-sm shadow-sm">HH</div>
-                        <div class="overflow-hidden">
-                            <p id="auth-display-name" class="text-sm font-bold text-gray-800 truncate">Nur Haliza Haron</p>
-                            <p id="auth-display-email" class="text-xs text-gray-500 truncate">haliza@phb.com.my</p>
-                        </div>
-                    </div>
-                </div>
+    /* CRITICAL: Gift catalog quantity inputs MUST remain white at all times */
+    .gift-qty-input input.gift-qty-input-field {
+      background-color: #ffffff !important;
+    }
 
-                <button onclick="completeMSAuthentication()" class="w-full bg-[#0067b8] hover:bg-[#005da6] text-white font-semibold py-2.5 px-4 rounded-lg text-sm transition shadow-sm">
-                    Sign in with Microsoft
-                </button>
-            </div>
-        </div>
+    /* Standardized focus state for ALL inputs (brand red) */
+    .field input:focus, 
+    .field select:focus, 
+    .field textarea:focus { 
+      border-color: #A23B4C !important; 
+      box-shadow: 0 0 0 4px rgba(162, 59, 76, 0.2) !important;
+      background-color: #ffffff !important; 
+    }
 
-        <!-- STEP 3: MAIN AUTHENTICATED PORTAL VIEW -->
-        <div id="view-dashboard" class="w-full max-w-6xl fade-in hidden space-y-6">
-            <div class="border-b border-gray-200 flex justify-between items-center">
-                <div class="flex space-x-8 text-xs font-bold tracking-wider uppercase" id="tab-bar"></div>
-                <button onclick="refreshData()" class="border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-xs font-bold tracking-wider uppercase transition flex items-center space-x-1.5 mb-2">
-                    <i class="fa-solid fa-arrows-rotate"></i><span>REFRESH</span>
-                </button>
-            </div>
+    .field-error { color: #ba1a1a; font-size:11px; font-weight:600; margin-top: 4px; text-transform: uppercase; }
 
-            <!-- DYNAMIC TAB PANELS -->
-            <div id="tab-content-container"></div>
-        </div>
+    .gift-picker { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap:24px; }
+    .gift-option { display:flex; flex-direction:column; border:1px solid #e2e2e2; background:#fff; transition: all .2s; position:relative; }
+    .gift-option:hover { border-color: #2F6F62; }
+    .gift-option.selected { border: 2px solid #2F6F62; background: rgba(47, 111, 98, 0.06); }
+    .gift-option-top { display:flex; flex-direction:column; width: 100%; text-align: left; }
+    .gift-thumb { width:100%; height:200px; background: #f5f3f3; display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; border-bottom: 1px solid #e2e2e2; }
+    .gift-thumb img { width:100%; height:100%; object-fit:cover; }
+    .gift-option-text { display:flex; flex-direction:column; font-size:13px; padding: 16px; }
+    .gift-option-text strong { font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 13px; letter-spacing: 0.02em; line-height: 1.4; }
+    .gift-qty-input { display: none; padding: 0 16px 16px 16px; }
+    .gift-option.selected .gift-qty-input { display: block; }
 
-        <!-- ADMIN: NEW ITEM MODAL -->
-        <div id="modal-new-item" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md p-6 fade-in">
-                <h3 class="text-lg font-bold mb-4">Add New Inventory Item</h3>
-                <div class="space-y-4 text-xs">
-                    <div><label class="font-bold text-gray-500 uppercase block mb-1">Item Name</label><input type="text" id="input-item-name" placeholder="e.g. Executive Plaque" class="w-full p-3 border rounded-xl"></div>
-                    <div><label class="font-bold text-gray-500 uppercase block mb-1">Category</label><input type="text" id="input-item-cat" placeholder="e.g. MEMENTO" class="w-full p-3 border rounded-xl"></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><label class="font-bold text-gray-500 uppercase block mb-1">Physical Stock</label><input type="number" id="input-item-stock" value="50" class="w-full p-3 border rounded-xl"></div>
-                        <div><label class="font-bold text-gray-500 uppercase block mb-1">Low Stock Alert Level</label><input type="number" id="input-item-low" value="10" class="w-full p-3 border rounded-xl"></div>
-                    </div>
-                    <label>Image URL</label>
-<input
- type="text"
- id="input-item-image-url"
- placeholder="Paste OneDrive or Google Drive Image URL"
- class="w-full p-3 border rounded-xl">
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button onclick="closeNewItemModal()" class="px-4 py-2 border rounded-xl text-xs font-bold">Cancel</button>
-                    <button onclick="saveNewItem()" class="px-5 py-2 bg-phb-black text-white rounded-xl text-xs font-bold hover:bg-gray-800">Save Item</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- ADMIN: PREPARE FOR COLLECTION MODAL -->
-        <div id="modal-prep-collection" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-lg p-6 fade-in">
-                <div class="flex justify-between items-center border-b pb-3 mb-4">
-                    <div>
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">CCD PREPARATION</span>
-                        <h3 class="text-base font-extrabold text-gray-900 uppercase">PREPARE FOR COLLECTION</h3>
-                    </div>
-                    <button onclick="closePrepModal()" class="text-xs font-bold px-3 py-1 border rounded-lg">CLOSE</button>
-                </div>
-                <p class="text-xs text-gray-500 mb-4">Confirm quantity CCD can prepare. Stock becomes reserved until final collection.</p>
-                <div id="prep-items-list" class="space-y-3 mb-4"></div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">COLLECTION INSTRUCTIONS</label>
-                    <textarea id="prep-instructions" rows="2" placeholder="Collection location, contact person and collection period" class="w-full p-3 border rounded-xl text-xs"></textarea>
-                </div>
-                <button onclick="confirmReadyForCollection()" class="w-full mt-4 bg-phb-black hover:bg-gray-800 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider">
-                    CONFIRM READY FOR COLLECTION
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="w-full bg-white border-t border-phb-border py-4 px-6 text-center text-xs text-gray-400">
-        <p>© 2026 Pelaburan Hartanah Berhad (PHB). All rights reserved.</p>
-    </footer>
-
-    <script>
-        const PERSONAS = {
-            USER: { fullName: "Nur Haliza Haron", email: "haliza@phb.com.my", department: "Marketing", role: "USER" },
-            ADMIN: { fullName: "Nur Haliza Haron", email: "haliza@phb.com.my", department: "Corporate Communications", role: "ADMIN" }
-        };
-
-      // START OF REPLACEMENT
-        let inventory = []; // Starts empty, populated live from SharePoint
-
-        // Live SharePoint Inventory Fetch Function
-        async function fetchInventoryFromSharePoint() {
-            const CREATE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/26/workflows/269133e65fa844c98a6049bc6a90a68e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1tJ6jzVc5HntEhKEF0IJZQbYywToHbgelQ33J6BRSdU";
-            const ADD_INVENTORY_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/ef5522727cdb4e019632b33316b3dac2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lzC-t6crcoP5__eiC9sH2QucE10nQotmhpn3kfYPoxQ"; // Your live SharePoint site URL
-            const GET_INVENTORY_API="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/26/workflows/269133e65fa844c98a6049bc6a90a68e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=1tJ6jzVc5HntEhKEF0IJZQbYywToHbgelQ33J6BRSdU";
-
-            try {
-      const response = await fetch(GET_INVENTORY_API,{
-    method:"POST",
-    headers:{
-        "Content-Type":"application/json"
-    },
-    body: JSON.stringify({})
-});
-                const data = await response.json();
-                
-                // Map SharePoint list rows into your app's inventory array structure
-                inventory = data.d.results.map(item => ({
-                    id: item.ID,
-                    name: item.Title,
-                    category: item.Category || 'GENERAL',
-                    physical: item.Physical || 0,
-                    reserved: item.Reserved || 0,
-                    lowStock: item.LowStock || 5,
-                    image: item.ImageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400'
-                }));
-                
-                renderContent(); // Refresh UI with live data
-            } catch (error) {
-                console.error("Error fetching inventory from SharePoint:", error);
-            }
-        }
-        // END OF REPLACEMENT
-
-        let requests = [
-            {
-                id: "REQ-2026-001",
-                title: "SIGNING CEREMONY",
-                requester: "Local Test User",
-                submitted: "11/11/2026 11:13 AM",
-                date: "24/11/2026",
-                department: "Legal & Corporate",
-                status: "APPROVED",
-                purpose: "test",
-                items: [
-                    { name: "PHB Non-Woven Bag (White)", requested: 2, ready: "NA", collected: "NA" },
-                    { name: "Large Wooden Plaque", requested: 2, ready: "NA", collected: "NA" },
-                    { name: "Small Wooden Plaque", requested: 2, ready: "NA", collected: "NA" }
-                ]
-            },
-            {
-                id: "REQ-2026-002",
-                title: "PHB FUNLYMPIC",
-                requester: "Nur Haliza Haron",
-                submitted: "11/11/2026 11:13 AM",
-                date: "23/11/2026",
-                department: "Marketing",
-                status: "PENDING",
-                purpose: "Please collect pada 19 Nov 2026, 5 petang",
-                approvalNote: "Pending Superior approval",
-                approvalSubnote: "The approval request has been sent to your Superior via Microsoft Teams.",
-                items: [
-                    { name: "Small Wooden Plaque", requested: 4 },
-                    { name: "Large Wooden Plaque", requested: 2 }
-                ]
-            }
-        ];
-
-        let activePersona = null;
-        let activeTab = '';
-        let adminRequestFilter = 'ALL';
-        let cart = {};
-        let activePrepRequestId = null;
-
-        function openMSAuthModal(role) {
-            activePersona = PERSONAS[role];
-            document.getElementById('auth-display-name').innerText = activePersona.fullName;
-            document.getElementById('auth-display-email').innerText = activePersona.email;
-            document.getElementById('modal-ms-auth').classList.remove('hidden');
-        }
-
-        function closeMSAuthModal() { document.getElementById('modal-ms-auth').classList.add('hidden'); }
-
-        function completeMSAuthentication() {
-            closeMSAuthModal();
-            document.getElementById('view-landing').classList.add('hidden');
-            document.getElementById('view-dashboard').classList.remove('hidden');
-            document.getElementById('nav-user-info').classList.remove('hidden');
-            document.getElementById('nav-user-info').classList.add('flex');
-            document.getElementById('nav-user-name').innerText = activePersona.fullName;
-            document.getElementById('nav-user-email').innerText = activePersona.email;
-            document.getElementById('nav-user-role-badge').innerText = activePersona.role;
-
-            activeTab = activePersona.role === 'ADMIN' ? 'DASHBOARD' : 'MY_REQUESTS';
-            renderTabs();
-            renderContent();
-        }
-
-        function handleSignOut() {
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('nav-user-info').classList.add('hidden');
-            document.getElementById('view-landing').classList.remove('hidden');
-            activePersona = null;
-        }
-
-        function renderTabs() {
-            const tabBar = document.getElementById('tab-bar');
-            if (activePersona.role === 'ADMIN') {
-                tabBar.innerHTML = `
-                    <button onclick="setTab('DASHBOARD')" class="py-3 border-b-2 ${activeTab === 'DASHBOARD' ? 'border-black text-black' : 'border-transparent text-gray-400'}">DASHBOARD</button>
-                    <button onclick="setTab('REQUESTS')" class="py-3 border-b-2 ${activeTab === 'REQUESTS' ? 'border-black text-black' : 'border-transparent text-gray-400'}">REQUESTS</button>
-                    <button onclick="setTab('INVENTORY')" class="py-3 border-b-2 ${activeTab === 'INVENTORY' ? 'border-black text-black' : 'border-transparent text-gray-400'}">INVENTORY</button>
-                `;
-            } else {
-                tabBar.innerHTML = `
-                    <button onclick="setTab('MY_REQUESTS')" class="py-3 border-b-2 ${activeTab === 'MY_REQUESTS' ? 'border-black text-black' : 'border-transparent text-gray-400'}">MY REQUESTS</button>
-                    <button onclick="setTab('NEW_REQUEST')" class="py-3 border-b-2 ${activeTab === 'NEW_REQUEST' ? 'border-black text-black' : 'border-transparent text-gray-400'}">NEW REQUEST</button>
-                `;
-            }
-        }
-
-        function setTab(tab) { activeTab = tab; renderTabs(); renderContent(); }
-        function setAdminFilter(filter) { adminRequestFilter = filter; renderContent(); }
-
-        function renderContent() {
-            const container = document.getElementById('tab-content-container');
-            container.innerHTML = '';
-
-            if (activeTab === 'DASHBOARD') {
-                let totalStock = inventory.reduce((sum, item) => sum + item.physical, 0);
-                let pendingCount = requests.filter(r => r.status === 'PENDING').length;
-                let issuedCount = requests.filter(r => r.status === 'READY FOR COLLECTION').length;
-
-                container.innerHTML = `
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-4 gap-6">
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm"><div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">ACTIVE INVENTORY</div><div class="text-3xl font-black">${inventory.length}</div></div>
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm"><div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">STOCK VOLUME</div><div class="text-3xl font-black">${totalStock}</div></div>
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm"><div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">PENDING APPROVAL</div><div class="text-3xl font-black">${pendingCount}</div></div>
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm"><div class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">PENDING ISSUANCE</div><div class="text-3xl font-black">${issuedCount}</div></div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-6">
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm">
-                                <h3 class="font-bold text-xs uppercase tracking-wider mb-4">STOCK ANALYSIS</h3>
-                                <div class="space-y-3">
-                                    ${inventory.map(i => `
-                                        <div>
-                                            <div class="flex justify-between text-xs font-semibold mb-1"><span>${i.name}</span><span>${i.physical} units</span></div>
-                                            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden"><div class="bg-emerald-800 h-full rounded-full" style="width: ${(i.physical / 120) * 100}%"></div></div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <div class="bg-white p-6 rounded-2xl border shadow-sm flex flex-col items-center justify-center text-center">
-                                <h3 class="font-bold text-xs uppercase tracking-wider mb-6 w-full text-left">REQUEST DISTRIBUTION</h3>
-                                <div class="w-44 h-44 rounded-full border-[18px] border-emerald-800 border-t-amber-500 border-r-black flex items-center justify-center mb-4"><span class="text-xs font-bold text-gray-500">Analytics</span></div>
-                                <div class="flex flex-wrap justify-center gap-4 text-[11px] font-semibold text-gray-600">
-                                    <span class="flex items-center space-x-1.5"><span class="w-3 h-3 bg-amber-500 rounded-sm"></span><span>pending</span></span>
-                                    <span class="flex items-center space-x-1.5"><span class="w-3 h-3 bg-emerald-800 rounded-sm"></span><span>approved</span></span>
-                                    <span class="flex items-center space-x-1.5"><span class="w-3 h-3 bg-black rounded-sm"></span><span>collected</span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else if (activeTab === 'REQUESTS') {
-                let filters = ['ALL', 'PENDING', 'APPROVED', 'READY FOR COLLECTION', 'COLLECTED', 'REJECTED', 'DECLINED'];
-                let filterHtml = filters.map(f => `
-                    <button onclick="setAdminFilter('${f}')" class="text-xs font-bold pb-2 border-b-2 ${adminRequestFilter === f ? 'border-black text-black' : 'border-transparent text-gray-400'}">${f}</button>
-                `).join('');
-
-                let filteredReqs = requests.filter(r => adminRequestFilter === 'ALL' || r.status === adminRequestFilter);
-
-                let reqListHtml = filteredReqs.length === 0 ? `<div class="bg-white p-8 rounded-2xl border text-center text-gray-400 text-xs font-bold uppercase">No requests found under ${adminRequestFilter}</div>` : 
-                    filteredReqs.map(r => `
-                        <div class="bg-white p-6 rounded-2xl border space-y-4 shadow-sm">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase">SUBMITTED BY ${r.requester} · ${r.date}</span>
-                                    <h3 class="text-base font-extrabold uppercase mt-0.5">${r.title}</h3>
-                                    <p class="text-xs text-gray-400">${r.department} · PHB HQ</p>
-                                </div>
-                                <span class="px-3 py-1 text-[10px] font-bold border rounded-full ${r.status === 'APPROVED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'}">${r.status}</span>
-                            </div>
-                            <div class="bg-gray-50 p-3 rounded-xl text-xs"><strong>PURPOSE:</strong> ${r.purpose}</div>
-                            <div class="space-y-2">
-                                ${r.items.map(i => `
-                                    <div class="bg-gray-50 p-3 rounded-xl flex justify-between text-xs">
-                                        <span class="font-bold">${i.name}</span>
-                                        <span class="text-gray-500">Requested <strong>${i.requested}</strong> | Ready <strong>${i.ready || 'NA'}</strong> | Collected <strong>${i.collected || 'NA'}</strong></span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            <div class="flex justify-end space-x-3 pt-2">
-                                <button onclick="openPrepModal('${r.id}')" class="bg-black text-white text-xs font-bold px-4 py-2 rounded-xl">PREPARE FOR COLLECTION</button>
-                                <button onclick="updateReqStatus('${r.id}', 'DECLINED')" class="border border-red-200 text-red-600 text-xs font-bold px-4 py-2 rounded-xl">DECLINE</button>
-                            </div>
-                        </div>
-                    `).join('');
-
-                container.innerHTML = `
-                    <div class="space-y-6">
-                        <div class="flex space-x-6 border-b pb-2 overflow-x-auto">${filterHtml}</div>
-                        <div class="space-y-4">${reqListHtml}</div>
-                    </div>
-                `;
-            } else if (activeTab === 'INVENTORY') {
-                let cardsHtml = inventory.map((item, idx) => {
-                    let avail = item.physical - item.reserved;
-                    let isLow = avail <= item.lowStock;
-                    return `
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between">
-                            <div>
-                              <div>
-    <img src="${item.image}" class="w-full h-56 object-contain rounded-xl bg-gray-100 mb-3">
-
-    ${isLow ? `
-    <div class="mb-2">
-        <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">
-            LOW STOCK
-        </span>
-    </div>
-    ` : ''}
-</div>
-                                <h3 class="font-bold text-xs uppercase">${item.name}</h3>
-                                <p class="text-[10px] text-gray-400 uppercase mb-3">${item.category}</p>
-                            </div>
-                            <div>
-                                <div class="grid grid-cols-3 gap-2 text-center text-xs mb-3">
-                                    <div class="border p-2 rounded-lg"><div class="text-[9px] text-gray-400">PHYSICAL</div><strong>${item.physical}</strong></div>
-                                    <div class="border p-2 rounded-lg"><div class="text-[9px] text-gray-400">RESERVED</div><strong>${item.reserved}</strong></div>
-                                    <div class="border border-green-200 bg-green-50/50 p-2 rounded-lg text-green-700"><div class="text-[9px]">AVAILABLE</div><strong>${avail}</strong></div>
-                                </div>
-                                <div class="flex justify-end space-x-3 text-xs font-bold">
-                                    <button onclick="adjustItemStock(${idx})" class="text-gray-600">ADJUST</button>
-                                    <button onclick="removeItem(${idx})" class="text-red-500">REMOVE</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                container.innerHTML = `
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-xl font-extrabold">INVENTORY MANAGEMENT</h1>
-                        <button onclick="openNewItemModal()" class="bg-black text-white px-4 py-2 rounded-xl text-xs font-bold">+ NEW ITEM</button>
-                    </div>
-                    <div class="grid grid-cols-3 gap-6">${cardsHtml}</div>
-                `;
-            } else if (activeTab === 'NEW_REQUEST') {
-                let catalogHtml = inventory.map(item => {
-                    let avail = item.physical - item.reserved;
-                    let selectedQty = cart[item.id] || 0;
-                    return `
-                        <div class="bg-white border rounded-xl p-4 flex flex-col justify-between">
-                            <div>
-                                <img src="${item.image}" class="w-full h-36 object-cover rounded-lg mb-2">
-                                <div class="text-[9px] font-bold text-gray-400 uppercase">${item.category}</div>
-                                <div class="font-bold text-xs uppercase mb-1">${item.name}</div>
-                                <div class="text-[10px] text-gray-400 mb-3">${avail} available</div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold">Qty:</span>
-                                <div class="flex items-center space-x-2">
-                                    <button onclick="changeCartQty(${item.id}, -1)" class="w-6 h-6 bg-gray-100 font-bold rounded">-</button>
-                                    <span class="text-xs font-bold">${selectedQty}</span>
-                                    <button onclick="changeCartQty(${item.id}, 1)" class="w-6 h-6 bg-gray-100 font-bold rounded">+</button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                container.innerHTML = `
-                    <div class="space-y-6">
-                        <div class="bg-white p-6 rounded-2xl border space-y-4">
-                            <h3 class="font-bold text-xs text-gray-400 uppercase">EVENT DETAILS</h3>
-                            <div class="grid grid-cols-2 gap-4 text-xs">
-                                <div><label class="font-bold block mb-1">NAME</label><input type="text" value="${activePersona.fullName}" disabled class="w-full p-3 bg-gray-50 border rounded-xl"></div>
-                                <div><label class="font-bold block mb-1">DEPARTMENT</label><input type="text" id="req-dept" value="${activePersona.department}" class="w-full p-3 border rounded-xl"></div>
-                                <div><label class="font-bold block mb-1">EMAIL</label><input type="text" value="${activePersona.email}" disabled class="w-full p-3 bg-gray-50 border rounded-xl"></div>
-                                <div><label class="font-bold block mb-1">EVENT NAME</label><input type="text" id="req-event" placeholder="Signing Ceremony" class="w-full p-3 border rounded-xl"></div>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-2xl border">
-                            <h3 class="font-bold text-xs text-gray-400 uppercase mb-4">CATALOG</h3>
-                            <div class="grid grid-cols-3 gap-6">${catalogHtml}</div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-6">
-                            <div class="col-span-2 bg-white p-6 rounded-2xl border">
-                                <h3 class="font-bold text-xs text-gray-400 uppercase mb-2">PURPOSE</h3>
-                                <textarea id="req-purpose" rows="4" placeholder="Briefly describe usage plan..." class="w-full p-3 border rounded-xl text-xs"></textarea>
-                            </div>
-                            <div class="bg-black text-white p-6 rounded-2xl flex flex-col justify-between">
-                                <div>
-                                    <h3 class="font-bold text-xs uppercase border-b border-gray-800 pb-3 mb-3">YOUR SELECTION</h3>
-                                    <div id="cart-summary-list" class="text-xs space-y-2"></div>
-                                </div>
-                                <button onclick="submitUserRequest()" class="w-full bg-phb-green text-black py-3 rounded-xl font-bold text-xs uppercase">SUBMIT REQUEST</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                renderCartSummary();
-            } else if (activeTab === 'MY_REQUESTS') {
-                let userReqs = requests.filter(r => r.requester === activePersona.fullName);
-                let reqHtml = userReqs.length === 0 ? `<div class="bg-white p-8 rounded-2xl border text-center text-gray-400 text-xs font-bold uppercase">No requests submitted yet</div>` :
-                    userReqs.map(r => `
-                        <div class="bg-white rounded-2xl border-l-4 border-l-amber-400 border-y border-r border-gray-200 p-6 space-y-4 shadow-sm">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <span class="text-[10px] font-bold text-gray-400 uppercase">SUBMITTED ${r.submitted}</span>
-                                    <h3 class="text-xl font-black text-gray-900 uppercase tracking-tight mt-0.5">${r.title}</h3>
-                                    <p class="text-xs text-gray-400 font-medium">${r.department} · PHB HQ</p>
-                                </div>
-                                <span class="px-3.5 py-1 bg-amber-50 text-amber-700 text-[10px] font-extrabold tracking-wider rounded-full border border-amber-200">${r.status}</span>
-                            </div>
-                            <div class="bg-amber-50/60 border border-amber-200 p-3.5 rounded-xl flex justify-between text-xs">
-                                <span class="font-bold text-amber-900">${r.approvalNote || 'Pending Superior approval'}</span>
-                                <span class="text-amber-700 text-[11px]">${r.approvalSubnote || 'Sent to Superior via Microsoft Teams.'}</span>
-                            </div>
-                            <div class="bg-gray-50/70 p-3.5 rounded-xl border">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase block mb-1">PURPOSE</span>
-                                <p class="text-xs text-gray-700 font-medium">${r.purpose}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                container.innerHTML = `<div class="space-y-4">${reqHtml}</div>`;
-            }
-        }
-
-        function changeCartQty(id, change) {
-            cart[id] = (cart[id] || 0) + change;
-            if (cart[id] <= 0) delete cart[id];
-            renderContent();
-        }
-
-        function renderCartSummary() {
-            const list = document.getElementById('cart-summary-list');
-            if(!list) return;
-            let keys = Object.keys(cart);
-            if(keys.length === 0) { list.innerHTML = `<p class="text-gray-500">NO ITEMS SELECTED</p>`; return; }
-            list.innerHTML = keys.map(id => {
-                let item = inventory.find(i => i.id == id);
-                return `<div class="flex justify-between"><span>${item.name}</span><strong>${cart[id]} units</strong></div>`;
-            }).join('');
-        }
-
-        // START OF REPLACEMENT: Live SharePoint Request Submission
-        async function submitUserRequest() {
-            const siteUrl = "https://phbcommy-my.sharepoint.com/personal/haliza_phb_com_my"; // Your live SharePoint site URL
-            let eventName = document.getElementById('req-event').value;
-            let purpose = document.getElementById('req-purpose').value;
-            
-            if(!eventName) { 
-                alert("Please enter Event Name"); 
-                return; 
-            }
-
-            if(Object.keys(cart).length === 0) {
-                alert("Please select at least one gift item for your request.");
-                return;
-            }
-
-            try {
-                const endpoint = `${siteUrl}/_api/web/lists/getbytitle('iGift_Requests')/items`;
-
-                // Build body mapping your SharePoint list columns
-                const requestBody = {
-                    __metadata: { type: "SP.Data.Igift_RequestsListItem" },
-                    Title: eventName.toUpperCase(),
-                    RequesterName: activePersona.fullName,
-                    RequesterEmail: activePersona.email,
-                    Department: activePersona.department,
-                    Status: "PENDING",
-                    Purpose: purpose || "Standard event distribution",
-                    SubmittedDate: new Date().toLocaleString(),
-                    EventDate: "28/11/2026"
-                };
-
-                await fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json;odata=verbose",
-                        "Accept": "application/json;odata=verbose"
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                cart = {};
-                alert("Request successfully submitted and saved to SharePoint database!");
-                setTab('MY_REQUESTS');
-            } catch (error) {
-                console.error("Error submitting request to SharePoint:", error);
-                alert("Failed to submit request to SharePoint. Check console for details.");
-            }
-        }
-        // END OF REPLACEMENT
-
-        function openNewItemModal() { document.getElementById('modal-new-item').classList.remove('hidden'); }
-        function closeNewItemModal() { document.getElementById('modal-new-item').classList.add('hidden'); }
-
-        // START OF REPLACEMENT: Live SharePoint Image Upload & Item Creation
-        async function saveNewItem() {
-
-    const itemName =
-        document.getElementById("input-item-name").value;
-
+    /* Quantity input specific styling */
+    .gift-option.selected .gift-qty-input input.gift-qty-input-field { 
+      height: 32px; 
+      font-size: 11px; 
+      padding: 4px 8px; 
+      border: 1px solid #2F6F62; 
+      outline: none; 
+    }
     
+    /* Quantity input focus state (Standardized to Brand Red) */
+    .gift-option.selected .gift-qty-input input.gift-qty-input-field:focus {
+      border-color: #A23B4C !important;
+      box-shadow: 0 0 0 4px rgba(162, 59, 76, 0.2) !important;
+    }
 
-    const stockQty =
-        parseInt(document.getElementById("input-item-stock").value);
+    .btn-primary { display:inline-flex; align-items:center; justify-content:center; gap:10px; font-weight:700; font-size:13px; padding:16px 32px; background: #000000; color:#ffffff; border:none; transition: opacity .2s; }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary.sm { padding: 10px 20px; font-size:11px; }
+    .btn-primary.full { width:100%; }
+    .btn-primary.brand-submit { background-color: #2F6F62; color: #ffffff; }
+    .btn-primary.brand-submit:hover { background-color: #265a50; }
+    
+    .btn-ghost { display:inline-flex; align-items:center; justify-content:center; gap:8px; font-family:'Montserrat'; text-transform: uppercase; font-weight:700; font-size:11px; padding:10px 20px; background:transparent; color: #000; border:1px solid #000; }
+    .btn-ghost.danger { color: #ba1a1a; border-color: #ba1a1a; }
 
-    const category =
-    document.getElementById("input-item-cat").value;
+    .stat-row { display:grid; grid-template-columns: repeat(4, 1fr); gap:24px; margin-bottom: 40px; }
+    .stat-card { border:1px solid #e2e2e2; padding:24px; background: #fff; }
+    .stat-value { font-family:'Montserrat', sans-serif; font-size:28px; font-weight:700; margin-bottom: 4px; }
+    .stat-label { font-family:'Montserrat', sans-serif; font-size:10px; font-weight:700; text-transform: uppercase; color: #7e7576; letter-spacing: 0.05em; }
 
-const lowStockQty =
-    parseInt(document.getElementById("input-item-low").value);
+    .admin-tabs { display:flex; gap:40px; border-bottom:1px solid #e2e2e2; margin-bottom: 40px; }
+    .admin-tab { font-size:12px; font-weight:700; padding:16px 0; background:transparent; border-bottom:2px solid transparent; color: #7e7576; }
+    .admin-tab.active { color: #000; border-color: #000; }
+    .admin-tab.logout { margin-left:auto; border-bottom:none; color: #ba1a1a; }
 
-    const imageUrl =
-        document.getElementById("input-item-image-url").value;
+    .gift-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:24px; }
+    .gift-card-img { height:180px; background: #f5f3f3; display:flex; align-items:center; justify-content:center; overflow: hidden; }
+    .gift-card-img img { width:100%; height:100%; object-fit: cover; }
+    .gift-card-body { padding:20px 0; }
+    .gift-card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 4px; }
+    .gift-card-top strong { font-family: 'Montserrat', sans-serif; text-transform: uppercase; font-size: 14px; letter-spacing: 0.02em; }
+    .low-pill { background: #ba1a1a; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; text-transform: uppercase; }
 
+    .request-card { position: relative; margin-bottom: 16px; border: 1px solid #e2e2e2; padding: 24px; }
+    .badge { font-family: 'Montserrat', sans-serif; font-size:10px; font-weight:700; padding:4px 12px; text-transform: uppercase; border: 1px solid currentColor; }
+
+    .toast { position:fixed; bottom:40px; right:40px; display:flex; align-items:center; gap:12px; background: #000; color:#fff; padding:16px 24px; font-family:'Montserrat'; font-size:12px; font-weight:700; text-transform: uppercase; letter-spacing: 0.05em; z-index:100; }
+
+    /* Selection Summary Theming - Black Background */
+    .selection-card { background: #000000; border: 1px solid #000000; padding: 32px; color: #ffffff; }
+    .selection-card h3 { border-bottom-color: rgba(255,255,255,0.1) !important; color: #ffffff !important; }
+    .order-summary-table { width: 100%; font-size: 12px; color: #ffffff; }
+    .order-summary-table th { font-family: 'Montserrat', sans-serif; text-align: left; text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); font-size: 10px; color: rgba(255,255,255,0.5) !important; }
+    .order-summary-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .order-summary-total { font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; padding-top: 16px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 8px; }
+    .order-summary-total span:first-child { color: rgba(255,255,255,0.5); }
+    .order-summary-total span:last-child { color: #ffffff; }
+
+    #modal-root:empty { display: none; }
+    #modal-root { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); padding: 20px; }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 16px 20px; }
+      .main-area { padding: 40px 20px; }
+      .form-grid, .stat-row, .chart-row { grid-template-columns: 1fr; }
+      .topnav { gap: 16px; }
+    }
+  
+
+    /* ------------------------------------------------------------------ */
+    /* v6 visual consistency pass                                         */
+    /* ------------------------------------------------------------------ */
+    :root {
+      --page-bg: #f7f7f6;
+      --surface: #ffffff;
+      --surface-soft: #f3f3f1;
+      --ink: #171817;
+      --muted: #686b69;
+      --line: #dedfdd;
+      --line-strong: #bfc1be;
+      --accent: #000000;
+      --danger: #a81717;
+      --radius: 8px;
+      --shadow: 0 10px 30px rgba(20, 22, 20, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--page-bg); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--page-bg);
+      color: var(--ink);
+      line-height: 1.55;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .topbar {
+      min-height: 72px;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.96);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+      gap: 24px;
+    }
+    .brand { min-height: 72px; gap: 10px; flex-shrink: 0; }
+    .brand img { height: 30px !important; width: auto; margin-right: 8px !important; }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      line-height: 1;
+    }
+    .brand-mark svg { width: 18px; height: 18px; }
+    .brand-text { font-size: 15px; line-height: 1; letter-spacing: .08em; }
+    .topnav { min-height: 72px; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .nav-pill {
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .nav-pill:hover { background: var(--surface-soft); }
+    .nav-pill.active { background: #111; color: #fff; border-color: #111; }
+
+    .main-area {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 40px 72px;
+    }
+    .sheet, .card, .chart-card, .stat-card, .selection-card {
+      border-radius: var(--radius) !important;
+    }
+    .sheet {
+      padding: 36px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .card {
+      border: 1px solid var(--line) !important;
+      background: var(--surface);
+      box-shadow: none;
+    }
+    .card:hover { border-color: var(--line-strong) !important; }
+    .stat-card, .chart-card {
+      border: 1px solid var(--line) !important;
+      background: var(--surface);
+      box-shadow: none;
+    }
+    .stat-card { padding: 24px; min-height: 126px; }
+    .chart-card { padding: 24px; }
+    .selection-card { border: 1px solid #000 !important; padding: 28px; }
+
+    h1 { margin: 0; font-size: clamp(25px, 3vw, 34px); line-height: 1.18; letter-spacing: .025em; }
+    h2 { line-height: 1.25; }
+    h3 { line-height: 1.35; }
+    .eyebrow { margin: 0 0 10px; line-height: 1.2; letter-spacing: .13em; }
+    .subtext { margin-top: 10px; max-width: 720px; color: var(--muted); line-height: 1.55; }
+
+    .admin-tabs {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      min-height: 46px;
+      margin: 0 0 24px;
+      padding: 0 4px;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+    }
+    .admin-tab {
+      min-height: 45px;
+      padding: 0 16px;
+      border: 0 !important;
+      border-bottom: 2px solid transparent !important;
+      background: transparent;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .09em;
+      white-space: nowrap;
+    }
+    .admin-tab:hover { color: #000; background: var(--surface-soft); }
+    .admin-tab.active { color: #000; border-bottom-color: #000 !important; background: transparent; }
+
+    .form-grid { gap: 20px 24px; }
+    .field { gap: 7px; margin-bottom: 0; }
+    .field label { margin: 0; line-height: 1.25; color: #343634; }
+    .field input, .field select, .field textarea,
+    input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong) !important;
+      border-radius: 6px !important;
+      background: #fff;
+      color: var(--ink);
+      box-shadow: none !important;
+      line-height: 1.4;
+    }
+    textarea { min-height: 104px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: #111 !important;
+      outline: 2px solid rgba(0,0,0,.10) !important;
+      outline-offset: 1px;
+    }
+    input[readonly] { background: #f3f3f1; color: #555957; }
+
+    .btn-primary, .btn-ghost {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 18px;
+      border-radius: 6px !important;
+      font-size: 10px;
+      line-height: 1;
+      letter-spacing: .08em;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background .15s ease, border-color .15s ease, color .15s ease, transform .15s ease;
+    }
+    .btn-primary { border: 1px solid #000 !important; background: #000; color: #fff; }
+    .btn-primary:hover { background: #252525; border-color: #252525 !important; transform: translateY(-1px); }
+    .btn-ghost { border: 1px solid var(--line-strong) !important; background: #fff; color: #222; }
+    .btn-ghost:hover { border-color: #222 !important; background: var(--surface-soft); }
+    .btn-primary.sm, .btn-ghost.sm { min-height: 36px; padding: 0 14px; }
+    .btn-ghost.danger { color: var(--danger); border-color: #d8aaaa !important; }
+    .btn-ghost.danger:hover { background: #fff3f3; border-color: var(--danger) !important; }
+
+    .badge {
+      min-height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 10px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      background: #fff;
+      font-size: 9px;
+      line-height: 1.2;
+      letter-spacing: .07em;
+      white-space: nowrap;
+    }
+
+    .gift-grid { gap: 18px; }
+    .gift-option { border: 1px solid var(--line) !important; border-radius: var(--radius) !important; overflow: hidden; }
+    .gift-option:hover { border-color: var(--line-strong) !important; }
+    .gift-option.selected { border: 2px solid #000 !important; }
+    .gift-option.selected .gift-option-body { padding: 19px; }
+    .gift-option-img { aspect-ratio: 16 / 10; height: auto; object-fit: cover; }
+    .gift-option-body { padding: 20px; }
+
+    .order-summary-table th, .order-summary-table td { vertical-align: middle; }
+    .order-summary-table th { padding: 0 0 10px; }
+    .order-summary-table td { padding: 12px 0; }
+
+    .loading-block { min-height: 260px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    #toast-root { right: 20px; bottom: 20px; display: grid; gap: 10px; }
+    .toast { min-width: 280px; max-width: 420px; padding: 14px 16px; border-radius: 6px; box-shadow: 0 12px 32px rgba(0,0,0,.16); }
+    #modal-root { padding: 24px; background: rgba(13,14,13,.48); }
+    #modal-root > * { max-height: calc(100vh - 48px); overflow-y: auto; }
+
+    /* Login cards */
+    .main-area > .max-w-5xl { max-width: 960px; }
+    .main-area > .max-w-5xl .card { min-height: 330px; padding: 34px !important; }
+    .main-area > .max-w-5xl .card h2 { margin: 0 0 12px; }
+    .main-area > .max-w-5xl .card p { line-height: 1.6; }
+
+    @media (max-width: 900px) {
+      .topbar { padding: 0 24px; }
+      .main-area { padding: 36px 24px 56px; }
+      .sheet { padding: 28px; }
+    }
+    @media (max-width: 640px) {
+      .topbar { min-height: auto; padding: 12px 16px; align-items: flex-start; }
+      .brand { min-height: 42px; }
+      .brand img { height: 26px !important; }
+      .topnav { min-height: 42px; width: 100%; justify-content: flex-start; gap: 6px; }
+      .topnav > span { width: 100%; margin: 2px 0 4px; }
+      .nav-pill { min-height: 36px; padding: 0 11px; }
+      .main-area { padding: 28px 16px 44px; }
+      .sheet { padding: 22px 18px; }
+      .main-area > .max-w-5xl { padding-top: 16px !important; }
+      .main-area > .max-w-5xl .card { min-height: 0; padding: 24px !important; }
+      .admin-tabs { margin-bottom: 18px; padding: 0; }
+      .admin-tab { padding: 0 12px; }
+      .stat-card, .chart-card { padding: 20px; }
+      .selection-card { padding: 22px 18px; }
+      .btn-primary, .btn-ghost { width: 100%; }
+      .flex.gap-3, .flex.gap-4 { flex-wrap: wrap; }
+      #modal-root { padding: 12px; }
+      #modal-root > * { max-height: calc(100vh - 24px); }
+    }
+
+
+    /* v7 viewport and layout stability fixes */
+    html { overflow-y: scroll; scrollbar-gutter: stable; }
+    body.login-page { overflow: hidden; }
+    body.login-page .main-area {
+      height: calc(100dvh - 72px);
+      min-height: 0;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    body.login-page .main-area > .max-w-5xl {
+      width: 100%;
+      max-width: 920px;
+      padding-top: 0 !important;
+    }
+    body.login-page .main-area > .max-w-5xl > .text-center { margin-bottom: 22px !important; }
+    body.login-page .main-area > .max-w-5xl .brand-mark { margin-bottom: 14px !important; }
+    body.login-page .main-area > .max-w-5xl h1 { font-size: clamp(25px, 3.4vh, 34px); margin-bottom: 8px !important; }
+    body.login-page .main-area > .max-w-5xl .card { min-height: 260px; padding: 26px !important; }
+    body.login-page .main-area > .max-w-5xl .card .mb-6 { margin-bottom: 16px !important; }
+    body.login-page .main-area > .max-w-5xl .card .mb-8 { margin-bottom: 20px !important; }
+    @media (max-height: 720px) and (min-width: 641px) {
+      body.login-page .main-area { padding-top: 12px; padding-bottom: 12px; }
+      body.login-page .main-area > .max-w-5xl > .text-center { margin-bottom: 14px !important; }
+      body.login-page .main-area > .max-w-5xl .card { min-height: 225px; padding: 20px !important; }
+      body.login-page .main-area > .max-w-5xl .card p { line-height: 1.4; }
+    }
+    @media (max-width: 640px) {
+      body.login-page { overflow-y: auto; }
+      body.login-page .main-area { height: auto; min-height: calc(100dvh - 66px); overflow: visible; align-items: flex-start; }
+    }
+
+
+    /* v8: make sign-out actions clearly distinguishable */
+    #global-logout,
+    #logout-btn,
+    .admin-tab.logout {
+      color: #b42318 !important;
+      background: #fff5f4 !important;
+      border: 1px solid #f0b7b2 !important;
+      border-radius: 6px !important;
+      font-weight: 700 !important;
+    }
+    #global-logout {
+      padding-left: 14px !important;
+      padding-right: 14px !important;
+    }
+    #logout-btn,
+    .admin-tab.logout {
+      min-height: 36px !important;
+      margin-left: auto;
+      padding: 0 14px !important;
+      align-self: center;
+      border-bottom: 1px solid #f0b7b2 !important;
+    }
+    #global-logout:hover,
+    #logout-btn:hover,
+    .admin-tab.logout:hover {
+      color: #ffffff !important;
+      background: #b42318 !important;
+      border-color: #b42318 !important;
+    }
+    #global-logout:focus-visible,
+    #logout-btn:focus-visible,
+    .admin-tab.logout:focus-visible {
+      outline: 3px solid rgba(180, 35, 24, 0.22) !important;
+      outline-offset: 2px;
+    }
+    @media (max-width: 640px) {
+      #logout-btn,
+      .admin-tab.logout { margin-left: 0; }
+    }
+
+    [hidden] { display: none !important; }
+
+    [data-login-role]:disabled { opacity: .65; cursor: wait; transform: none !important; }
+
+
+    /* v24: subtle separation for individual request records */
+    .request-card {
+      background: #ffffff !important;
+      border: 2px solid #c8cdd1 !important;
+      box-shadow: 0 2px 8px rgba(24, 39, 52, 0.045) !important;
+      padding: 20px 24px !important;
+    }
+    .request-card:hover {
+      background: #ffffff !important;
+      border-color: #9fa8ae !important;
+      box-shadow: 0 4px 12px rgba(24, 39, 52, 0.065) !important;
+    }
+    .request-card h3 { margin-top: 3px !important; line-height: 1.22; }
+    .request-card .mt-5 { margin-top: 14px !important; }
+    .request-card .pt-5 { padding-top: 14px !important; }
+    .request-card .mb-4 { margin-bottom: 10px !important; }
+    .request-card .mb-2 { margin-bottom: 5px !important; }
+    .request-card .gap-y-4 { row-gap: 8px !important; }
+    .request-card .leading-6 { line-height: 1.4 !important; }
+    .request-card p { line-height: 1.45; }
+    @media (max-width: 640px) {
+      .request-card { padding: 18px !important; }
+    }
+
+
+    /* v28: light-green border applies only to User My Requests cards */
+    .user-request-card {
+      border-color: #9fc9ad !important;
+    }
+    .user-request-card:hover {
+      border-color: #72ad86 !important;
+    }
+
+
+    /* v29: dedicated landing page branding */
+    body.login-page .topbar {
+      display: none !important;
+    }
+    body.login-page .main-area {
+      height: 100dvh !important;
+      min-height: 100dvh !important;
+    }
+    .landing-phb-logo {
+      display: block;
+      width: auto;
+      height: 64px;
+      margin: 0 auto 20px;
+      object-fit: contain;
+    }
+    @media (max-height: 720px) and (min-width: 641px) {
+      .landing-phb-logo {
+        height: 50px;
+        margin-bottom: 12px;
+      }
+    }
+    @media (max-width: 640px) {
+      body.login-page .main-area {
+        min-height: 100dvh !important;
+      }
+      .landing-phb-logo {
+        height: 52px;
+        margin-bottom: 16px;
+      }
+    }
+
+
+    /* v31: modern My Requests view, scoped to User portal only */
+    .my-requests-view {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .my-requests-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #dedfdd;
+    }
+    .my-requests-header .subtext { margin-bottom: 0; }
+    .my-request-list { display: grid; gap: 16px; }
+    .my-request-record {
+      position: relative;
+      display: grid;
+      grid-template-columns: 5px minmax(0, 1fr);
+      overflow: hidden;
+      border: 1px solid #dfe2e0;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 5px 18px rgba(27, 40, 34, 0.055);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+    .my-request-record:hover {
+      transform: translateY(-2px);
+      border-color: #bfc7c2;
+      box-shadow: 0 10px 26px rgba(27, 40, 34, 0.085);
+    }
+    .my-request-rail { background: #c89b3c; }
+    .my-request-record.is-approved .my-request-rail { background: #2f6f62; }
+    .my-request-record.is-issued .my-request-rail { background: #252525; }
+    .my-request-record.is-closed .my-request-rail { background: #a23b4c; }
+    .my-request-main { padding: 24px 26px 22px; }
+    .my-request-topline,
+    .my-request-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .my-request-topline { margin-bottom: 16px; }
+    .my-request-date,
+    .my-request-event-date {
+      display: grid;
+      gap: 2px;
+    }
+    .my-request-date span,
+    .my-request-event-date span,
+    .my-request-section-label,
+    .my-request-purpose > span,
+    .my-request-sequence {
+      margin: 0;
+      color: #848a86;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .my-request-date strong,
+    .my-request-event-date strong {
+      color: #343835;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .my-request-status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: #fff7e7;
+      color: #926711;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .is-approved .my-request-status { background: #e8f2ee; color: #245f52; }
+    .is-issued .my-request-status { background: #eeeeed; color: #242424; }
+    .is-closed .my-request-status { background: #f9e9ec; color: #913244; }
+    .my-request-title-row { align-items: flex-end; }
+    .my-request-title-row h2 {
+      margin: 5px 0 0;
+      color: #181a19;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(17px, 2vw, 21px);
+      font-weight: 700;
+      letter-spacing: .035em;
+      line-height: 1.28;
+      text-transform: uppercase;
+    }
+    .my-request-event-date { min-width: 120px; text-align: right; }
+    .my-request-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 18px;
+      margin-top: 12px;
+      color: #696f6b;
+      font-size: 12px;
+    }
+    .my-request-meta span {
+      position: relative;
+    }
+    .my-request-meta span:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #adb2af;
+    }
+    .my-request-purpose {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 7px;
+      background: #f6f7f6;
+    }
+    .my-request-purpose p {
+      margin: 5px 0 0;
+      color: #353a37;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .my-request-items {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid #eceeec;
+    }
+    .my-request-item-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 10px;
+    }
+    .my-request-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 36px;
+      padding: 7px 8px 7px 12px;
+      border: 1px solid #d9ddda;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #242725;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .my-request-item strong {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 25px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: #1e211f;
+      color: #ffffff;
+      font-size: 10px;
+    }
+    .my-request-empty-items { margin: 0; color: #858b87; font-size: 12px; }
+    .my-requests-empty {
+      padding: 72px 28px;
+      border: 1px dashed #cfd3d0;
+      border-radius: 10px;
+      background: #ffffff;
+      text-align: center;
+    }
+    .my-requests-empty-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      background: #f0f2f0;
+      color: #646a66;
+    }
+    .my-requests-empty h2 { margin: 0 0 6px; font-size: 16px; }
+    .my-requests-empty p { margin: 0; color: #727773; font-size: 13px; }
+    @media (max-width: 640px) {
+      .my-requests-header { align-items: flex-start; }
+      .my-requests-header .btn-primary { width: auto; }
+      .my-request-main { padding: 20px 18px 18px; }
+      .my-request-title-row { align-items: flex-start; }
+      .my-request-event-date { min-width: 0; text-align: left; }
+      .my-request-title-row,
+      .my-request-topline { gap: 14px; }
+      .my-request-meta span::after { display: none; }
+      .my-request-item { width: 100%; justify-content: space-between; }
+    }
+
+
+    /* v32: compact My Requests density, User view only */
+    .my-requests-header {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+    }
+    .my-requests-header .eyebrow { margin-bottom: 5px; }
+    .my-requests-header h1 { font-size: clamp(23px, 2.5vw, 30px); }
+    .my-requests-header .subtext { margin-top: 5px; font-size: 12px; }
+    .my-request-list { gap: 10px; }
+    .my-request-record {
+      grid-template-columns: 4px minmax(0, 1fr);
+      border-radius: 8px;
+      box-shadow: 0 3px 12px rgba(27, 40, 34, 0.045);
+    }
+    .my-request-record:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 17px rgba(27, 40, 34, 0.07);
+    }
+    .my-request-main { padding: 15px 18px 14px; }
+    .my-request-topline { margin-bottom: 9px; }
+    .my-request-topline,
+    .my-request-title-row { gap: 16px; }
+    .my-request-date,
+    .my-request-event-date { gap: 0; }
+    .my-request-date span,
+    .my-request-event-date span,
+    .my-request-section-label,
+    .my-request-purpose > span,
+    .my-request-sequence { font-size: 8px; }
+    .my-request-date strong,
+    .my-request-event-date strong { font-size: 11px; }
+    .my-request-status {
+      min-height: 24px;
+      padding: 4px 9px;
+      font-size: 8px;
+    }
+    .my-request-title-row h2 {
+      margin-top: 2px;
+      font-size: clamp(15px, 1.7vw, 18px);
+      line-height: 1.2;
+    }
+    .my-request-event-date { min-width: 105px; }
+    .my-request-meta {
+      gap: 4px 16px;
+      margin-top: 7px;
+      font-size: 11px;
+    }
+    .my-request-purpose {
+      margin-top: 10px;
+      padding: 9px 11px;
+      border-radius: 6px;
+    }
+    .my-request-purpose p {
+      margin-top: 2px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .my-request-items {
+      margin-top: 10px;
+      padding-top: 9px;
+    }
+    .my-request-item-list {
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .my-request-item {
+      min-height: 30px;
+      gap: 8px;
+      padding: 4px 6px 4px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+    .my-request-item strong {
+      min-width: 21px;
+      height: 19px;
+      padding: 0 6px;
+      font-size: 9px;
+    }
+    @media (max-width: 640px) {
+      .my-requests-header { margin-bottom: 14px; padding-bottom: 13px; }
+      .my-request-main { padding: 14px 13px 13px; }
+      .my-request-topline { margin-bottom: 8px; }
+      .my-request-title-row { flex-direction: column; gap: 7px; }
+      .my-request-event-date { min-width: 0; }
+      .my-request-purpose { margin-top: 9px; }
+      .my-request-items { margin-top: 9px; }
+    }
+
+.workflow-note{display:flex;gap:10px;align-items:center;margin-bottom:18px;padding:10px 12px;border:1px solid #e6d59d;background:#fffaf0;border-radius:7px;font-size:11px;color:#67562e}.workflow-note strong{text-transform:uppercase;letter-spacing:.08em;font-size:9px}.admin-workflow-card{padding:20px;border:1px solid #dfe2e0;border-radius:9px;background:#fff;box-shadow:0 3px 12px rgba(24,39,52,.045)}.admin-workflow-head{display:flex;justify-content:space-between;gap:20px}.admin-workflow-head h3{margin:3px 0 4px;font-size:17px;text-transform:uppercase}.admin-workflow-head p{margin:0;color:#707571;font-size:11px}.workflow-status{display:inline-flex;align-items:center;height:27px;padding:0 10px;border:1px solid;border-radius:999px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}.workflow-item-grid{display:grid;gap:7px;margin-top:15px}.workflow-item-row{display:grid;grid-template-columns:minmax(180px,1fr) repeat(3,auto);gap:16px;align-items:center;padding:10px 12px;background:#f7f8f7;border-radius:6px;font-size:11px}.workflow-item-row strong{font-size:12px}.workflow-item-row span{color:#747a76}.workflow-item-row b{color:#191b1a}.workflow-details{margin-top:12px;border-top:1px solid #eceeec;padding-top:10px}.workflow-details summary{cursor:pointer;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.workflow-timeline{display:grid;gap:0;margin-top:12px}.workflow-timeline-item{position:relative;display:grid;grid-template-columns:16px 1fr;gap:9px;padding-bottom:13px}.workflow-timeline-item:not(:last-child)::before{content:"";position:absolute;left:5px;top:10px;bottom:0;width:1px;background:#d2d7d3}.workflow-dot{width:11px;height:11px;border-radius:50%;background:#abb3ad;border:3px solid #fff;box-shadow:0 0 0 1px #abb3ad}.workflow-timeline-item.current .workflow-dot{background:#2f6f62;box-shadow:0 0 0 1px #2f6f62}.workflow-timeline-item strong{font-size:11px}.workflow-timeline-item p,.workflow-timeline-item small{margin:1px 0 0;color:#777d79;font-size:10px}.workflow-actions{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:12px}.workflow-wait{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#956b19}.workflow-modal{width:min(860px,100%);max-height:90vh;overflow:auto;margin:auto;padding:26px;background:#fff;border-radius:10px;box-shadow:0 24px 70px rgba(0,0,0,.22)}.workflow-modal-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.workflow-modal-head h2{margin:3px 0 0}.workflow-modal-copy{margin:12px 0 18px;color:#686e6a;font-size:12px}.modal-item-list{display:grid;gap:9px;margin-bottom:18px}.modal-item-row{display:grid;grid-template-columns:minmax(220px,1fr) 90px minmax(180px,1fr);gap:10px;align-items:center;padding:11px;background:#f5f6f5;border-radius:7px}.modal-item-row div{display:grid}.modal-item-row small{color:#747a76;font-size:10px}.modal-item-row input{min-height:38px!important}.inventory-low-stock{border-color:#d4a53d!important;background:#fffaf0!important}@media(max-width:720px){.workflow-item-row{grid-template-columns:1fr 1fr}.workflow-item-row strong{grid-column:1/-1}.admin-workflow-head{flex-direction:column}.workflow-actions{justify-content:flex-start;flex-wrap:wrap}.modal-item-row{grid-template-columns:1fr}.workflow-note{align-items:flex-start;flex-direction:column}}
+
+
+    /* v38: improve secondary-description readability across the portal */
+    .modal-item-row small {
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+      color: #626963 !important;
+      margin-top: 3px;
+    }
+    .workflow-item-row span {
+      font-size: 12px !important;
+      line-height: 1.4 !important;
+    }
+    .workflow-timeline-item p,
+    .workflow-timeline-item small {
+      font-size: 11px !important;
+      line-height: 1.45 !important;
+    }
+    .inventory-card .text-xs,
+    .gift-option .text-xs,
+    .request-card .text-xs,
+    .admin-workflow-card .text-xs {
+      font-size: 12px !important;
+      line-height: 1.45 !important;
+    }
+    .subtext {
+      font-size: 13px !important;
+      line-height: 1.5 !important;
+    }
+
+
+    /* v39: reserved-stock visibility */
+    .request-stock-summary {
+      display: block;
+      margin-top: 5px;
+      color: #69706b;
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+    .request-stock-summary b { color: #2f6f62; font-weight: 700; }
+    .inventory-stock-breakdown {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .inventory-stock-breakdown > div {
+      padding: 10px 9px;
+      border: 1px solid #e0e3e1;
+      border-radius: 6px;
+      background: #f7f8f7;
+    }
+    .inventory-stock-breakdown span {
+      display: block;
+      color: #7a807c;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+    .inventory-stock-breakdown strong {
+      display: block;
+      margin-top: 4px;
+      color: #202321;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .inventory-stock-breakdown .available {
+      border-color: #a9cab4;
+      background: #eef7f1;
+    }
+    .inventory-stock-breakdown .available strong { color: #2f6f62; }
+    @media (max-width: 640px) {
+      .inventory-stock-breakdown { grid-template-columns: 1fr; }
+    }
+
+
+    /* v40: show NA until each operational stage is reached */
+    .workflow-item-row .quantity-na {
+      color: #9aa09c !important;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .06em;
+    }
+
+
+    /* v43: recipient acknowledgement and signature capture */
+    .collection-details-grid { margin-bottom: 18px; }
+    .signature-section {
+      margin: 18px 0 14px;
+      padding: 16px;
+      border: 1px solid #d9ddda;
+      border-radius: 8px;
+      background: #f7f8f7;
+    }
+    .signature-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+    .signature-heading p {
+      margin: 3px 0 0;
+      color: #6e746f;
+      font-size: 12px;
+    }
+    .signature-canvas {
+      display: block;
+      width: 100%;
+      height: 150px;
+      border: 1px solid #aeb5b0;
+      border-radius: 6px;
+      background: #ffffff;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .signature-error {
+      min-height: 18px;
+      margin: 5px 0 0;
+      color: #b42318;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .collection-acknowledgement {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: #343936;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .collection-acknowledgement input {
+      width: 17px;
+      height: 17px;
+      min-height: 0 !important;
+      margin-top: 1px;
+      accent-color: #000000;
+    }
+    @media (max-width: 640px) {
+      .signature-heading { flex-direction: column; }
+      .signature-heading .btn-ghost { width: auto; }
+      .signature-canvas { height: 130px; }
+    }
+
+
+    /* v44: simplified collection details */
+    .collection-details-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    @media (max-width: 640px) {
+      .collection-details-grid { grid-template-columns: 1fr; }
+    }
+
+
+    /* v46: User request audit trail and collection alert */
+    .user-ready-notice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border: 1px solid #9fc8b4;
+      border-radius: 7px;
+      background: #edf7f1;
+    }
+    .user-ready-notice strong {
+      color: #245f4d;
+      font-size: 13px;
+    }
+    .user-ready-notice p {
+      margin: 2px 0 0;
+      color: #49685b;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .user-ready-notice > span {
+      flex-shrink: 0;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: #2f6f62;
+      color: #ffffff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .user-audit-details {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #eceeec;
+    }
+    .user-audit-details summary {
+      cursor: pointer;
+      color: #404541;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    .user-audit-timeline {
+      display: grid;
+      margin-top: 12px;
+    }
+    .user-audit-entry {
+      position: relative;
+      display: grid;
+      grid-template-columns: 15px minmax(0, 1fr);
+      gap: 9px;
+      padding-bottom: 12px;
+    }
+    .user-audit-entry:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      bottom: 0;
+      left: 5px;
+      width: 1px;
+      background: #d5d9d6;
+    }
+    .user-audit-dot {
+      width: 11px;
+      height: 11px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      background: #aab1ac;
+      box-shadow: 0 0 0 1px #aab1ac;
+    }
+    .user-audit-entry.current .user-audit-dot {
+      background: #2f6f62;
+      box-shadow: 0 0 0 1px #2f6f62;
+    }
+    .user-audit-entry strong { color: #2c312e; font-size: 11px; }
+    .user-audit-entry p,
+    .user-audit-entry small {
+      display: block;
+      margin: 1px 0 0;
+      color: #737a75;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    @media (max-width: 640px) {
+      .user-ready-notice { align-items: flex-start; flex-direction: column; }
+    }
+
+
+    /* v51: purpose shown on Admin request cards */
+    .admin-request-purpose {
+      margin-top: 13px;
+      padding: 10px 12px;
+      border-left: 3px solid #2f6f62;
+      border-radius: 0 6px 6px 0;
+      background: #f5f7f5;
+    }
+    .admin-request-purpose span {
+      display: block;
+      color: #737a75;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .admin-request-purpose p {
+      margin: 3px 0 0;
+      color: #343936;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+
+    /* v52 Phase 1: audit trail functionality deferred */
+    .workflow-details,
+    .user-audit-details,
+    .workflow-timeline,
+    .user-audit-timeline {
+      display: none !important;
+    }
+
+    /* v58: authenticated Microsoft identity fields */
+    input[readonly][name="requesterName"],
+    input[readonly][name="email"] {
+      background: #f1f4f2 !important;
+      color: #3f4742 !important;
+      cursor: not-allowed;
+    }
+
+.my-requests-actions{display:flex;gap:8px}.user-pending-note{display:flex;justify-content:space-between;gap:16px;margin-top:10px;padding:10px 12px;border:1px solid #e4c77d;border-radius:6px;background:#fff9e9;color:#735718;font-size:11px}.admin-collection-note{display:flex;gap:10px;align-items:center;margin-top:12px;padding:10px 12px;border:1px solid #cfd4d1;border-radius:6px;background:#f5f7f5}.admin-collection-note span{font-size:9px;font-weight:700;text-transform:uppercase}.admin-collection-note small{margin-left:auto}@media(max-width:640px){.my-requests-actions{width:100%}.my-requests-actions button{flex:1;width:auto!important}.user-pending-note,.admin-collection-note{flex-direction:column}.admin-collection-note small{margin-left:0}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast-root"></div>
+<div id="modal-root"></div>
+<script>
+    /* ---------------------------------------------------------------------- */
+    /* Constants & Config                                                      */
+    /* ---------------------------------------------------------------------- */
+// TEMPORARY LOCAL TEST MODE ONLY. Change to false before publishing.
+const LOCAL_TEST_MODE = false;
+
+const msalConfig = {
+    auth: {
+        clientId: "3d36f5d5-4070-44f3-9bbf-a65429c401a0",
+        authority: "https://login.microsoftonline.com/cc9afa77-5900-4c38-8262-c226c4c2e27d",
+        redirectUri:
+            "https://poduxiptv2021-hash.github.io/gift-inventory/",
+        postLogoutRedirectUri:
+            "https://poduxiptv2021-hash.github.io/gift-inventory/"
+    }
+};
+
+
+const msalAvailable = typeof window.msal !== "undefined" && window.msal.PublicClientApplication;
+
+const msalInstance = LOCAL_TEST_MODE
+  ? {
+      initialize: async () => {},
+      handleRedirectPromise: async () => null,
+      setActiveAccount: () => {},
+      getActiveAccount: () => null,
+      getAllAccounts: () => [],
+      loginRedirect: async () => {},
+      logoutRedirect: async () => {}
+    }
+  : (msalAvailable ? new window.msal.PublicClientApplication(msalConfig) : null);
+
+const msalReady = msalInstance
+  ? msalInstance.initialize()
+  : Promise.reject(new Error("Microsoft Authentication Library could not be loaded."));
+
+// Using loginRedirect (full-page redirect) instead of loginPopup. Popups
+// no longer close reliably: login.microsoftonline.com now sends a
+// Cross-Origin-Opener-Policy header that permanently isolates the popup
+// from this app, and MSAL's fix for that (the "redirect bridge") requires
+// a JS bundler to set up, which a plain static HTML file doesn't have.
+// A full-page redirect has no popup to close, so it sidesteps the issue
+// entirely — this just needs to process the response on the way back.
+if (!LOCAL_TEST_MODE) msalReady.then(async () => {
     try {
+        const response = await msalInstance.handleRedirectPromise();
+        if (!response || !response.account) return;
 
-        const response = await fetch(ADD_INVENTORY_API, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                giftID: Date.now().toString(),
-                giftName: itemName,
-                category: category,
-                stockQty: stockQty,
-                lowStockQty: lowStockQty,
-                imageUrl: imageUrl
-            })
+        const email = String(response.account.username || "").toLowerCase();
+        const role = sessionStorage.getItem("pendingLoginRole") || "user";
+        sessionStorage.removeItem("pendingLoginRole");
+
+        if (role === "admin" && !ALLOWED_USERS.includes(email)) {
+            localStorage.removeItem("portalSession");
+            state.authed = false;
+            state.role = null;
+            state.view = "login";
+            render();
+            notify("This account is not authorized for CCD Admin", "error");
+            return;
+        }
+
+        msalInstance.setActiveAccount(response.account);
+        state.authed = true;
+        state.role = role;
+        state.account = response.account;
+        state.view = role === "admin" ? "admin" : "user";
+        state.adminTab = "dashboard";
+        state.userTab = "requests";
+
+        localStorage.setItem("portalSession", JSON.stringify({
+            role,
+            account: response.account
+        }));
+        render();
+    } catch (error) {
+        console.warn("Ignoring MSAL redirect error:", error);
+    }
+});
+
+const ALLOWED_USERS = [
+    "amirulhakimi@phb.com.my",
+    "muhammadjazli@phb.com.my",
+    "wardatul@phb.com.my",
+    "elizayazmin@phb.com.my",
+    "nurhaliza@phb.com.my",
+    "haliza@phb.com.my"
+];
+
+    const CATEGORIES = ["Apparel", "Drinkware", "Stationery", "Tech Accessory", "Souvenir", "Other"];
+    const STATUS_META = {
+      "pending approval":      { label: "Pending", color: "#C89B3C" },
+      "approved":             { label: "Approved", color: "#2F6F62" },
+      "rejected by approver": { label: "Rejected by Approver", color: "#ba1a1a" },
+      "issued":               { label: "Issued", color: "#7e7576" },
+      "declined by ccd":      { label: "Declined by CCD", color: "#ba1a1a" },
+      "ready for collection": { label: "Ready for Collection", color: "#296b58" },
+      "partially ready for collection": { label: "Partially Ready", color: "#9a6b14" },
+      "collected":            { label: "Collected", color: "#252525" },
+      "partially collected":  { label: "Partially Collected", color: "#5f596f" }
+    };
+
+    function normalizeStatus(value) {
+      // SharePoint Choice columns can arrive as plain text or as an object,
+      // for example { Value: "Approved" }. Extract the readable value first.
+      let statusValue = value;
+      if (statusValue && typeof statusValue === "object") {
+        statusValue = statusValue.Value
+          ?? statusValue.value
+          ?? statusValue.Label
+          ?? statusValue.label
+          ?? statusValue.Title
+          ?? statusValue.title
+          ?? "Pending Approval";
+      }
+      const raw = String(statusValue || "Pending Approval").trim().toLowerCase();
+      const aliases = {
+        "pending": "pending approval",
+        "pending approval": "pending approval",
+        "approved": "approved",
+        "rejected": "rejected by approver",
+        "rejected by approver": "rejected by approver",
+        "issued": "issued",
+        "declined": "declined by ccd",
+        "declined by ccd": "declined by ccd",
+        "ready for collection": "ready for collection",
+        "partially ready for collection": "partially ready for collection",
+        "collected": "collected",
+        "partially collected": "partially collected"
+      };
+      return aliases[raw] || raw;
+    }
+
+    function getStatusMeta(value) {
+      const normalized = normalizeStatus(value);
+      return STATUS_META[normalized] || {
+        label: normalized.replace(/\b\w/g, character => character.toUpperCase()),
+        color: "#7e7576"
+      };
+    }
+    const ICONS = {
+      gift: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+      clock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+      check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>',
+      check_circle: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2F6F62" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+      x: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+      pkg: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg>',
+      alert: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+      search: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+      plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+      trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+      chevron: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>',
+      refresh: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>'
+    };
+
+    /* ---------------------------------------------------------------------- */
+    /* Storage                                                                 */
+    /* ---------------------------------------------------------------------- */
+    const memoryStore = {};
+    async function storageGet(key) {
+      if (window.storage) { try { const r = await window.storage.get(key, true); return r ? r.value : null; } catch { return null; } }
+      return memoryStore[key] || null;
+    }
+    async function storageSet(key, value) {
+      if (window.storage) { try { await window.storage.set(key, value, true); return; } catch { memoryStore[key] = value; return; } }
+      memoryStore[key] = value;
+    }
+
+    const uid = (p) => `${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+    function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+    const PORTAL_TIME_ZONE = "Asia/Kuala_Lumpur";
+
+    function formatDate(d) {
+      if (!d) return "—";
+      try {
+        return new Intl.DateTimeFormat("en-GB", {
+          timeZone: PORTAL_TIME_ZONE,
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric"
+        }).format(new Date(d));
+      } catch { return d; }
+    }
+
+    function formatDateTime(d) {
+      if (!d) return "—";
+      try {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: PORTAL_TIME_ZONE,
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true
+        }).formatToParts(new Date(d));
+        const value = type => parts.find(part => part.type === type)?.value || "";
+        return `${value("day")}/${value("month")}/${value("year")} ${value("hour")}:${value("minute")} ${value("dayPeriod").toUpperCase()}`;
+      } catch { return d; }
+    }
+
+    function notify(message, kind = "success") {
+      const el = document.createElement("div");
+      el.className = `toast ${kind === "error" ? "bg-red-600" : ""}`;
+      el.innerHTML = `<span>${esc(message)}</span>`;
+      document.getElementById("toast-root").appendChild(el);
+      setTimeout(() => el.remove(), 3200);
+    }
+
+    const SEED_GIFTS = [
+      { id: uid("g"), name: "Insulated Tumbler", category: "Drinkware", quantity: 42, lowStock: 10, image: "https://images.unsplash.com/photo-1574634534894-89d7576c8259?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Branded Polo Shirt", category: "Apparel", quantity: 18, lowStock: 15, image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Notebook Set", category: "Stationery", quantity: 60, lowStock: 20, image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+      { id: uid("g"), name: "Wireless Charger", category: "Tech Accessory", quantity: 6, lowStock: 8, image: "https://images.unsplash.com/photo-1615526675159-e248c3021d3f?auto=format&fit=crop&q=80&w=800", createdAt: Date.now() },
+    ];
+
+    let state = {
+      view: "login", adminTab: "dashboard", userTab: "requests", authed: false,
+      role: null, account: null,
+      gifts: [], requests: [], loaded: false,
+      selectedGifts: {}, // { giftId: quantity }
+      pendingImage: null,
+      requestFilter: "approved", inventoryQuery: "", showGiftForm: false,
+      isRefreshing: false,
+      currentRequestData: null,
+      requestAudit: {},
+      workflowPrototype: true
+    };
+
+    const GET_REQUESTS_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com/powerautomate/automations/direct/cu/04/workflows/bfed2f41e60c467d8c0c5ab927c40e8f/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWvD-kCPeLhN94juTyuMp9npnWtFz8hJ_iep34Z9nGo";
+
+    const CREATE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/13/workflows/211263645b7143bdb3bd5e63403993d7/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lCGZhOtIJNZVc8jG1Mmp_u4DPEaB5026hm2yyoKE6rg";
+    const PREPARE_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/29/workflows/d74784b90fe24c7687f6596c61560727/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=-GrZW25-118Yg8o_NsWJFIkVDLG2yl74tE9E1FhT2fs";
+    const CONFIRM_COLLECTION_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/5468dcf16a6d47129f9a815d03c748bf/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=daP-okqE2Wz49sZaU3iflLTZfkH16NH9CHFs_LB646E";
+    const DECLINE_REQUEST_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/25/workflows/e9dea9691bbf4ad1a71f61e6e74f1271/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=P0sxcCX-KOjwQ3bhl5et6Cj-xi2pvuYiKMBdA-Byt9w";
+
+    const GET_INVENTORY_API =
+"https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/55b1aafd1f374e6397fcfd2f1c84080a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=otP6LULBv8RIfrOUlBCrWVcjP8IbwU_qJu9Vwl7Y73k";
+
+const UPDATE_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/14/workflows/c9194c6174884fb3973a218150356b6d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TWtyCcoe0-Ik_LpCrQz0ZHO0hVADltYS7_6JYJq0tBc";
+
+const ADD_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/ef5522727cdb4e019632b33316b3dac2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lzC-t6crcoP5__eiC9sH2QucE10nQotmhpn3kfYPoxQ";
+
+const DELETE_INVENTORY_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/21/workflows/d62fb6ef659b45dd8b64bca3b6ff091e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=I5UItZq7XoHKXz7WFIT5bSgZ4XOICPdRxGANBWGU1Gc";
+
+    async function loadAll() {
+      if (state.isRefreshing) return;
+      state.isRefreshing = true;
+      render();
+      
+      try {
+        const response = await fetch(GET_REQUESTS_API, {
+          method: "POST",
+          headers: { "Accept": "application/json" }
         });
 
-        const data = await response.json();
+        // Read as text first because Power Automate responses can be returned
+        // as direct JSON, a JSON-encoded string, or a statusCode/body wrapper.
+        const responseText = await response.text();
+        if (!responseText.trim()) {
+          throw new Error(`Get Requests returned an empty response (HTTP ${response.status})`);
+        }
 
-        alert("Item created successfully");
+        let rawData;
+        try {
+          rawData = JSON.parse(responseText);
+        } catch (parseError) {
+          throw new Error(`Get Requests returned invalid JSON (HTTP ${response.status})`);
+        }
 
+        let data = rawData;
+
+        // Only unwrap body when requests/items are not already at the top level.
+        if (!Array.isArray(data?.requests) && data && Object.prototype.hasOwnProperty.call(data, "body")) {
+          data = data.body;
+          if (typeof data === "string") {
+            data = JSON.parse(data);
+          }
+        }
+
+        const requests = Array.isArray(data?.requests) ? data.requests : [];
+        const items = Array.isArray(data?.items) ? data.items : [];
+
+        if (!Array.isArray(data?.requests)) {
+          throw new Error("Get Requests response does not contain a requests array");
+        }
+
+        state.requests = requests.map(req => ({
+          id: req.ID ?? req.ItemInternalId,
+          requesterName: req.RequestorName || "",
+          department: req.Department || "",
+          company: req.Company || "",
+          email: String(req.Email || "").trim().toLowerCase(),
+          mobileNo: req.MobileNo || "",
+          eventName: req.EventName || "",
+          eventDate: req.EventDate || "",
+          reason: req.Purpose || "",
+          status: normalizeStatus(req.Status),
+          submittedAt: req.Created || req.Modified,
+          collectionDateTime: req.CollectionDateTime || "",
+          collectedBy: req.CollectedBy || "",
+          items: items.filter(item =>
+            String(item.RequestID) === String(req.ID ?? req.ItemInternalId)
+          ).map(item => ({
+              ...item,
+              id: item.ID ?? item.ItemInternalId,
+              RequestedQty: Number(item.RequestedQty ?? item.Quantity ?? item.Qty ?? 0),
+              ReadyQty: Number(item.ReadyQty ?? item.IssueQty ?? 0),
+              CollectedQty: Number(item.CollectedQty ?? 0),
+              CCDRemark: item.CCDRemark ?? item.CCDIssueRemark ?? ""
+            }))
+        }));
+
+        console.info("Loaded gift requests:", state.requests.length);
+      } catch(e) {
+        console.error("Get Requests error:", e);
+        state.requests = state.requests.length > 0 ? state.requests : [];
+        const detail = String(e?.message || "Unknown error");
+        notify(`Requests could not be loaded: ${detail}`, "error");
+      }
+      
+const inventoryResponse =
+    await fetch(GET_INVENTORY_API,{
+        method:"POST"
+    });
+
+const inventoryData =
+    await inventoryResponse.json();
+
+state.gifts = inventoryData.map(item => ({
+    id: item.ID,                  // <--- Must be SharePoint's numeric row ID (1, 2, 3...) for updates
+    giftID: item.GiftID,          // <--- Your custom string ID ("G001")
+    name: item.GiftName,
+    category: item.Category,
+    quantity: Number(item.StockQty || 0),
+    reserved: Math.max(0, Number(item.ReservedQty || 0)),
+    lowStock: Number(item.LowStockQty || 0),
+    image: item.ImageURL,
+    createdAt: Date.now()
+}));
+      state.loaded = true;
+      state.isRefreshing = false;
+      render();
     }
-    catch(error){
-        console.error(error);
-        alert("Failed to save item");
+
+    function physicalStock(gift) {
+      return Math.max(0, Number(gift?.quantity || 0));
     }
+
+    function reservedStock(gift) {
+      return Math.min(physicalStock(gift), Math.max(0, Number(gift?.reserved || 0)));
+    }
+
+    function availableStock(gift) {
+      return Math.max(0, physicalStock(gift) - reservedStock(gift));
+    }
+
+    async function persistGifts(next) { state.gifts = next; await storageSet("gifts", JSON.stringify(next)); }
+    async function persistRequests(next) { state.requests = next; await storageSet("requests", JSON.stringify(next)); }
+
+    /* ---------------------------------------------------------------------- */
+    /* Rendering                                                               */
+    /* ---------------------------------------------------------------------- */
+    function render() {
+      const app = document.getElementById("app");
+      const signedIn = state.authed && state.role;
+      document.body.classList.toggle("login-page", !signedIn || state.view === "login");
+      app.innerHTML = `
+        <header class="topbar">
+          <button class="brand" id="brand-btn">
+            <img src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg" alt="PHB Logo" class="h-8 w-auto mr-3" />
+            <span class="brand-mark">${ICONS.gift}</span>
+            <span class="brand-text">iGIFT</span>
+          </button>
+          <nav class="topnav">
+            ${signedIn ? `<span class="text-[10px] uppercase tracking-widest text-gray-500 hidden md:inline">${esc(state.account?.name || state.account?.username || "Signed in")}</span>` : ""}
+            ${state.role === "user" ? `<button class="nav-pill ${state.userTab === "requests" ? "active" : ""}" data-user-tab="requests">My Requests</button><button class="nav-pill ${state.userTab === "new" ? "active" : ""}" data-user-tab="new">New Request</button>` : ""}
+            ${signedIn ? `<button class="nav-pill" id="global-logout">Sign Out</button>` : ""}
+          </nav>
+        </header>
+        <main class="main-area">${mainHTML()}</main>`;
+      bindEvents();
+      if (state.view === "admin" && state.adminTab === "dashboard") renderCharts();
+    }
+
+    function mainHTML() {
+      if (!state.loaded && !state.isRefreshing) return `<div class="loading-block"><span class="spin">${ICONS.clock}</span> Initializing...</div>`;
+      if (!state.authed || state.view === "login") return loginViewHTML();
+      if (state.role === "user") {
+        if (!state.userTab) state.userTab = "requests";
+        return userShellHTML();
+      }
+      if (state.role === "admin") return adminShellHTML();
+      return loginViewHTML();
+    }
+
+    function requestViewHTML() {
+      const selectedEntries = Object.entries(state.selectedGifts);
+      
+      return `
+      <div class="max-w-6xl mx-auto">
+        <div class="hero-tag">
+          <p class="eyebrow">Inventory Request Portal</p>
+          <h1>Corporate Gift</h1>
+          <p class="hero-sub">Select items from our current inventory for your upcoming events.</p>
+        </div>
+        <form id="request-form" class="space-y-12">
+          <div class="card">
+            <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Event Details</h3>
+            <div class="space-y-6">
+              <div class="w-full">
+                ${fieldHTML("requesterName", "Name", `<input name="requesterName" required readonly value="${esc(state.account?.name || "")}" placeholder="Signed-in Microsoft account" />`)}
+              </div>
+              
+              <div class="form-grid">
+                <div class="grid grid-cols-2 gap-6 col-span-2">
+
+  ${fieldHTML("department", "Department",
+    `<input name="department" required placeholder="e.g. Marketing" />`)}
+
+  ${fieldHTML("company", "Company",
+    `<input name="company" required placeholder="e.g. PHB Asset Management Berhad" />`)}
+
+  ${fieldHTML("email", "Email",
+    `<input type="email" name="email" required readonly value="${esc(String(state.account?.username || "").toLowerCase())}" placeholder="Signed-in Microsoft email" />`)}
+
+  ${fieldHTML("mobileNo", "Mobile No",
+    `<input name="mobileNo" required placeholder="012-3456789" />`)}
+
+  ${fieldHTML("eventName", "Event Name",
+    `<input name="eventName" required placeholder="e.g. Signing Ceremony" />`)}
+
+  ${fieldHTML("eventDate", "Event Date",
+    `<input type="date" name="eventDate" id="event-date-input" required />`)}
+
+</div>
+              </div>
+            </div>
+          </div>
+
+<div class="card">
+  <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">
+      Catalog
+  </h3>
+
+  <p class="text-[12px] text-gray-500 mb-6">
+      You may select multiple gift items and specify the required quantity for each selection.
+  </p>
+
+  <div class="gift-picker" id="gift-picker">
+              ${state.gifts.map(g => `
+                <div class="gift-option ${state.selectedGifts[g.id] ? "selected" : ""}" data-gift-id="${g.id}">
+                  <button type="button" class="gift-option-top" data-toggle-gift="${g.id}">
+                    <span class="gift-thumb">${g.image ? `<img src="${g.image}" alt="" />` : `<div class="opacity-20">${ICONS.gift}</div>`}</span>
+                    <span class="gift-option-text">
+                      <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">${esc(g.category)}</span>
+                      <strong>${esc(g.name)}</strong>
+                      <span class="request-stock-summary"><b>${availableStock(g)}</b> available</span>
+                    </span>
+                  </button>
+                  <div class="gift-qty-input">
+                    <div class="flex items-center gap-3">
+                      <span class="text-[9px] font-headline font-bold uppercase tracking-widest whitespace-nowrap">Quantity</span>
+                      <input type="number" 
+                        min="1" 
+                        max="${availableStock(g)}" 
+                        placeholder=" "
+                        class="gift-qty-input-field w-full text-xs p-2 border border-gray-200 outline-none" 
+                        data-qty-gift="${g.id}" 
+                        value="${state.selectedGifts[g.id] || 1}" 
+                      />
+                    </div>
+                  </div>
+                </div>`).join("")}
+            </div>
+            <span class="field-error" id="err-giftSelection"></span>
+            <div id="stock-warnings" class="mt-4 space-y-2"></div>
+          </div>
+
+          <div class="flex flex-col md:flex-row gap-8">
+            <div class="flex-1">
+              <div class="card h-full">
+                <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Purpose</h3>
+                ${fieldHTML("reason", "Description of Request", `<textarea rows="6" name="reason" required placeholder="Briefly describe the usage and distribution plan..."></textarea>`)}
+              </div>
+            </div>
+            <div class="w-full md:w-80" id="order-summary-container">
+              ${orderSummaryHTML(selectedEntries)}
+            </div>
+          </div>
+        </form>
+      </div>`;
+    }
+
+    function orderSummaryHTML(selectedEntries) {
+      const totalItems = selectedEntries.reduce((acc, [_, qty]) => acc + (parseInt(qty) || 0), 0);
+      const hasItems = selectedEntries.length > 0;
+      
+      return `
+      <div class="selection-card h-full flex flex-col">
+        <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-8 pb-4 border-b border-gray-100">Your Selection</h3>
+        
+        <div class="flex-grow">
+          ${!hasItems ? `
+            <div class="flex flex-col items-center justify-center h-full py-12 text-gray-400">
+              <div class="mb-4 opacity-30 scale-150">${ICONS.gift}</div>
+              <p class="font-headline text-[10px] uppercase font-bold tracking-widest">No items selected</p>
+            </div>
+          ` : `
+            <table class="order-summary-table mb-8">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th class="text-right">Qty</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${selectedEntries.map(([gid, qty]) => {
+                  const g = state.gifts.find(item => item.id === gid);
+                  return `
+                    <tr>
+                      <td class="pr-4">${esc(g.name)}</td>
+                      <td class="text-right font-bold">${qty}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+            
+            <div class="order-summary-total mb-10 pt-4">
+              <span class="text-[10px] uppercase font-bold">Total Units</span>
+              <span class="text-2xl font-headline font-bold">${totalItems}</span>
+            </div>
+          `}
+        </div>
+
+        <button type="submit" 
+          class="btn-primary full brand-submit ${!hasItems ? 'opacity-50 cursor-not-allowed' : ''}" 
+          id="submit-btn" 
+          ${!hasItems ? 'disabled' : ''}
+        >Submit Request</button>
+        
+        <p class="text-[9px] text-gray-500 mt-6 text-center leading-relaxed font-sans normal-case tracking-normal">
+          Your request will be submitted to the CCD team for final verification and inventory reservation.
+        </p>
+      </div>`;
+    }
+
+    function fieldHTML(name, label, inner) {
+      return `<label class="field">
+        <span class="field-label">${label}</span>
+        ${inner}
+        <span class="field-error" id="err-${name}"></span>
+      </label>`;
+    }
+
+let localRoleNavigationInProgress = false;
+
+function enterLocalTestRole(role) {
+  if (!LOCAL_TEST_MODE || localRoleNavigationInProgress) return;
+  localRoleNavigationInProgress = true;
+
+  const safeRole = role === "admin" ? "admin" : "user";
+  const testEmail = safeRole === "admin"
+    ? (ALLOWED_USERS[0] || "admin@phb.com.my")
+    : "test.user@phb.com.my";
+
+  state.authed = true;
+  state.role = safeRole;
+  state.account = {
+    name: safeRole === "admin" ? "Local Test Admin" : "Local Test User",
+    username: testEmail
+  };
+  state.view = safeRole === "admin" ? "admin" : "user";
+  state.adminTab = "dashboard";
+  state.userTab = "requests";
+  state.selectedGifts = {};
+
+  document.body.classList.remove("login-page");
+  render();
+  window.scrollTo(0, 0);
+  requestAnimationFrame(() => { localRoleNavigationInProgress = false; });
 }
-        // END OF REPLACEMENT
 
-        function adjustItemStock(idx) {
-            let val = prompt("Enter new Physical stock count:", inventory[idx].physical);
-            if(val !== null) { inventory[idx].physical = parseInt(val) || 0; renderContent(); }
+function loginViewHTML() {
+  return `
+  <div class="max-w-5xl mx-auto pt-10 md:pt-16">
+    <div class="text-center mb-10">
+      <img
+        src="https://www.phb.com.my/clients/asset_E5316276-9983-47F1-A6C2-76D0C7985656/contentms/img/logo/logo-phb.svg"
+        alt="PHB Logo"
+        class="landing-phb-logo"
+      />
+      <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400 mb-3">CORPORATE COMMUNICATIONS DEPARTMENT</p>
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">iGIFT PORTAL</h1>
+      <p class="text-sm text-gray-500">_____</p>
+      ${LOCAL_TEST_MODE ? `<div class="inline-flex mt-4 px-4 py-2 bg-amber-50 border border-amber-300 text-amber-800 text-[10px] font-bold uppercase tracking-widest">Local Test Mode · Microsoft login bypassed</div>` : ""}
+    </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <section class="card p-8 md:p-10 flex flex-col">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Employee Access</p>
+        <h2 class="text-2xl font-bold mb-3">User</h2>
+        <p class="text-sm text-gray-500 mb-8 flex-1">Open My Requests to track requests submitted using your account, or select New Request to submit new request.</p>
+        <button type="button" class="btn-primary w-full" data-login-role="user">Login as User</button>
+      </section>
+      <section class="card p-8 md:p-10 flex flex-col border-t-4 border-black">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">CCD Access</p>
+        <h2 class="text-2xl font-bold mb-3">Admin</h2>
+        <p class="text-sm text-gray-500 mb-8 flex-1">View the CCD dashboard, manage inventory, review approved requests and record gift issuance.</p>
+        <button type="button" class="btn-primary w-full" data-login-role="admin">Login as Admin</button>
+      </section>
+    </div>
+  </div>`;
+}
+
+    function userShellHTML() {
+      return `<div>
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.userTab === "requests" ? "active" : ""}" data-user-tab="requests">My Requests</button>
+          <button class="admin-tab ${state.userTab === "new" ? "active" : ""}" data-user-tab="new">New Request</button>
+        </div>
+        <div>${state.userTab === "new" ? requestViewHTML() : myRequestsHTML()}</div>
+      </div>`;
+    }
+
+    function userRequestAuditHTML(request) {
+      const status = normalizeStatus(request.status);
+      const liveEntries = Array.isArray(state.requestAudit[request.id])
+        ? state.requestAudit[request.id]
+        : [];
+      const baselineEntries = [
+        {
+          key: "submitted",
+          title: "Request submitted",
+          date: request.submittedAt,
+          actor: request.requesterName || "Requester"
         }
+      ];
 
-        function removeItem(idx) {
-            if(confirm("Remove this item?")) { inventory.splice(idx, 1); renderContent(); }
-        }
+      if (status !== "pending approval") {
+        baselineEntries.push({
+          key: "approved",
+          title: status === "rejected by approver" ? "Superior decision completed" : "Approved by Superior",
+          date: request.ApprovedDate || request.approvedDate || request.submittedAt,
+          actor: request.ApproverName || request.approverName || "Superior"
+        });
+      }
 
-        function openPrepModal(reqId) {
-            activePrepRequestId = reqId;
-            let req = requests.find(r => r.id === reqId);
-            let container = document.getElementById('prep-items-list');
-            container.innerHTML = req.items.map((item, idx) => `
-                <div class="flex items-center justify-between text-xs bg-gray-50 p-3 rounded-xl">
-                    <span class="font-bold">${item.name}</span>
-                    <input type="number" value="${item.requested}" id="prep-qty-${idx}" class="w-16 p-2 border rounded-lg text-center font-bold">
+      const entries = [...baselineEntries, ...liveEntries]
+        .filter((entry, index, array) => {
+          const signature = `${entry.key || entry.title}|${entry.date || ""}|${entry.actor || ""}`;
+          return array.findIndex(candidate =>
+            `${candidate.key || candidate.title}|${candidate.date || ""}|${candidate.actor || ""}` === signature
+          ) === index;
+        })
+        .sort((a, b) => new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime());
+
+      return `<div class="user-audit-timeline">${entries.map((entry, index) => `
+        <div class="user-audit-entry ${index === entries.length - 1 ? "current" : ""}">
+          <span class="user-audit-dot"></span>
+          <div>
+            <strong>${esc(entry.title)}</strong>
+            <p>${formatDateTime(entry.date)} · ${esc(entry.actor || "System")}</p>
+            ${entry.remark ? `<small>${esc(entry.remark)}</small>` : ""}
+          </div>
+        </div>
+      `).join("")}</div>`;
+    }
+
+    function myRequestsHTML() {
+      const email = String(state.account?.username || "").trim().toLowerCase();
+      const mine = state.requests
+        .filter(r => String(r.email || "").trim().toLowerCase() === email)
+        .sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+      const statusClass = (status) => {
+        const normalized = normalizeStatus(status);
+        if (normalized === "approved") return "is-approved";
+        if (normalized === "issued") return "is-issued";
+        if (normalized === "rejected by approver" || normalized === "declined by ccd") return "is-closed";
+        return "is-pending";
+      };
+
+      return `<section class="my-requests-view">
+        <div class="my-requests-header">
+          <div>
+            <h1>My Requests</h1>
+            <p class="subtext">Track gift requests submitted using ${esc(email)}</p>
+          </div>
+          <div class="my-requests-actions"><button class="btn-ghost sm" id="refresh-my-requests"><span>${ICONS.refresh}</span> Refresh</button><button class="btn-primary sm" data-user-tab="new">New Request</button></div>
+        </div>
+
+        ${mine.length ? `
+          <div class="my-request-list">
+            ${mine.map((r, index) => {
+              const meta = getStatusMeta(r.status);
+              const items = Array.isArray(r.items) ? r.items : [];
+              const totalUnits = items.reduce((sum, item) => sum + Number(item.Quantity || item.Qty || 0), 0);
+              return `<article class="my-request-record ${statusClass(r.status)}">
+                <div class="my-request-rail" aria-hidden="true"></div>
+                <div class="my-request-main">
+                  <div class="my-request-topline">
+                    <div class="my-request-date">
+                      <span>Submitted</span>
+                      <strong>${formatDateTime(r.submittedAt)}</strong>
+                    </div>
+                    <span class="my-request-status">${esc(meta.label)}</span>
+                  </div>
+
+                  <div class="my-request-title-row">
+                    <div>
+                      <p class="my-request-sequence">Request ${String(mine.length - index).padStart(2, "0")}</p>
+                      <h2>${esc(r.eventName || "Gift Request")}</h2>
+                    </div>
+                    <div class="my-request-event-date">
+                      <span>Event date</span>
+                      <strong>${formatDate(r.eventDate)}</strong>
+                    </div>
+                  </div>
+
+                  <div class="my-request-meta">
+                    <span>${esc(r.department || "Department not specified")}</span>
+                    ${r.company ? `<span>${esc(r.company)}</span>` : ""}
+                    <span>${items.length} item type${items.length === 1 ? "" : "s"} · ${totalUnits} unit${totalUnits === 1 ? "" : "s"}</span>
+                  </div>
+
+                  ${normalizeStatus(r.status) === "pending approval" ? `<div class="user-pending-note"><strong>Pending Superior approval</strong><span>The approval request has been sent to your Superior via Microsoft Teams.</span></div>` : ""}
+                  ${r.reason ? `<div class="my-request-purpose">
+                    <span>Purpose</span>
+                    <p>${esc(r.reason)}</p>
+                  </div>` : ""}
+
+                  <div class="my-request-items">
+                    <span class="my-request-section-label">Requested items</span>
+                    <div class="my-request-item-list">
+                      ${items.length ? items.map(item => `
+                        <div class="my-request-item">
+                          <span>${esc(item.GiftName || item.GiftID || "Gift item")}</span>
+                          <strong>${esc(item.Quantity || item.Qty || 0)}</strong>
+                        </div>
+                      `).join("") : `<p class="my-request-empty-items">Item details are not available.</p>`}
+                    </div>
+                  </div>
+
+                  ${["ready for collection", "partially ready for collection"].includes(normalizeStatus(r.status)) ? `
+                    <div class="user-ready-notice" role="status">
+                      <div>
+                        <strong>${normalizeStatus(r.status) === "partially ready for collection" ? "Some gifts are ready for collection" : "Your gifts are ready for collection"}</strong>
+                        <p>Please proceed to CCD to collect the quantity marked as ready. Bring your staff identification for verification.</p>
+                      </div>
+                      <span>Collection required</span>
+                    </div>
+                  ` : ""}
+
+                  <details class="user-audit-details">
+                    <summary>View request audit trail</summary>
+                    ${userRequestAuditHTML(r)}
+                  </details>
                 </div>
-            `).join('');
-            document.getElementById('modal-prep-collection').classList.remove('hidden');
+              </article>`;
+            }).join("")}
+          </div>
+        ` : `
+          <div class="my-requests-empty">
+            <div class="my-requests-empty-mark">${ICONS.pkg}</div>
+            <h2>No requests yet</h2>
+            <p>Use the New Request tab to submit your first corporate gift request.</p>
+          </div>
+        `}
+      </section>`;
+    }
+
+    function adminShellHTML() {
+      const pending = state.requests.filter(r => r.status === "pending approval").length;
+      return `
+        <div class="admin-tabs">
+          <button class="admin-tab ${state.adminTab === "dashboard" ? "active" : ""}" data-tab="dashboard">Dashboard</button>
+          <button class="admin-tab ${state.adminTab === "requests" ? "active" : ""}" data-tab="requests">${pending ? `(${pending})` : ""} Requests</button>
+          <button class="admin-tab ${state.adminTab === "inventory" ? "active" : ""}" data-tab="inventory">Inventory</button>
+          
+        </div>
+        <div id="admin-content">
+          ${state.adminTab === "dashboard" ? dashboardHTML() : state.adminTab === "inventory" ? inventoryHTML() : requestsHTML()}
+        </div>
+      `;
+    }
+
+    function dashboardHTML() {
+      const totalUnits = state.gifts.reduce((s, g) => s + physicalStock(g), 0);
+      const pendingApprovalCount = state.requests.filter(
+        request => normalizeStatus(request.status) === "pending approval"
+      ).length;
+      const pendingIssuanceCount = state.requests.filter(
+        request => normalizeStatus(request.status) === "approved"
+      ).length;
+
+      return `
+        <div class="stat-row">
+          ${statCardHTML("Active Inventory", state.gifts.length)}
+          ${statCardHTML("Stock Volume", totalUnits)}
+          ${statCardHTML("Pending Approval", pendingApprovalCount)}
+          ${statCardHTML("Pending Issuance", pendingIssuanceCount)}
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="card">
+            <h3 class="text-xs font-bold mb-8">Stock Analysis</h3>
+            
+<div style="height:300px;">
+  <canvas id="stockChart"></canvas>
+</div>
+
+          </div>
+          <div class="card">
+            <h3 class="text-xs font-bold mb-8">Request Distribution</h3>
+            
+<div style="height:300px;">
+  <canvas id="statusChart"></canvas>
+</div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function statCardHTML(label, value) {
+      return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
+    }
+function giftFormHTML() {
+      return `
+        <div class="card mb-8 border-2 border-black bg-white p-6 shadow-sm">
+          <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-6">Add New Inventory Item</h3>
+          <form id="new-gift-form" class="space-y-4">
+            <div class="form-grid">
+              ${fieldHTML("newItemName", "Item Name", `<input name="newItemName" required placeholder="e.g. Executive Gift Box" />`)}
+              ${fieldHTML("newItemCategory", "Category", `<input name="newItemCategory" value="General" required placeholder="e.g. General" />`)}
+            </div>
+            <div class="form-grid">
+              ${fieldHTML("newItemQty", "Stock Quantity", `<input type="number" name="newItemQty" min="0" required value="50" />`)}
+              ${fieldHTML("newItemLow", "Low Stock Alert Level", `<input type="number" name="newItemLow" min="0" required value="10" />`)}
+            </div>
+            ${fieldHTML("newItemImage", "Image URL", `<input name="newItemImage" placeholder="https://..." />`)}
+            <div class="flex justify-end gap-3 mt-4">
+              <button type="button" class="btn-ghost sm" id="cancel-new-gift">Cancel</button>
+              <button type="submit" class="btn-primary sm brand-submit">Save Item</button>
+            </div>
+          </form>
+        </div>
+      `;
+    }
+
+    function inventoryHTML() {
+      return `
+       <div class="flex justify-between items-center mb-12">
+
+  <div class="flex items-center border-b border-black py-2 w-full max-w-xs">
+
+    <span class="mr-3">${ICONS.search}</span>
+
+    <input
+      id="inv-search"
+      placeholder="SEARCH INVENTORY"
+      class="bg-transparent border-none outline-none text-xs font-headline font-bold uppercase tracking-widest w-full"
+      value="${esc(state.inventoryQuery)}"
+    />
+
+  </div>
+
+  <div class="flex items-center gap-3">
+
+      <button
+          id="refresh-inventory"
+          class="btn-ghost sm border-none px-2 flex items-center gap-2 hover:bg-black/5 transition-colors"
+          ${state.isRefreshing ? 'disabled' : ''}
+      >
+          <span class="${state.isRefreshing ? 'spin' : ''}">
+              ${ICONS.refresh}
+          </span>
+
+          <span class="text-[10px] font-bold uppercase tracking-widest">
+              ${state.isRefreshing ? 'Refreshing...' : 'Refresh'}
+          </span>
+      </button>
+
+      <button class="btn-primary sm" id="toggle-gift-form">
+          ${ICONS.plus} New Item
+      </button>
+
+  </div>
+
+</div>
+        <div id="gift-form-slot">${state.showGiftForm ? giftFormHTML() : ""}</div>
+        <div class="relative min-h-[200px]">
+
+  ${state.isRefreshing ? `
+    <div class="absolute inset-0 z-10 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
+      <div class="flex flex-col items-center gap-4">
+        <span class="spin">${ICONS.refresh}</span>
+        <span class="font-headline text-[9px] font-bold uppercase tracking-widest text-black">
+          Synchronizing with API
+        </span>
+      </div>
+    </div>
+  ` : ''}
+
+  <div class="gift-grid">
+
+          ${state.gifts.map(g => `
+          <div class="bg-white border border-gray-100 p-4">
+            <div class="gift-card-img">${g.image ? `<img src="${g.image}" />` : ICONS.gift}</div>
+            <div class="gift-card-body">
+              <div class="gift-card-top">
+                <strong>${esc(g.name)}</strong>
+                ${availableStock(g) <= g.lowStock ? `<span class="low-pill">Low</span>` : ""}
+              </div>
+              <div class="text-[10px] uppercase font-bold text-gray-400 mb-6">${esc(g.category)}</div>
+              <div class="inventory-stock-breakdown">
+                <div><span>Physical</span><strong>${physicalStock(g)}</strong></div>
+                <div><span>Reserved</span><strong>${reservedStock(g)}</strong></div>
+                <div class="available"><span>Available</span><strong>${availableStock(g)}</strong></div>
+              </div>
+              <div class="flex justify-end items-end mt-5">
+                <div class="flex gap-4">
+                  <button class="text-[10px] uppercase font-bold tracking-widest hover:underline" data-edit-gift="${g.id}">Adjust</button>
+                  <button class="text-[10px] uppercase font-bold tracking-widest text-red-500 hover:underline" data-remove-gift="${g.id}">Remove</button>
+                </div>
+              </div>
+            </div>
+          </div>`).join("")}
+  </div>
+</div>`;
+
+    }
+
+    function requestAuditHTML(request) {
+      const status = normalizeStatus(request.status);
+      const liveEntries = Array.isArray(state.requestAudit[request.id])
+        ? state.requestAudit[request.id]
+        : [];
+
+      // Baseline events must always remain visible. Previously, the first live
+      // issuance event replaced this baseline array, causing Submitted and
+      // Superior Approval to disappear from the timeline.
+      const baselineEntries = [
+        {
+          key: "submitted",
+          title: "Request submitted",
+          date: request.submittedAt,
+          actor: request.requesterName || "Requester"
+        }
+      ];
+
+      if (status !== "pending approval") {
+        baselineEntries.push({
+          key: "approved",
+          title: "Superior approval completed",
+          date: request.ApprovedDate || request.approvedDate || request.submittedAt,
+          actor: request.ApproverName || request.approverName || "Superior"
+        });
+      }
+
+      // Merge baseline and live events instead of choosing one or the other.
+      const entries = [...baselineEntries, ...liveEntries]
+        .filter((entry, index, array) => {
+          const signature = `${entry.key || entry.title}|${entry.date || ""}|${entry.actor || ""}`;
+          return array.findIndex(candidate =>
+            `${candidate.key || candidate.title}|${candidate.date || ""}|${candidate.actor || ""}` === signature
+          ) === index;
+        })
+        .sort((a, b) => {
+          const aTime = new Date(a.date || 0).getTime();
+          const bTime = new Date(b.date || 0).getTime();
+          return aTime - bTime;
+        });
+
+      return `<div class="workflow-timeline">${entries.map((entry, index) => `
+        <div class="workflow-timeline-item ${index === entries.length - 1 ? "current" : ""}">
+          <span class="workflow-dot"></span>
+          <div>
+            <strong>${esc(entry.title)}</strong>
+            <p>${formatDateTime(entry.date)} · ${esc(entry.actor || "System")}</p>
+            ${entry.remark ? `<small>${esc(entry.remark)}</small>` : ""}
+          </div>
+        </div>`).join("")}</div>`;
+    }
+
+    function requestsHTML() {
+      const filtered = state.requestFilter === "all" ? state.requests : state.requests.filter(r => {
+        const status = normalizeStatus(r.status);
+        if (state.requestFilter === "ready") return ["ready for collection", "partially ready for collection"].includes(status);
+        if (state.requestFilter === "collected") return ["collected", "partially collected"].includes(status);
+        return status === state.requestFilter;
+      });
+      const filters = [
+        ["all","All"], ["pending approval","Pending"], ["approved","Approved"], ["ready","Ready for Collection"],
+        ["collected","Collected"], ["rejected by approver","Rejected"], ["declined by ccd","Declined"]
+      ];
+      return `<div>
+        
+        <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-2 gap-4">
+          <div class="flex gap-6 overflow-x-auto">${filters.map(([value,label]) => `<button class="text-[10px] uppercase font-bold tracking-widest whitespace-nowrap pb-2 ${state.requestFilter === value ? "text-black border-b-2 border-black" : "text-gray-400"}" data-filter="${value}">${label}</button>`).join("")}</div>
+          <button id="refresh-requests" class="btn-ghost sm">Refresh</button>
+        </div>
+        <div class="space-y-4">${filtered.length ? filtered.map(r => {
+          const status = normalizeStatus(r.status);
+          const meta = getStatusMeta(status);
+          const items = Array.isArray(r.items) ? r.items : [];
+          return `<article class="admin-workflow-card">
+            <div class="admin-workflow-head">
+              <div><p class="eyebrow">${esc(r.department || "Request")}</p><h3>${esc(r.eventName || "Gift Request")}</h3><p>${esc(r.requesterName || "")} · ${formatDate(r.eventDate)}</p></div>
+              <span class="workflow-status" style="color:${meta.color};border-color:${meta.color}">${esc(meta.label)}</span>
+            </div>
+            <div class="admin-request-purpose">
+              <span>Purpose</span>
+              <p>${esc(r.reason || "No purpose provided.")}</p>
+            </div>
+            <div class="workflow-item-grid">${items.map((item,i) => {
+              const requested = Number(item.RequestedQty || item.Quantity || item.Qty || 0);
+              const readyStage = [
+                "ready for collection",
+                "partially ready for collection",
+                "collected",
+                "partially collected"
+              ].includes(status);
+              const collectedStage = ["collected", "partially collected"].includes(status);
+              const readyValue = readyStage
+                ? Number(item.ReadyQty ?? item.IssueQty ?? 0)
+                : "NA";
+              const collectedValue = collectedStage
+                ? Number(item.CollectedQty ?? 0)
+                : "NA";
+              return `<div class="workflow-item-row">
+                <strong>${esc(item.GiftName || item.GiftID || "Gift item")}</strong>
+                <span>Requested <b>${requested}</b></span>
+                <span>Ready <b class="${readyStage ? "" : "quantity-na"}">${readyValue}</b></span>
+                <span>Collected <b class="${collectedStage ? "" : "quantity-na"}">${collectedValue}</b></span>
+              </div>`;
+            }).join("") || `<p class="text-sm text-gray-400">No item details available.</p>`}</div>
+            <details class="workflow-details"><summary>View audit trail</summary>${requestAuditHTML(r)}</details>
+            <div class="workflow-actions">
+              ${status === "pending approval" ? `<span class="workflow-wait">Awaiting Superior approval in Microsoft Teams</span>` : ""}
+              ${status === "approved" ? `<button class="btn-primary sm" data-prepare-request="${r.id}">Prepare for Collection</button><button class="btn-ghost sm danger" data-ccd-decline="${r.id}">Decline</button>` : ""}
+              ${["ready for collection","partially ready for collection"].includes(status) ? `<button class="btn-primary sm" data-collect-request="${r.id}">Confirm Collection</button>` : ""}
+            </div>
+          </article>`;
+        }).join("") : `<div class="text-center py-16 text-gray-400 text-sm">No matching requests found</div>`}</div>
+      </div>`;
+    }
+
+    function declineGiftRequest(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) {
+        notify("Request could not be found", "error");
+        return;
+      }
+
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal" style="width:min(620px,100%)">
+        <div class="workflow-modal-head">
+          <div>
+            <p class="eyebrow">CCD Decision</p>
+            <h2>Decline Request</h2>
+          </div>
+          <button type="button" class="btn-ghost sm" data-close-decline>Close</button>
+        </div>
+        <p class="workflow-modal-copy">
+          Provide a clear reason for declining <strong>${esc(request.eventName || "this gift request")}</strong>.
+          The requester will receive the reason by email.
+        </p>
+        <label class="field">
+          <span class="field-label">CCD Decline Reason</span>
+          <textarea id="ccd-decline-reason" rows="5" maxlength="1000" placeholder="Example: The requested gifts are unavailable and no suitable alternative is currently available." required></textarea>
+          <span class="field-error" id="ccd-decline-error"></span>
+        </label>
+        <button type="button" class="btn-primary full" id="confirm-ccd-decline">Confirm Decline</button>
+      </div>`;
+
+      const closeButton = document.querySelector('[data-close-decline]');
+      if (closeButton) closeButton.onclick = () => { document.getElementById("modal-root").innerHTML = ""; };
+
+      const confirmButton = document.getElementById("confirm-ccd-decline");
+      if (confirmButton) confirmButton.onclick = async () => {
+        const reason = document.getElementById("ccd-decline-reason")?.value.trim() || "";
+        const errorField = document.getElementById("ccd-decline-error");
+        if (reason.length < 5) {
+          if (errorField) errorField.textContent = "Please provide a decline reason of at least 5 characters.";
+          return;
         }
 
-        function closePrepModal() { document.getElementById('modal-prep-collection').classList.add('hidden'); }
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
 
-        function confirmReadyForCollection() {
-            let req = requests.find(r => r.id === activePrepRequestId);
-            req.status = "READY FOR COLLECTION";
-            closePrepModal();
-            alert("Status updated to Ready for Collection!");
-            renderContent();
+        try {
+          const response = await fetch(DECLINE_REQUEST_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id),
+              declineReason: reason,
+              actionByName: state.account?.name || "CCD Officer",
+              actionByEmail: String(state.account?.username || "").trim().toLowerCase()
+            })
+          });
+
+          await readFlowResponse(response, "The request could not be declined");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Request declined by CCD");
+          await loadAll();
+        } catch (error) {
+          confirmButton.disabled = false;
+          confirmButton.textContent = "Confirm Decline";
+          notify(error.message || "The request could not be declined", "error");
+        }
+      };
+    }
+
+    function readFlowResponse(response, fallbackMessage) {
+      return response.text().then(text => {
+        let data = {};
+        if (text.trim()) {
+          try { data = JSON.parse(text); }
+          catch { data = { message: text }; }
+        }
+        if (data && Object.prototype.hasOwnProperty.call(data, "body")) {
+          if (typeof data.body === "string") {
+            try { data = JSON.parse(data.body); } catch { data = { message: data.body }; }
+          } else if (data.body && typeof data.body === "object") data = data.body;
+        }
+        if (!response.ok || data.success === false) {
+          throw new Error(data.message || `${fallbackMessage} (HTTP ${response.status})`);
+        }
+        return data;
+      });
+    }
+
+    function openEditGiftModal(giftId) {
+      const gift = state.gifts.find(g => String(g.id) === String(giftId));
+      if (!gift) {
+        notify("Gift not found", "error");
+        return;
+      }
+
+      document.getElementById("modal-root").innerHTML = `
+        <div class="workflow-modal" style="width:min(520px,100%)">
+          <div class="workflow-modal-head">
+            <div>
+              <p class="eyebrow">Inventory</p>
+              <h2>Edit Item</h2>
+            </div>
+            <button class="btn-ghost sm" id="close-edit-modal">Close</button>
+          </div>
+          <div class="space-y-4 mt-4">
+            <label class="field">
+              <span class="field-label">Gift Name</span>
+              <input id="edit-name" value="${esc(gift.name)}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Category</span>
+              <input id="edit-category" value="${esc(gift.category || "General")}" required placeholder="e.g. General">
+            </label>
+            <label class="field">
+              <span class="field-label">Stock Quantity</span>
+              <input id="edit-qty" type="number" min="0" value="${physicalStock(gift)}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Low Stock Alert Level</span>
+              <input id="edit-low" type="number" min="0" value="${gift.lowStock || 0}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Image URL</span>
+              <input id="edit-image" value="${esc(gift.image || "")}" placeholder="https://...">
+            </label>
+            <button id="save-gift" class="btn-primary full brand-submit">Save Changes</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("close-edit-modal").onclick = () => {
+        document.getElementById("modal-root").innerHTML = "";
+      };
+
+      document.getElementById("save-gift").onclick = async () => {
+        const name = document.getElementById("edit-name").value.trim();
+        const category = document.getElementById("edit-category").value;
+        const quantity = Number(document.getElementById("edit-qty").value) || 0;
+        const lowStock = Number(document.getElementById("edit-low").value) || 0;
+        const image = document.getElementById("edit-image").value.trim();
+
+        if (!name) {
+          notify("Gift name is required", "error");
+          return;
         }
 
-        function updateReqStatus(reqId, newStatus) {
-            let req = requests.find(r => r.id === reqId);
-            if(req) { req.status = newStatus; renderContent(); }
+        const saveBtn = document.getElementById("save-gift");
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
+
+       try {
+          const response = await fetch(UPDATE_INVENTORY_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              itemId: Number(gift.sharepointId || gift.id), // Use SharePoint numeric row ID
+              giftID: String(gift.giftID || "G001"),
+              giftName: name,
+              category: category,
+              stockQty: quantity,
+              lowStockQty: lowStock,
+              imageUrl: image
+            })
+          });
+          await readFlowResponse(response, "Failed to update inventory item");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Inventory updated successfully");
+          await loadAll();
+        } catch (error) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Changes";
+          notify(error.message || "Failed to update inventory item", "error");
+        }
+      };
+    }
+
+    function openPrepareModal(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) return;
+      const rows = (request.items || []).map((item,index) => {
+        const requested = Number(item.RequestedQty ?? item.Quantity ?? item.Qty ?? 0);
+        const gift = state.gifts.find(g => String(g.id) === String(item.GiftID));
+        const stock = availableStock(gift);
+        return `<div class="modal-item-row">
+          <div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Requested ${requested} · Available ${stock}</small></div>
+          <input type="number" min="0" max="${Math.min(requested,stock)}" value="${Math.min(requested,stock)}" data-prepare-qty="${index}">
+          <input placeholder="CCD remark, if reduced" data-prepare-remark="${index}">
+        </div>`;
+      }).join("");
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal">
+        <div class="workflow-modal-head"><div><p class="eyebrow">CCD Preparation</p><h2>Prepare for Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div>
+        <p class="workflow-modal-copy">Confirm the quantity CCD can prepare. The quantity becomes reserved, while Physical stock remains unchanged until collection.</p>
+        <div class="modal-item-list">${rows}</div>
+        <label class="field"><span class="field-label">Collection instructions</span><textarea id="collection-instructions" placeholder="Collection location, contact person and collection period"></textarea></label>
+        <button class="btn-primary full" data-confirm-prepare="${request.id}">Confirm Ready for Collection</button>
+      </div>`;
+      bindWorkflowModalEvents();
+    }
+
+    function openCollectionModal(requestId) {
+      const request = state.requests.find(r => String(r.id) === String(requestId));
+      if (!request) return;
+      const rows = (request.items || []).map((item,index) => {
+        const ready = Number(item.ReadyQty || 0);
+        return `<div class="modal-item-row">
+          <div><strong>${esc(item.GiftName || "Gift item")}</strong><small>Ready quantity ${ready}</small></div>
+          <input type="number" value="${ready}" readonly data-collected-qty="${index}">
+        </div>`;
+      }).join("");
+      document.getElementById("modal-root").innerHTML = `<div class="workflow-modal">
+        <div class="workflow-modal-head"><div><p class="eyebrow">Collection</p><h2>Confirm Gift Collection</h2></div><button class="btn-ghost sm" data-close-workflow>Close</button></div>
+        <p class="workflow-modal-copy">Confirm the recipient and acknowledgement. Phase 1 requires all Ready quantities to be collected.</p>
+        <div class="modal-item-list">${rows}</div>
+        <div class="form-grid collection-details-grid">
+          <label class="field"><span class="field-label">Collected by</span><input id="collected-by" required placeholder="Recipient full name" value="${esc(request.requesterName || "")}"></label>
+          <label class="field"><span class="field-label">Collection date & time</span><input id="collection-datetime" type="datetime-local" required></label>
+        </div>
+        <label class="collection-acknowledgement"><input type="checkbox" id="collection-ack" required><span>I acknowledge that the quantities shown above were received in good order.</span></label>
+        <button class="btn-primary full" data-confirm-collection="${request.id}">Confirm Collected</button>
+      </div>`;
+      const dateTime = document.getElementById("collection-datetime");
+      if (dateTime) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        dateTime.value = now.toISOString().slice(0,16);
+      }
+      bindWorkflowModalEvents();
+    }
+
+    function bindWorkflowModalEvents() {
+      document.querySelectorAll("[data-close-workflow]").forEach(button => {
+        button.onclick = () => { document.getElementById("modal-root").innerHTML = ""; };
+      });
+
+      const prepareButton = document.querySelector("[data-confirm-prepare]");
+      if (prepareButton) prepareButton.onclick = async () => {
+        const request = state.requests.find(r => String(r.id) === String(prepareButton.dataset.confirmPrepare));
+        const instructions = document.getElementById("collection-instructions")?.value.trim() || "";
+        const items = (request.items || []).map((item,index) => ({
+          requestItemId: Number(item.id),
+          giftId: String(item.GiftID || ""),
+          giftName: String(item.GiftName || "Gift item"),
+          readyQty: Number(document.querySelector(`[data-prepare-qty="${index}"]`)?.value || 0),
+          ccdRemark: document.querySelector(`[data-prepare-remark="${index}"]`)?.value.trim() || ""
+        }));
+        if (items.some(item => !item.requestItemId)) {
+          notify("Request item IDs are missing. Update the Get Requests flow to return item ID.", "error"); return;
+        }
+        if (!items.some(item => item.readyQty > 0)) {
+          notify("At least one item must have a Ready quantity", "error"); return;
+        }
+        prepareButton.disabled = true;
+        prepareButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+        try {
+          const response = await fetch(PREPARE_COLLECTION_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id),
+              preparedByName: state.account?.name || "CCD Officer",
+              preparedByEmail: String(state.account?.username || "").trim().toLowerCase(),
+              collectionInstructions: instructions,
+              items
+            })
+          });
+          await readFlowResponse(response, "Preparation could not be recorded");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Request marked Ready for Collection");
+          await loadAll();
+        } catch (error) {
+          prepareButton.disabled = false;
+          prepareButton.textContent = "Confirm Ready for Collection";
+          notify(error.message || "Preparation could not be recorded", "error");
+        }
+      };
+
+      const collectButton = document.querySelector("[data-confirm-collection]");
+      if (collectButton) collectButton.onclick = async () => {
+        const request = state.requests.find(r => String(r.id) === String(collectButton.dataset.confirmCollection));
+        const collectedBy = document.getElementById("collected-by")?.value.trim();
+        const localDateTime = document.getElementById("collection-datetime")?.value;
+        const acknowledged = Boolean(document.getElementById("collection-ack")?.checked);
+        if (!collectedBy || !localDateTime) { notify("Complete the recipient name and collection date", "error"); return; }
+        if (!acknowledged) { notify("Recipient acknowledgement is required", "error"); return; }
+        const collectionDateTime = new Date(localDateTime).toISOString();
+        const items = (request.items || []).map((item,index) => ({
+          requestItemId: Number(item.id),
+          giftId: String(item.GiftID || ""),
+          giftName: String(item.GiftName || "Gift item"),
+          collectedQty: Number(document.querySelector(`[data-collected-qty="${index}"]`)?.value || 0)
+        }));
+        if (items.some(item => !item.requestItemId)) {
+          notify("Request item IDs are missing. Update the Get Requests flow to return item ID.", "error"); return;
+        }
+        collectButton.disabled = true;
+        collectButton.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+        try {
+          const response = await fetch(CONFIRM_COLLECTION_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              requestId: Number(request.id), collectedBy, collectionDateTime, acknowledged, items
+            })
+          });
+          await readFlowResponse(response, "Collection could not be confirmed");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Gift collection confirmed");
+          await loadAll();
+        } catch (error) {
+          collectButton.disabled = false;
+          collectButton.textContent = "Confirm Collected";
+          notify(error.message || "Collection could not be confirmed", "error");
+        }
+      };
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* Event Binding & Logic                                                   */
+    /* ---------------------------------------------------------------------- */
+    function bindEvents() {
+      const brand = document.getElementById("brand-btn");
+      if (brand) brand.onclick = () => { state.view = "login"; state.role = null; state.selectedGifts = {}; render(); window.scrollTo(0,0); };
+
+      document.querySelectorAll("[data-user-tab]").forEach(btn => {
+        btn.onclick = () => { state.userTab = btn.dataset.userTab; state.view = "user"; render(); };
+      });
+
+      const refreshMyRequests = document.getElementById("refresh-my-requests");
+      if (refreshMyRequests) refreshMyRequests.onclick = () => loadAll();
+      const logout = document.getElementById("global-logout");
+      if (logout) logout.onclick = logoutPortal;
+
+      if (!state.authed || state.view === "login") bindLoginEvents();
+      if (state.role === "user" && state.userTab === "new") bindRequestEvents();
+      if (state.role === "admin" && state.view === "admin") bindAdminEvents();
+    }
+
+    async function logoutPortal() {
+      localStorage.removeItem("portalSession");
+      localStorage.removeItem("msUser");
+      state.authed = false;
+      state.role = null;
+      state.account = null;
+      state.view = "login";
+
+      if (LOCAL_TEST_MODE) {
+        sessionStorage.clear();
+        // A clean reload avoids stale event handlers or pending async renders
+        // from the previous User/Admin session.
+        window.location.reload();
+        return;
+      }
+
+      try {
+        await msalReady;
+        const account = msalInstance.getActiveAccount() || msalInstance.getAllAccounts()[0];
+        await msalInstance.logoutRedirect({ account });
+      } catch (error) {
+        console.error("Logout error:", error);
+        render();
+      }
+    }
+
+    function bindRequestEvents() {
+      const form = document.getElementById("request-form");
+      if (!form) return;
+
+      const dateInput = document.getElementById("event-date-input");
+      if (dateInput) {
+        const updateDateClass = () => {
+          if (dateInput.value) dateInput.classList.add("has-value");
+          else dateInput.classList.remove("has-value");
+        };
+        dateInput.onchange = updateDateClass;
+        dateInput.onblur = updateDateClass;
+        updateDateClass();
+      }
+
+      document.querySelectorAll("[data-toggle-gift]").forEach(btn => {
+        btn.onclick = () => {
+          const gid = btn.dataset.toggleGift;
+          if (state.selectedGifts[gid]) {
+            delete state.selectedGifts[gid];
+          } else {
+            state.selectedGifts[gid] = 1;
+          }
+          refreshRequestUI();
+        };
+      });
+
+      document.querySelectorAll("[data-qty-gift]").forEach(input => {
+        input.oninput = (e) => {
+          const gid = input.dataset.qtyGift;
+          state.selectedGifts[gid] = parseInt(e.target.value) || 0;
+          refreshRequestUI();
+        };
+      });
+
+      function refreshRequestUI() {
+        const summaryContainer = document.getElementById("order-summary-container");
+        const selectedEntries = Object.entries(state.selectedGifts);
+        
+        summaryContainer.innerHTML = orderSummaryHTML(selectedEntries);
+
+        document.querySelectorAll(".gift-option").forEach(opt => {
+          const gid = opt.dataset.giftId;
+          if (state.selectedGifts[gid]) {
+            opt.classList.add("selected");
+          } else {
+            opt.classList.remove("selected");
+          }
+        });
+
+        updateStockWarnings();
+      }
+
+      function updateStockWarnings() {
+        const container = document.getElementById("stock-warnings");
+        if (!container) return;
+        container.innerHTML = "";
+        
+        Object.entries(state.selectedGifts).forEach(([gid, qty]) => {
+          const g = state.gifts.find(item => item.id === gid);
+          if (g && qty > availableStock(g)) {
+            const div = document.createElement("div");
+            div.className = "flex items-center gap-2 text-[10px] font-bold text-red-600 uppercase";
+            div.innerHTML = `${ICONS.alert} Not available: ${g.name} (Maximum: ${availableStock(g)})`;
+            container.appendChild(div);
+          }
+        });
+      }
+
+      form.onsubmit = (ev) => {
+        ev.preventDefault();
+        const fd = new FormData(form);
+        const selectedIds = Object.keys(state.selectedGifts).filter(id => state.selectedGifts[id] > 0);
+        
+        if (selectedIds.length === 0) { 
+          notify("Please select at least one gift", "error"); 
+          return; 
+        }
+        
+        for (const gid of selectedIds) {
+          const g = state.gifts.find(item => item.id === gid);
+          if (state.selectedGifts[gid] > availableStock(g)) {
+            notify(`Quantity for ${g.name} exceeds available stock`, "error");
+            return;
+          }
         }
 
-        function refreshData() { renderContent(); }
-    </script>
-</body>
-</html>
+
+state.currentRequestData = {
+
+  requesterName: state.account?.name || fd.get("requesterName"),
+
+  department: fd.get("department"),
+
+  email: String(state.account?.username || fd.get("email") || "").trim().toLowerCase(),
+
+  company: fd.get("company"),
+
+  mobileNo: fd.get("mobileNo"),
+
+  eventName: fd.get("eventName"),
+
+  eventDate: fd.get("eventDate"),
+
+  purpose: fd.get("reason"),
+
+  items: selectedIds.map(id => ({ giftId: id, giftName: state.gifts.find(g => g.id === id).name, quantity: Number(state.selectedGifts[id] || 0) })),
+  selectedItems: selectedIds.map(id => ({ name: state.gifts.find(g => g.id === id).name, qty: state.selectedGifts[id] }))
+};
+
+
+        openConfirmationModal();
+      };
+    }
+
+    function openConfirmationModal() {
+      const modalRoot = document.getElementById("modal-root");
+      const data = state.currentRequestData;
+      
+      modalRoot.innerHTML = `
+        <div class="card w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+          <h2 class="text-lg font-bold mb-6 border-b pb-4">Confirm Request</h2>
+          <div class="space-y-6 mb-8">
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Company / Requester</p>
+              <p class="text-sm font-bold uppercase">${esc(data.company)} / ${esc(data.requesterName)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Event</p>
+              <p class="text-sm font-bold uppercase">${esc(data.eventName)}</p>
+            </div>
+            <div>
+              <p class="text-[10px] uppercase font-bold text-gray-400 mb-1">Items Summary</p>
+              <ul class="space-y-2">
+                ${data.selectedItems.map(i => `
+                  <li class="flex justify-between text-xs border-b border-gray-50 pb-1">
+                    <span>${esc(i.name)}</span>
+                    <span class="font-bold">x${i.qty}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button id="modal-confirm" class="btn-primary brand-submit flex-1">Confirm & Submit</button>
+            <button id="modal-cancel" class="btn-ghost flex-1">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("modal-cancel").onclick = () => { modalRoot.innerHTML = ""; };
+      document.getElementById("modal-confirm").onclick = handleFinalSubmit;
+    }
+
+    async function handleFinalSubmit() {
+      const modalRoot = document.getElementById("modal-root");
+      const confirmBtn = document.getElementById("modal-confirm");
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> PROCESSING...`;
+
+      try {
+        console.log("Submitting");
+console.log(state.currentRequestData);
+
+const response = await fetch(
+  CREATE_REQUEST_API,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ ...state.currentRequestData, selectedItems: undefined })
+  }
+);
+
+if (!response.ok) {
+  throw new Error("Failed to submit request");
+}
+        
+        modalRoot.innerHTML = `
+          <div class="card w-full max-w-md text-center py-12 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-center mb-6">${ICONS.check_circle}</div>
+            <h2 class="text-xl font-bold mb-2">Submission Successful</h2>
+            <p class="text-sm text-gray-500 mb-8 max-w-[280px] mx-auto">Your inventory request has been received. Please get your superior to approve via Microsoft Teams.</p>
+            <button id="modal-close-success" class="btn-primary w-full brand-submit">Back to Portal</button>
+          </div>
+        `;
+
+        document.getElementById("modal-close-success").onclick = async () => {
+          modalRoot.innerHTML = "";
+          state.selectedGifts = {};
+          state.currentRequestData = null;
+          await loadAll();
+          if (state.role === "user") { state.userTab = "requests"; state.view = "user"; }
+          render();
+        };
+      } catch (err) {
+        notify("Error submitting requests", "error");
+        modalRoot.innerHTML = "";
+      }
+    }
+
+function bindLoginEvents() {
+  const roleButtons = document.querySelectorAll("[data-login-role]");
+
+  roleButtons.forEach((btn) => {
+    btn.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const role = event.currentTarget.dataset.loginRole;
+
+      if (!LOCAL_TEST_MODE && state.account) {
+        const email = String(state.account.username || "").trim().toLowerCase();
+        if (role === "admin" && !ALLOWED_USERS.includes(email)) { notify("This account is not authorized for CCD Admin", "error"); return; }
+        state.authed = true; state.role = role; state.view = role === "admin" ? "admin" : "user";
+        state.adminTab = "dashboard"; state.userTab = "requests";
+        localStorage.setItem("portalSession", JSON.stringify({ role, account: state.account }));
+        render(); window.scrollTo(0,0); return;
+      }
+      if (LOCAL_TEST_MODE) {
+        roleButtons.forEach((button) => { button.disabled = true; });
+        enterLocalTestRole(role);
+        return;
+      }
+
+      sessionStorage.setItem("pendingLoginRole", role);
+
+      try {
+        await msalReady;
+        await msalInstance.loginRedirect({
+          scopes: ["openid", "profile", "email"]
+        });
+      } catch (error) {
+        console.error("MSAL Error:", error);
+        if (
+          error?.errorCode === "timed_out" ||
+          String(error?.message || "").includes("timed_out")
+        ) return;
+        notify("Microsoft sign-in could not be started", "error");
+      }
+    });
+  });
+}
+
+    function bindAdminEvents() {
+      document.querySelectorAll("[data-tab]").forEach(btn => {
+        btn.onclick = () => {
+          state.adminTab = btn.dataset.tab;
+          if (state.adminTab === "requests") state.requestFilter = "approved";
+          render();
+        };
+      });
+      document.querySelectorAll("[data-edit-gift]")
+.forEach(btn => {
+
+    btn.onclick = () => {
+
+        const giftId =
+            btn.dataset.editGift;
+
+        openEditGiftModal(giftId);
+
+    };
+
+});
+
+      const adminLogout = document.getElementById("logout-btn");
+      if (adminLogout) adminLogout.onclick = logoutPortal;
+      /* legacy logout disabled
+async () => {
+
+    // Full sign-out: end both the app session and the Microsoft session,
+    // via logoutRedirect() (same redirect approach as login — no popup,
+    // so no COOP/bridge issue here either). This navigates away to
+    // Microsoft's sign-out page and back, so nothing after the call runs
+    // in the success case.
+
+localStorage.removeItem("msUser");
+
+sessionStorage.clear();
+
+state.authed = false;
+state.view = "request";
+
+try {
+    await msalReady;
+
+    const account =
+        msalInstance.getActiveAccount() ||
+        msalInstance.getAllAccounts()[0];
+
+    await msalInstance.logoutRedirect({
+        account
+    });
+
+} catch (e) {
+
+    console.error("Logout error:", e);
+
+    state.view = "request";
+    render();
+}
+
+*/
+      
+  if (state.adminTab === "inventory") {
+
+    const search = document.getElementById("inv-search");
+
+    if(search)
+        search.oninput = (e) => {
+            state.inventoryQuery = e.target.value;
+        };
+
+    const refreshInventoryBtn =
+        document.getElementById("refresh-inventory");
+
+    if (refreshInventoryBtn) {
+        refreshInventoryBtn.onclick = () => {
+            loadAll();
+        };
+    }
+
+    // NEW ITEM BUTTON
+    const newItemBtn =
+        document.getElementById("toggle-gift-form");
+
+    if(newItemBtn){
+
+        newItemBtn.onclick = () => {
+
+            state.showGiftForm =
+                !state.showGiftForm;
+
+            render();
+
+        };
+
+    }
+// Cancel button inside the New Item form
+        const cancelNewGiftBtn = document.getElementById("cancel-new-gift");
+        if (cancelNewGiftBtn) {
+          cancelNewGiftBtn.onclick = () => {
+            state.showGiftForm = false;
+            render();
+          };
+        }
+
+        // Submit action for the New Item form
+        const newGiftForm = document.getElementById("new-gift-form");
+        if (newGiftForm) {
+          newGiftForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData(newGiftForm);
+            const giftName = fd.get("newItemName")?.trim();
+            const category = fd.get("newItemCategory");
+            const stockQty = Number(fd.get("newItemQty") || 0);
+            const lowStockQty = Number(fd.get("newItemLow") || 0);
+            const imageUrl = fd.get("newItemImage")?.trim() || "";
+
+            if (!giftName || !category) {
+              notify("Please fill in all required fields", "error");
+              return;
+            }
+
+            const submitBtn = newGiftForm.querySelector("button[type='submit']");
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
+            }
+
+            try {
+              const response = await fetch(ADD_INVENTORY_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({
+                  giftID: Date.now().toString(),
+                  giftName,
+                  category,
+                  stockQty,
+                  lowStockQty,
+                  imageUrl
+                })
+              });
+              await readFlowResponse(response, "Failed to create inventory item");
+              notify("New inventory item created successfully");
+              state.showGiftForm = false;
+              await loadAll();
+            } catch (error) {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Save Item";
+              }
+              notify(error.message || "Failed to create inventory item", "error");
+            }
+          };
+        }
+    // ADJUST BUTTON
+    document.querySelectorAll("[data-edit-gift]")
+    .forEach(btn => {
+
+        btn.onclick = () => {
+
+            openEditGiftModal(
+                btn.dataset.editGift
+            );
+
+        };
+
+    });
+
+ // REMOVE BUTTON
+    document.querySelectorAll("[data-remove-gift]").forEach(btn => {
+      btn.onclick = async () => {
+        if (confirm("Are you sure you want to remove this inventory item?")) {
+          const giftId = btn.dataset.removeGift;
+          const gift = state.gifts.find(g => String(g.id) === String(giftId));
+
+          const removeBtn = btn;
+          removeBtn.disabled = true;
+          removeBtn.textContent = "REMOVING...";
+
+          try {
+            const response = await fetch(DELETE_INVENTORY_API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Accept": "application/json" },
+              body: JSON.stringify({
+                itemId: Number(gift?.id || giftId)
+              })
+            });
+            await readFlowResponse(response, "Failed to delete inventory item");
+            notify("Inventory item removed successfully");
+            await loadAll();
+          } catch (error) {
+            removeBtn.disabled = false;
+            removeBtn.textContent = "REMOVE";
+            notify(error.message || "Failed to remove item", "error");
+          }
+        }
+      };
+    });
+
+}
+
+      if (state.adminTab === "requests") {
+        const refreshBtn = document.getElementById("refresh-requests");
+        if (refreshBtn) {
+          refreshBtn.onclick = () => loadAll();
+        }
+        document.querySelectorAll("[data-filter]").forEach(btn => {
+          btn.onclick = () => { state.requestFilter = btn.dataset.filter; render(); };
+        });
+          // Approval is controlled only by the Microsoft Teams Approval flow.
+          // CCD has no approve action in the portal.
+          document.querySelectorAll("[data-issue]").forEach(btn => {
+            btn.onclick = () => issueGiftRequest(btn.dataset.issue);
+          });
+          document.querySelectorAll("[data-ccd-decline]").forEach(btn => {
+            btn.onclick = () => declineGiftRequest(btn.dataset.ccdDecline);
+          });
+          document.querySelectorAll("[data-prepare-request]").forEach(btn => {
+            btn.onclick = () => openPrepareModal(btn.dataset.prepareRequest);
+          });
+          document.querySelectorAll("[data-collect-request]").forEach(btn => {
+            btn.onclick = () => openCollectionModal(btn.dataset.collectRequest);
+          });
+
+      }
+    }
+
+function renderCharts() {
+
+  if (typeof Chart === "undefined") {
+    console.error("Chart.js not loaded");
+    return;
+  }
+
+  Chart.getChart("stockChart")?.destroy();
+  Chart.getChart("statusChart")?.destroy();
+
+  const stockCtx = document.getElementById("stockChart");
+
+  if (stockCtx && state.gifts.length > 0) {
+    new Chart(stockCtx, {
+      type: "bar",
+      data: {
+        labels: state.gifts.map(g => g.name),
+        datasets: [{
+          label: "Stock Qty",
+          data: state.gifts.map(g => g.quantity),
+          backgroundColor: "#2F6F62"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  const statusCtx = document.getElementById("statusChart");
+
+  if (statusCtx) {
+
+    const counts = {
+      pending: 0,
+      approved: 0,
+      collected: 0,
+      rejected: 0,
+      declined: 0
+    };
+
+    state.requests.forEach(request => {
+      const status = normalizeStatus(request.status);
+
+      if (status === "pending approval") counts.pending += 1;
+      else if (status === "approved") counts.approved += 1;
+      else if (status === "collected") counts.collected += 1;
+      else if (status === "rejected by approver") counts.rejected += 1;
+      else if (status === "declined by ccd") counts.declined += 1;
+    });
+
+    new Chart(statusCtx, {
+      type: "doughnut",
+      data: {
+        labels: ["pending", "approved", "collected", "rejected", "declined"],
+        datasets: [{
+          data: [
+            counts.pending,
+            counts.approved,
+            counts.collected,
+            counts.rejected,
+            counts.declined
+          ],
+          backgroundColor: [
+            "#C89B3C",
+            "#2F6F62",
+            "#000000",
+            "#ba1a1a",
+            "#7f3948"
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "70%",
+        plugins: {
+          legend: {
+            position: "bottom"
+          }
+        }
+      }
+    });
+
+  }
+}
+
+window.addEventListener("error", (event) => {
+  console.error("Portal runtime error:", event.error || event.message);
+});
+window.addEventListener("unhandledrejection", (event) => {
+  console.error("Portal promise error:", event.reason);
+});
+
+if (LOCAL_TEST_MODE) {
+  // Always show the front page first during local testing.
+  localStorage.removeItem("portalSession");
+  localStorage.removeItem("msUser");
+  sessionStorage.removeItem("pendingLoginRole");
+  state.authed = false;
+  state.role = null;
+  state.account = null;
+  state.view = "login";
+  state.userTab = "requests";
+  state.adminTab = "dashboard";
+} else {
+  const storedSession = localStorage.getItem("portalSession");
+  if (storedSession) {
+    try {
+      const session = JSON.parse(storedSession);
+      if (session?.role && session?.account) {
+        state.authed = true;
+        state.role = session.role;
+        state.account = session.account;
+        state.view = session.role === "admin" ? "admin" : "user";
+        state.userTab = "requests";
+        msalReady.then(() => msalInstance.setActiveAccount(session.account)).catch(() => {});
+      }
+    } catch (error) {
+      localStorage.removeItem("portalSession");
+    }
+  }
+}
+loadAll();
+  </script>
+</body></html>
