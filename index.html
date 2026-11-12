@@ -1476,6 +1476,10 @@ const ALLOWED_USERS = [
     const GET_INVENTORY_API =
 "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/02/workflows/55b1aafd1f374e6397fcfd2f1c84080a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=otP6LULBv8RIfrOUlBCrWVcjP8IbwU_qJu9Vwl7Y73k";
 
+const UPDATE_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/14/workflows/c9194c6174884fb3973a218150356b6d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TWtyCcoe0-Ik_LpCrQz0ZHO0hVADltYS7_6JYJq0tBc";
+
+const ADD_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/ef5522727cdb4e019632b33316b3dac2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lzC-t6crcoP5__eiC9sH2QucE10nQotmhpn3kfYPoxQ";
+
     async function loadAll() {
       if (state.isRefreshing) return;
       state.isRefreshing = true;
@@ -2066,6 +2070,28 @@ function loginViewHTML() {
     function statCardHTML(label, value) {
       return `<div class="stat-card"><div class="stat-label">${label}</div><div class="stat-value">${value}</div></div>`;
     }
+function giftFormHTML() {
+      return `
+        <div class="card mb-8 border-2 border-black bg-white p-6 shadow-sm">
+          <h3 class="font-headline text-xs font-bold uppercase tracking-widest mb-6">Add New Inventory Item</h3>
+          <form id="new-gift-form" class="space-y-4">
+            <div class="form-grid">
+              ${fieldHTML("newItemName", "Item Name", `<input name="newItemName" required placeholder="e.g. Executive Gift Box" />`)}
+              ${fieldHTML("newItemCategory", "Category", `<select name="newItemCategory" required><option value="">Select Category</option>${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join("")}</select>`)}
+            </div>
+            <div class="form-grid">
+              ${fieldHTML("newItemQty", "Stock Quantity", `<input type="number" name="newItemQty" min="0" required value="50" />`)}
+              ${fieldHTML("newItemLow", "Low Stock Alert Level", `<input type="number" name="newItemLow" min="0" required value="10" />`)}
+            </div>
+            ${fieldHTML("newItemImage", "Image URL", `<input name="newItemImage" placeholder="https://..." />`)}
+            <div class="flex justify-end gap-3 mt-4">
+              <button type="button" class="btn-ghost sm" id="cancel-new-gift">Cancel</button>
+              <button type="submit" class="btn-primary sm brand-submit">Save Item</button>
+            </div>
+          </form>
+        </div>
+      `;
+    }
 
     function inventoryHTML() {
       return `
@@ -2348,6 +2374,95 @@ function loginViewHTML() {
         }
         return data;
       });
+    }
+
+    function openEditGiftModal(giftId) {
+      const gift = state.gifts.find(g => String(g.id) === String(giftId));
+      if (!gift) {
+        notify("Gift not found", "error");
+        return;
+      }
+
+      document.getElementById("modal-root").innerHTML = `
+        <div class="workflow-modal" style="width:min(520px,100%)">
+          <div class="workflow-modal-head">
+            <div>
+              <p class="eyebrow">Inventory</p>
+              <h2>Edit Item</h2>
+            </div>
+            <button class="btn-ghost sm" id="close-edit-modal">Close</button>
+          </div>
+          <div class="space-y-4 mt-4">
+            <label class="field">
+              <span class="field-label">Gift Name</span>
+              <input id="edit-name" value="${esc(gift.name)}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Category</span>
+              <select id="edit-category" required>
+                ${CATEGORIES.map(c => `<option value="${c}" ${gift.category === c ? "selected" : ""}>${c}</option>`).join("")}
+              </select>
+            </label>
+            <label class="field">
+              <span class="field-label">Stock Quantity</span>
+              <input id="edit-qty" type="number" min="0" value="${physicalStock(gift)}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Low Stock Alert Level</span>
+              <input id="edit-low" type="number" min="0" value="${gift.lowStock || 0}" required>
+            </label>
+            <label class="field">
+              <span class="field-label">Image URL</span>
+              <input id="edit-image" value="${esc(gift.image || "")}" placeholder="https://...">
+            </label>
+            <button id="save-gift" class="btn-primary full brand-submit">Save Changes</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("close-edit-modal").onclick = () => {
+        document.getElementById("modal-root").innerHTML = "";
+      };
+
+      document.getElementById("save-gift").onclick = async () => {
+        const name = document.getElementById("edit-name").value.trim();
+        const category = document.getElementById("edit-category").value;
+        const quantity = Number(document.getElementById("edit-qty").value) || 0;
+        const lowStock = Number(document.getElementById("edit-low").value) || 0;
+        const image = document.getElementById("edit-image").value.trim();
+
+        if (!name) {
+          notify("Gift name is required", "error");
+          return;
+        }
+
+        const saveBtn = document.getElementById("save-gift");
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
+
+        try {
+          const response = await fetch(UPDATE_INVENTORY_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({
+              giftID: String(gift.id),
+              giftName: name,
+              category: category,
+              stockQty: quantity,
+              lowStockQty: lowStock,
+              imageUrl: image
+            })
+          });
+          await readFlowResponse(response, "Failed to update inventory item");
+          document.getElementById("modal-root").innerHTML = "";
+          notify("Inventory updated successfully");
+          await loadAll();
+        } catch (error) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Changes";
+          notify(error.message || "Failed to update inventory item", "error");
+        }
+      };
     }
 
     function openPrepareModal(requestId) {
@@ -2790,6 +2905,20 @@ function bindLoginEvents() {
           render();
         };
       });
+      document.querySelectorAll("[data-edit-gift]")
+.forEach(btn => {
+
+    btn.onclick = () => {
+
+        const giftId =
+            btn.dataset.editGift;
+
+        openEditGiftModal(giftId);
+
+    };
+
+});
+
       const adminLogout = document.getElementById("logout-btn");
       if (adminLogout) adminLogout.onclick = logoutPortal;
       /* legacy logout disabled
@@ -2829,7 +2958,7 @@ try {
 
 */
       
-      if (state.adminTab === "inventory") {
+  if (state.adminTab === "inventory") {
 
     const search = document.getElementById("inv-search");
 
@@ -2847,18 +2976,115 @@ try {
         };
     }
 
-    document.querySelectorAll("[data-remove-gift]").forEach(btn => {
+    // NEW ITEM BUTTON
+    const newItemBtn =
+        document.getElementById("toggle-gift-form");
+
+    if(newItemBtn){
+
+        newItemBtn.onclick = () => {
+
+            state.showGiftForm =
+                !state.showGiftForm;
+
+            render();
+
+        };
+
+    }
+// Cancel button inside the New Item form
+        const cancelNewGiftBtn = document.getElementById("cancel-new-gift");
+        if (cancelNewGiftBtn) {
+          cancelNewGiftBtn.onclick = () => {
+            state.showGiftForm = false;
+            render();
+          };
+        }
+
+        // Submit action for the New Item form
+        const newGiftForm = document.getElementById("new-gift-form");
+        if (newGiftForm) {
+          newGiftForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const fd = new FormData(newGiftForm);
+            const giftName = fd.get("newItemName")?.trim();
+            const category = fd.get("newItemCategory");
+            const stockQty = Number(fd.get("newItemQty") || 0);
+            const lowStockQty = Number(fd.get("newItemLow") || 0);
+            const imageUrl = fd.get("newItemImage")?.trim() || "";
+
+            if (!giftName || !category) {
+              notify("Please fill in all required fields", "error");
+              return;
+            }
+
+            const submitBtn = newGiftForm.querySelector("button[type='submit']");
+            if (submitBtn) {
+              submitBtn.disabled = true;
+              submitBtn.innerHTML = `<span class="spin">${ICONS.refresh}</span> SAVING...`;
+            }
+
+            try {
+              const response = await fetch(ADD_INVENTORY_API, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Accept": "application/json" },
+                body: JSON.stringify({
+                  giftID: Date.now().toString(),
+                  giftName,
+                  category,
+                  stockQty,
+                  lowStockQty,
+                  imageUrl
+                })
+              });
+              await readFlowResponse(response, "Failed to create inventory item");
+              notify("New inventory item created successfully");
+              state.showGiftForm = false;
+              await loadAll();
+            } catch (error) {
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Save Item";
+              }
+              notify(error.message || "Failed to create inventory item", "error");
+            }
+          };
+        }
+    // ADJUST BUTTON
+    document.querySelectorAll("[data-edit-gift]")
+    .forEach(btn => {
+
         btn.onclick = () => {
+
+            openEditGiftModal(
+                btn.dataset.editGift
+            );
+
+        };
+
+    });
+
+    // REMOVE BUTTON
+    document.querySelectorAll("[data-remove-gift]").forEach(btn => {
+
+        btn.onclick = () => {
+
             if(confirm("Confirm removal?")) {
+
                 persistGifts(
                     state.gifts.filter(
                         g => g.id !== btn.dataset.removeGift
                     )
                 );
+
                 render();
+
             }
+
         };
+
     });
+
 }
 
       if (state.adminTab === "requests") {
