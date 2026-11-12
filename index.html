@@ -1480,6 +1480,8 @@ const UPDATE_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.en
 
 const ADD_INVENTORY_API ="https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/ef5522727cdb4e019632b33316b3dac2/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=lzC-t6crcoP5__eiC9sH2QucE10nQotmhpn3kfYPoxQ";
 
+const DELETE_INVENTORY_API = "https://defaultcc9afa7759004c388262c226c4c2e2.7d.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/21/workflows/d62fb6ef659b45dd8b64bca3b6ff091e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=I5UItZq7XoHKXz7WFIT5bSgZ4XOICPdRxGANBWGU1Gc";
+
     async function loadAll() {
       if (state.isRefreshing) return;
       state.isRefreshing = true;
@@ -2069,7 +2071,7 @@ function giftFormHTML() {
           <form id="new-gift-form" class="space-y-4">
             <div class="form-grid">
               ${fieldHTML("newItemName", "Item Name", `<input name="newItemName" required placeholder="e.g. Executive Gift Box" />`)}
-              ${fieldHTML("newItemCategory", "Category", `<select name="newItemCategory" required><option value="">Select Category</option>${CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join("")}</select>`)}
+              ${fieldHTML("newItemCategory", "Category", `<input name="newItemCategory" value="General" required placeholder="e.g. General" />`)}
             </div>
             <div class="form-grid">
               ${fieldHTML("newItemQty", "Stock Quantity", `<input type="number" name="newItemQty" min="0" required value="50" />`)}
@@ -2084,7 +2086,6 @@ function giftFormHTML() {
         </div>
       `;
     }
-
     function inventoryHTML() {
       return `
        <div class="flex justify-between items-center mb-12">
@@ -2391,9 +2392,7 @@ function giftFormHTML() {
             </label>
             <label class="field">
               <span class="field-label">Category</span>
-              <select id="edit-category" required>
-                ${CATEGORIES.map(c => `<option value="${c}" ${gift.category === c ? "selected" : ""}>${c}</option>`).join("")}
-              </select>
+              <input id="edit-category" value="${esc(gift.category || "General")}" required placeholder="e.g. General">
             </label>
             <label class="field">
               <span class="field-label">Stock Quantity</span>
@@ -3057,29 +3056,38 @@ try {
 
     });
 
+  
+
     // REMOVE BUTTON
     document.querySelectorAll("[data-remove-gift]").forEach(btn => {
+      btn.onclick = async () => {
+        if (confirm("Are you sure you want to remove this inventory item?")) {
+          const giftId = btn.dataset.removeGift;
+          const gift = state.gifts.find(g => String(g.id) === String(giftId));
 
-        btn.onclick = () => {
+          const removeBtn = btn;
+          removeBtn.disabled = true;
+          removeBtn.textContent = "REMOVING...";
 
-            if(confirm("Confirm removal?")) {
-
-                persistGifts(
-                    state.gifts.filter(
-                        g => g.id !== btn.dataset.removeGift
-                    )
-                );
-
-                render();
-
-            }
-
-        };
-
+          try {
+            const response = await fetch(DELETE_INVENTORY_API, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "Accept": "application/json" },
+              body: JSON.stringify({
+                itemId: Number(gift?.id || giftId)
+              })
+            });
+            await readFlowResponse(response, "Failed to delete inventory item");
+            notify("Inventory item removed successfully");
+            await loadAll();
+          } catch (error) {
+            removeBtn.disabled = false;
+            removeBtn.textContent = "REMOVE";
+            notify(error.message || "Failed to remove item", "error");
+          }
+        }
+      };
     });
-
-}
-
       if (state.adminTab === "requests") {
         const refreshBtn = document.getElementById("refresh-requests");
         if (refreshBtn) {
