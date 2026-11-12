@@ -1565,23 +1565,15 @@ const inventoryData =
     await inventoryResponse.json();
 
 state.gifts = inventoryData.map(item => ({
-
-    id: item.GiftID,
-
+    id: item.ID,                  // <--- Must be SharePoint's numeric row ID (1, 2, 3...) for updates
+    giftID: item.GiftID,          // <--- Your custom string ID ("G001")
     name: item.GiftName,
-
     category: item.Category,
-
     quantity: Number(item.StockQty || 0),
-
     reserved: Math.max(0, Number(item.ReservedQty || 0)),
-
     lowStock: Number(item.LowStockQty || 0),
-
     image: item.ImageURL,
-
     createdAt: Date.now()
-
 }));
       state.loaded = true;
       state.isRefreshing = false;
@@ -2445,7 +2437,7 @@ function giftFormHTML() {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
             body: JSON.stringify({
-              itemId: Number(gift.id), // Must be the SharePoint numeric row ID (1, 2, 3...)
+              itemId: Number(gift.sharepointId || gift.id), // Use SharePoint numeric row ID
               giftID: String(gift.giftID || "G001"),
               giftName: name,
               category: category,
