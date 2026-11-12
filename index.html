@@ -1742,9 +1742,10 @@ state.gifts = inventoryData.map(item => ({
       </div>`;
     }
 
-    function orderSummaryHTML(selectedEntries) {
-      const totalItems = selectedEntries.reduce((acc, [_, qty]) => acc + (parseInt(qty) || 0), 0);
-      const hasItems = selectedEntries.length > 0;
+   function orderSummaryHTML(selectedEntries) {
+      const activeEntries = selectedEntries.filter(([_, qty]) => (parseInt(qty) || 0) > 0);
+      const totalItems = activeEntries.reduce((acc, [_, qty]) => acc + (parseInt(qty) || 0), 0);
+      const hasItems = activeEntries.length > 0;
       
       return `
       <div class="selection-card h-full flex flex-col">
@@ -1765,11 +1766,11 @@ state.gifts = inventoryData.map(item => ({
                 </tr>
               </thead>
               <tbody>
-                ${selectedEntries.map(([gid, qty]) => {
-                  const g = state.gifts.find(item => item.id === gid);
+                ${activeEntries.map(([gid, qty]) => {
+                  const g = state.gifts.find(item => String(item.id) === String(gid));
                   return `
                     <tr>
-                      <td class="pr-4">${esc(g.name)}</td>
+                      <td class="pr-4">${esc(g ? g.name : "Gift Item")}</td>
                       <td class="text-right font-bold">${qty}</td>
                     </tr>
                   `;
@@ -2656,7 +2657,7 @@ function giftFormHTML() {
       }
     }
 
-    function bindRequestEvents() {
+ function bindRequestEvents() {
       const form = document.getElementById("request-form");
       if (!form) return;
 
@@ -2683,23 +2684,41 @@ function giftFormHTML() {
         };
       });
 
-      document.querySelectorAll("[data-qty-gift]").forEach(input => {
-        input.oninput = (e) => {
-          const gid = input.dataset.qtyGift;
-          state.selectedGifts[gid] = parseInt(e.target.value) || 0;
-          refreshRequestUI();
-        };
-      });
+      // Sync state whenever any quantity input changes
+   document.querySelectorAll("[data-qty-gift]").forEach(input => {
+
+    const gid = input.dataset.qtyGift;
+
+    input.addEventListener("input", function () {
+
+        const qty = parseInt(this.value) || 0;
+
+        if (qty > 0) {
+            state.selectedGifts[gid] = qty;
+        } else {
+            delete state.selectedGifts[gid];
+        }
+
+        console.log("Selected Gifts:", state.selectedGifts);
+
+        refreshRequestUI();
+    });
+
+});
 
       function refreshRequestUI() {
+        console.log("Refresh UI Triggered");
+console.log(state.selectedGifts);
         const summaryContainer = document.getElementById("order-summary-container");
-        const selectedEntries = Object.entries(state.selectedGifts);
+        const selectedEntries = Object.entries(state.selectedGifts).filter(([_, qty]) => (parseInt(qty) || 0) > 0);
         
-        summaryContainer.innerHTML = orderSummaryHTML(selectedEntries);
+        if (summaryContainer) {
+          summaryContainer.innerHTML = orderSummaryHTML(selectedEntries);
+        }
 
         document.querySelectorAll(".gift-option").forEach(opt => {
           const gid = opt.dataset.giftId;
-          if (state.selectedGifts[gid]) {
+          if (state.selectedGifts[gid] && state.selectedGifts[gid] > 0) {
             opt.classList.add("selected");
           } else {
             opt.classList.remove("selected");
@@ -2715,7 +2734,7 @@ function giftFormHTML() {
         container.innerHTML = "";
         
         Object.entries(state.selectedGifts).forEach(([gid, qty]) => {
-          const g = state.gifts.find(item => item.id === gid);
+          const g = state.gifts.find(item => String(item.id) === String(gid));
           if (g && qty > availableStock(g)) {
             const div = document.createElement("div");
             div.className = "flex items-center gap-2 text-[10px] font-bold text-red-600 uppercase";
@@ -2728,6 +2747,17 @@ function giftFormHTML() {
       form.onsubmit = (ev) => {
         ev.preventDefault();
         const fd = new FormData(form);
+        
+        // Harvest quantities directly from DOM inputs to ensure 100% reliability
+        const finalSelected = {};
+        document.querySelectorAll("[data-qty-gift]").forEach(input => {
+          const val = parseInt(input.value) || 0;
+          if (val > 0) {
+            finalSelected[input.dataset.qtyGift] = val;
+          }
+        });
+        state.selectedGifts = finalSelected;
+
         const selectedIds = Object.keys(state.selectedGifts).filter(id => state.selectedGifts[id] > 0);
         
         if (selectedIds.length === 0) { 
@@ -2736,36 +2766,25 @@ function giftFormHTML() {
         }
         
         for (const gid of selectedIds) {
-          const g = state.gifts.find(item => item.id === gid);
+          const g = state.gifts.find(item => String(item.id) === String(gid));
           if (state.selectedGifts[gid] > availableStock(g)) {
             notify(`Quantity for ${g.name} exceeds available stock`, "error");
             return;
           }
         }
 
-
-state.currentRequestData = {
-
-  requesterName: state.account?.name || fd.get("requesterName"),
-
-  department: fd.get("department"),
-
-  email: String(state.account?.username || fd.get("email") || "").trim().toLowerCase(),
-
-  company: fd.get("company"),
-
-  mobileNo: fd.get("mobileNo"),
-
-  eventName: fd.get("eventName"),
-
-  eventDate: fd.get("eventDate"),
-
-  purpose: fd.get("reason"),
-
-  items: selectedIds.map(id => ({ giftId: id, giftName: state.gifts.find(g => g.id === id).name, quantity: Number(state.selectedGifts[id] || 0) })),
-  selectedItems: selectedIds.map(id => ({ name: state.gifts.find(g => g.id === id).name, qty: state.selectedGifts[id] }))
-};
-
+        state.currentRequestData = {
+          requesterName: state.account?.name || fd.get("requesterName"),
+          department: fd.get("department"),
+          email: String(state.account?.username || fd.get("email") || "").trim().toLowerCase(),
+          company: fd.get("company"),
+          mobileNo: fd.get("mobileNo"),
+          eventName: fd.get("eventName"),
+          eventDate: fd.get("eventDate"),
+          purpose: fd.get("reason"),
+          items: selectedIds.map(id => ({ giftId: id, giftName: state.gifts.find(g => String(g.id) === String(id))?.name, quantity: Number(state.selectedGifts[id] || 0) })),
+          selectedItems: selectedIds.map(id => ({ name: state.gifts.find(g => String(g.id) === String(id))?.name, qty: state.selectedGifts[id] }))
+        };
 
         openConfirmationModal();
       };
