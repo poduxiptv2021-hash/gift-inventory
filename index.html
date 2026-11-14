@@ -2163,9 +2163,20 @@ function giftFormHTML() {
     </div>
   ` : ''}
 
-  <div class="gift-grid">
+ <div class="gift-grid">
+${state.gifts
+.filter(g => {
+    const q = state.inventoryQuery.toLowerCase().trim();
 
-          ${state.gifts.map(g => `
+    if (!q) return true;
+
+    return (
+        String(g.name || "").toLowerCase().includes(q) ||
+        String(g.category || "").toLowerCase().includes(q) ||
+        String(g.giftID || "").toLowerCase().includes(q)
+    );
+})
+.map(g => `
           <div class="bg-white border border-gray-100 p-4">
             <div class="gift-card-img">${g.image ? `<img src="${g.image}" />` : ICONS.gift}</div>
             <div class="gift-card-body">
@@ -2995,10 +3006,10 @@ try {
 
     const search = document.getElementById("inv-search");
 
-    if(search)
-        search.oninput = (e) => {
-            state.inventoryQuery = e.target.value;
-        };
+    search.oninput = (e) => {
+    state.inventoryQuery = e.target.value;
+    render();
+};
 
     const refreshInventoryBtn =
         document.getElementById("refresh-inventory");
