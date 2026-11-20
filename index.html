@@ -1606,7 +1606,7 @@ state.gifts = inventoryData.map(item => ({
     quantity: Number(item.StockQty || 0),
     reserved: Math.max(0, Number(item.ReservedQty || 0)),
     lowStock: Number(item.LowStockQty || 0),
-    image: encodeURI(item.ImageURL || ""),
+    image: item.ImageURL || "",
     createdAt: Date.now()
 }));
       state.loaded = true;
@@ -1709,12 +1709,11 @@ state.gifts = inventoryData.map(item => ({
                 <div class="gift-option ${state.selectedGifts[g.id] ? "selected" : ""}" data-gift-id="${g.id}">
                   <button type="button" class="gift-option-top" data-toggle-gift="${g.id}">
                     <span class="gift-thumb">
- ${g.image
+${g.image
   ? `<img
-       src="${encodeURI((g.image || '').trim())}"
+       src="${g.image}"
        alt="${esc(g.name)}"
        loading="lazy"
-       crossorigin="anonymous"
        referrerpolicy="no-referrer"
        onerror="this.onerror=null;this.src='https://via.placeholder.com/400x250?text=No+Image';"
      />`
