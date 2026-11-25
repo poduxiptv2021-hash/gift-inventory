@@ -1362,6 +1362,21 @@
     .hover\:file\:bg-gray-800:hover::file-selector-button { background-color: var(--phb-green-dark) !important; }
     .hover\:bg-black\/5:hover { background-color: rgba(102,174,10,0.10) !important; }
 
+    /* ---- Aligned cards: stock boxes and actions line up whatever the title length ---- */
+    .gift-grid { align-items: stretch; }
+    .inventory-card { display: flex; flex-direction: column; height: 100%; border-radius: 14px; border: 1px solid var(--line) !important; box-shadow: var(--shadow); padding: 20px !important; }
+    .inventory-card .gift-card-img { height: 190px; border-radius: 10px; background: #F3F6F0; }
+    .inventory-card .gift-card-body { display: flex; flex-direction: column; flex: 1 1 auto; padding: 18px 0 0; }
+    .inventory-card .gift-card-top { min-height: 44px; margin-bottom: 6px; gap: 10px; }
+    .inventory-card .gift-card-top strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: 15px; line-height: 22px; }
+    .inventory-card .inventory-category { min-height: 14px; margin-bottom: 20px; }
+    .inventory-card .inventory-stock-breakdown { margin-top: auto; }
+    .inventory-card .inventory-stock-breakdown + div { margin-top: 18px; }
+    .gift-option { height: 100%; }
+    .gift-option-top { flex: 1 1 auto; }
+    .gift-option-text { flex: 1 1 auto; }
+    .gift-option-text strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; min-height: 2.8em; line-height: 1.4; }
+
     /* ---- Footer ---- */
     .site-footer { margin-top: 48px; background: #ffffff; border-top: 1px solid var(--line); }
     .site-footer-inner { max-width: 1280px; margin: 0 auto; padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; gap: 12px 24px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
@@ -2037,8 +2052,8 @@ function loginViewHTML() {
     <section class="landing-hero">
       <div class="landing-hero-inner">
         <p class="landing-eyebrow">PHB · iGIFT Portal</p>
-        <h1>Corporate gifts, <span>managed with ease.</span></h1>
-        <p class="landing-hero-sub">Request gifts for your events, track their progress and collect them, all in one place with your PHB Microsoft account.</p>
+        <h1>Corporate gift request and <span>inventory management.</span></h1>
+        <p class="landing-hero-sub">A single platform for PHB staff to request corporate gifts for official events, and for the Corporate Communications Department to manage inventory and record gift issuance.</p>
         ${LOCAL_TEST_MODE ? `<div class="inline-flex mt-6 px-4 py-2 bg-amber-50 border border-amber-300 text-amber-800 text-[10px] font-bold uppercase tracking-widest">Local Test Mode · Microsoft login bypassed</div>` : ""}
       </div>
     </section>
@@ -2376,7 +2391,7 @@ ${state.gifts
     );
 })
 .map(g => `
-          <div class="bg-white border border-gray-100 p-4">
+          <div class="inventory-card bg-white border border-gray-100 p-4">
             <div class="gift-card-img">
   ${g.image
     ? `<img
@@ -2390,10 +2405,10 @@ ${state.gifts
 </div>
             <div class="gift-card-body">
               <div class="gift-card-top">
-                <strong>${esc(g.name)}</strong>
+                <strong title="${esc(g.name)}">${esc(g.name)}</strong>
                 ${availableStock(g) <= g.lowStock ? `<span class="low-pill">Low</span>` : ""}
               </div>
-              <div class="text-[10px] uppercase font-bold text-gray-400 mb-6">${esc(g.category)}</div>
+              <div class="inventory-category text-[10px] uppercase font-bold text-gray-400">${esc(g.category)}</div>
               <div class="inventory-stock-breakdown">
                 <div><span>Physical</span><strong>${physicalStock(g)}</strong></div>
                 <div><span>Reserved</span><strong>${reservedStock(g)}</strong></div>
